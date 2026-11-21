@@ -14,6 +14,10 @@
   - `css/style.css`：樣式與 6 種介面風格
   - `tools/make-icons.js`：由吉祥物產生 `icon.svg`、`apple-touch-icon.png`
 
+## 部署
+
+GitHub Pages 從 `main` 的根目錄發佈（網址 `https://gelegele0910-jpg.github.io/korean/`）。使用者同意：修改在 `node tests/run-all.js` 全部通過後，**直接推到 `main`**（不需開 PR），推上去約 1～2 分鐘網站就會更新。
+
 ## 內容規則
 
 - **羅馬拼音不要手寫**：一律由 `KH.romanize()` 依實際發音產生（連音、鼻音化、ㅎ、流音化、顎化；硬音化只出現在 `pronounce()` 的顯示，RR 不標）。新增內容後跑 `tests/hangul.js`，它會檢查拼音只含英文字母；遇到規則處理不了的字（例如 ㄴ 添加：서울역、명동역），換一個例子，或在 `hangul.js` 加規則並在 H2 補標準答案。

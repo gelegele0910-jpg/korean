@@ -4,7 +4,7 @@ const { seeded } = require('./server.js');
 const ROOT = path.resolve(__dirname, '..');
 const KH = require('../js/hangul.js');
 const ctx = { KH }; vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/data.js'), 'utf8') + ';this.D={VOWELS,VOWELS2,CONSONANTS,DOUBLES,BATCHIM,RULES,TOPICS,LESSONS,TRIOS,VPAIRS,VCHAINS,CTRIOS,CPLACES};', ctx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/data.js'), 'utf8') + ';this.D={VOWELS,VOWELS2,CONSONANTS,DOUBLES,BATCHIM,RULES,TOPICS,LESSONS,TRIOS,VPAIRS,VCHAINS,CTRIOS};', ctx);
 const D = ctx.D;
 let fail = 0, n = 0;
 const ok = (c, msg) => { n++; if (!c) { fail++; console.log('  ✗', msg); } };
@@ -60,7 +60,7 @@ for (const r of D.RULES) for (const [w, , wrong] of r.ex) { ok(KH.pronounce(w) !
 
 // H6 母音對比：每組單字只差這兩個母音（其他字母、長度都一樣），而且兩個母音都有嘴型
 const actx = { KH }; vm.createContext(actx);
-vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/art.js'), 'utf8') + ';this.A={MOUTH,MOUTH_SEQ,mouthSvg,mouthHtml,VMAP,CART,CSHAPE,consSvg,consHtml};', actx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/art.js'), 'utf8') + ';this.A={MOUTH,MOUTH_SEQ,mouthSvg,mouthHtml,VMAP,CSHAPE};', actx);
 for (const [a, b, tip, ws] of D.VPAIRS) {
   ok(tip && ws.length >= 2, 'H6 每組至少 2 對單字 ' + a + b);
   for (const [x, y] of ws) {
@@ -86,10 +86,26 @@ for (const [js, tip, ws] of D.CTRIOS) {
     ok(new Set(set.map(w => w[0])).size === set.length && set.every(w => w[1]), 'H7 單字不重複、有中文 ' + set[0][0]);
   }
 }
-for (const x of [...D.CONSONANTS, ...D.DOUBLES]) {
-  ok(actx.A.consHtml(x.j, 100).includes('<svg') && actx.A.CSHAPE[x.j], 'H7 側面圖與字形 ' + x.j);
+// 發音動畫（speech-art.js）：每個子音都有部位與出氣方式、家族卡剛好涵蓋每個子音一次、每個時間點都畫得出來
+const sctx = {}; vm.createContext(sctx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/speech-art.js'), 'utf8'), sctx);
+const SA = sctx.SA;
+const allC = [...D.CONSONANTS, ...D.DOUBLES].map(x => x.j);
+for (const j of allC) {
+  ok(SA.C[j] && actx.A.CSHAPE[j], 'H7 動畫資料與字形 ' + j);
+  ok(SA.FAM.filter(f => f.js.includes(j)).length === 1, 'H7 家族卡剛好一張 ' + j);
+  let rel = 0;
+  for (let ms = 0; ms <= 2400; ms += 50) {
+    const st = SA.stateAt(j, ms); st.now = ms; st.labels = true; st.zoom = 1;
+    const svg = SA.drawHybrid(st, 't');
+    if (!/^[\s\S]*<\/g>\s*$/.test(svg) || /NaN|undefined/.test(svg)) { ok(false, `H7 ${j} ${ms}ms 畫不出來`); break; }
+    if (st.step === 2) rel++;
+  }
+  ok(rel > 0 || j === 'ㅇ', 'H7 有「放開」階段 ' + j);
+  ok(SA.syl(j) && KH.isSyl(SA.syl(j)), 'H7 念的字 ' + j);
 }
-ok(D.CPLACES.flatMap(c => c[1]).sort().join('') === Object.keys(actx.A.CART).sort().join(''), 'H7 部位總覽包含所有子音');
+ok(Object.keys(SA.C).sort().join('') === [...allC].sort().join(''), 'H7 動畫子音＝40 音的子音');
+ok(SA.MANNERS.map(m => m.js).join('').split('').sort().join('') === 'ㄱㄲㄷㄸㅂㅃㅅㅆㅈㅉㅊㅋㅌㅍ'.split('').sort().join(''), 'H7 平音・送氣音・硬音卡');
 
 console.log(fail ? `hangul: ${fail}/${n} 失敗` : `hangul: ${n} 項全部通過`);
 process.exit(fail ? 1 : 0);

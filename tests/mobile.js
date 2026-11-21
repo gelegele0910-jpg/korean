@@ -13,6 +13,7 @@ const SCENES = {
   rule: lessonAt('r1', 'rule'), cplace: lessonAt('cs', 'cplace'), cair: lessonAt('cs', 'cair'), ctrio: lessonAt('cs', 'ctrio'),
   ctrioRes: lessonAt('cs', 'ctrio') + " U.ck={key:'ct-ㄷㅌㄸ', si:1, wi:2, r:{kind:'rival', heard:'턱', rival:['턱','下巴'], hint:'不要吐氣，喉嚨繃緊、短短的。'}}; render();",
   ctrioOk: lessonAt('cs', 'ctrio') + " U.ck={key:'ct-ㄷㅌㄸ', si:0, wi:0, r:{kind:'ok', heard:'달'}, gain:10}; render();",
+  cmap: "go('cmap')", cmapPlay: "go('cmap'); setTimeout(() => saPlay(document.querySelector('[data-sa-scope]'), 'ㅌ'), 0);",
   consCard: "startLesson('c2'); U.ls.i = U.ls.steps.findIndex(s => s.k==='letter' && s.x.j==='ㅉ'); render();", vmap: lessonAt('v3', 'vmap'), vchain: lessonAt('v3', 'vchain'), vpair: lessonAt('v3', 'vpair'),
   vpairRec: lessonAt('v3', 'vpair') + " U.my={key:'p-ㅓㅗ', url:'blob:x'}; render();",
   vowelSeq: "startLesson('v2'); U.ls.i = U.ls.steps.findIndex(s => s.k==='letter' && s.x.j==='ㅙ'); render();",

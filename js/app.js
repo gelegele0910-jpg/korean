@@ -57,7 +57,7 @@ function save() {
 }
 
 let S = load();
-const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
+const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, saSlow: false, saLbl: true, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
 
 /* ================= 進度工具 ================= */
 function owned(id, s) { s = s || S; const it = SHOP.find(x => x.id === id); return !!it && (it.price === 0 || !!s.own[id]); }
@@ -301,6 +301,7 @@ function vLearn() {
   <div class="tile-grid">
     <button class="tile" data-act="go" data-v="chart"><span class="ic ko">가</span><b>40 音表</b></button>
     <button class="tile" data-act="go" data-v="builder"><span class="ic">🧩</span><b>拼音工坊</b></button>
+    <button class="tile" data-act="go" data-v="cmap"><span class="ic">👄</span><b>子音發音地圖</b></button>
   </div>
   ${secs.map(sec => `<h3 class="mt">${h(sec)}</h3>` + LESSONS.filter(L => L.sec === sec).map(L => `
     <button class="lesson" data-act="lesson" data-id="${L.id}"><div class="ic">${h(L.ic)}</div>
@@ -352,7 +353,7 @@ function vStep(s) {
       <button class="btn main block mt" data-act="ls-next">開始 ▶</button></div>`;
     case 'letter': { const x = s.x; return `<div class="card center"><div class="big">${h(x.j)}</div>
       <div>${x.nm ? `<span class="ko sub">${h(x.nm)}</span>　` : ''}<span class="rr" style="font-size:1.3rem">${h(x.rr)}</span></div>
-      ${mouthHtml(x.j, 110) ? `<div class="mouthrow">${mouthHtml(x.j, 110)}</div>` : CART[x.j] ? `<div class="mouthrow">${consHtml(x.j, 130)}</div>` : ''}
+      ${mouthHtml(x.j, 110) ? `<div class="mouthrow">${mouthHtml(x.j, 110)}</div>` : SA.C[x.j] ? saBox([x.j], { one: true }) : ''}
       <div class="btns" style="justify-content:center"><button class="btn main" data-act="say" data-t="${h(x.say)}">🔊 ${h(x.say)}</button><button class="btn" data-act="say" data-t="${h(x.say)}" data-r="0.6">🐢 慢慢念</button></div>
       <div class="tip" style="text-align:left">${h(x.tip)}${CSHAPE[x.j] ? `<div style="margin-top:6px">✏️ 字形由來：${h(CSHAPE[x.j])}</div>` : ''}</div>
       ${myRecHtml('l-' + x.j, x.say)}
@@ -369,15 +370,13 @@ function vStep(s) {
       ${ws.map(([x, y]) => `<div class="wpair"><button data-act="say" data-t="${h(x[0])}"><b>${h(x[0])}</b><small>${h(x[1])}</small></button><span class="vs">vs</span><button data-act="say" data-t="${h(y[0])}"><b>${h(y[0])}</b><small>${h(y[1])}</small></button></div>`).join('')}
       ${checkHtml('vp-' + a + b, ws)}
       <div class="mt"><b>錄自己的聲音比比看</b><div class="sub small">念「${h(ws[0][0][0])}、${h(ws[0][1][0])}」，再和標準發音對照。</div>${myRecHtml('p-' + a + b, ws[0][0][0] + ', ' + ws[0][1][0])}</div></div>${stepNav()}`; }
-    case 'cplace': return `<div class="card"><h3>舌頭碰哪裡？</h3><div class="sub">從側面看嘴巴（臉朝左）。黃點＝碰到的地方，點字母聽發音。韓文子音的字形就是照這些位置畫的！</div>
-      <div class="cplaces">${CPLACES.map(([nm, js]) => `<div><b>${nm}</b>${consSvg(js.find(j => !CART[j][1]) || js[0], 104)}
-        <div class="seg" style="justify-content:center">${js.map(j => `<button data-act="say" data-t="${j === 'ㅇ' ? '앙' : KH.comp(j, 'ㅏ')}" ${j === 'ㅇ' ? 'title="收音時念 ng"' : ''}><span class="ko">${j}</span></button>`).join('')}</div></div>`).join('')}</div></div>${stepNav()}`;
-    case 'cair': return `<div class="card"><h3>三種出氣方式</h3><div class="sub">舌頭位置一樣，差別在「氣」：</div>
-      <div class="vpair">${['ㄷ', 'ㅌ', 'ㄸ'].map((j, i) => `<div><div class="vj">${KH.comp(j, 'ㅏ')}</div><div class="small" style="font-weight:800">${['平音', '送氣音', '硬音'][i]}</div>${consSvg(j, 104)}
-        <div class="sub small">${CMANNER[CART[j][1] || 'plain']}</div><div class="btns" style="justify-content:center;margin-top:6px">${sayBtn(KH.comp(j, 'ㅏ'))}</div></div>`).join('')}</div>
+    case 'cplace': return `<div class="card"><h3>舌頭碰哪裡？</h3><div class="sub">點任何一個子音，看嘴巴裡怎麼動。圖上的 ①～⑥ 是 6 個發音部位，韓文子音的字形就是照這些位置畫的！</div>
+      ${cmapHtml(false)}</div>${stepNav()}`;
+    case 'cair': return `<div class="card"><h3>三種出氣方式</h3><div class="sub">舌頭位置一樣，差別在「氣」。依序點 ㄷ、ㅌ、ㄸ 比較看看：</div>
+      ${saBox(['ㄷ', 'ㅌ', 'ㄸ'])}
       <div class="tip">🧻 <b>面紙測試</b>：拿一張面紙放在嘴巴前面。念 타 面紙會被吹動；念 다、따 面紙幾乎不動。<br>🎵 <b>聽音調</b>：送氣音、硬音開頭的字音調比較高，平音開頭的字音調比較低。<br>💪 <b>硬音</b>：像要憋氣一樣先把喉嚨繃緊，再短短地發出來。</div></div>${stepNav()}`;
     case 'ctrio': { const [js, tip, ws] = s.c; return `<div class="card"><h3>${js.map(j => `<span class="ko">${j}</span>`).join('・')}</h3>
-      <div class="vpair">${js.map(j => `<div><div class="vj">${KH.comp(j, 'ㅏ')}</div>${consHtml(j, 96)}<div class="btns" style="justify-content:center;margin-top:6px">${sayBtn(KH.comp(j, 'ㅏ'))}${slowBtn(KH.comp(j, 'ㅏ'))}</div></div>`).join('')}</div>
+      ${saBox(js)}
       <div class="tip">${h(tip)}</div>
       <div class="sub">只差一個子音、意思就不一樣的單字，交替點來聽：</div>
       ${ws.map(set => `<div class="wtrio">${set.map(w => `<button data-act="say" data-t="${h(w[0])}"><b>${h(w[0])}</b><small>${h(w[1])}</small></button>`).join('')}</div>`).join('')}
@@ -436,6 +435,43 @@ function cmpHtml(s) {
   const ko = s.opts.filter(o => /^[가-힣 ]+$/.test(o));
   if (ko.length < 2) return '';
   return `<div class="cmp"><span class="lbl">比較聽聽看：</span>${ko.map(o => `<button class="btn sm" data-act="say" data-t="${h(o)}">🔊 ${h(o)}</button>`).join('')}</div>`;
+}
+
+/* ================= 子音發音動畫（js/speech-art.js 的 SA） =================
+ * 同一個 data-sa-scope 裡：一個動畫畫面＋幾個 data-act="sa-play" 的按鈕。 */
+function saCtl() {
+  return `<div class="sa-opts"><button class="${U.saSlow ? 'on' : ''}" data-act="sa-slow">🐢 慢動作</button><button class="${U.saLbl ? 'on' : ''}" data-act="sa-lbl">🏷 名稱</button></div>`;
+}
+function saBox(js, o) {
+  o = o || {};
+  const btn = j => `<button class="sa-j" data-act="sa-play" data-j="${j}"><b class="ko">${KH.comp(j === 'ㅇ' ? 'ㅇ' : j, 'ㅏ', j === 'ㅇ' ? 'ㅇ' : '')}</b><small>${SA.KIND[SA.C[j][1]]}</small></button>`;
+  return `<div class="sa-box" data-sa-scope>${SA.stage()}
+    <div class="sa-cap">${o.one ? '按「看嘴巴怎麼動」，看舌頭和氣怎麼走' : '點下面的字，看嘴巴裡怎麼動'}</div>
+    <div class="sa-row">${o.one ? `<button class="btn main" data-act="sa-play" data-j="${js[0]}">▶ 看嘴巴怎麼動</button>` : js.map(btn).join('')}</div>${saCtl()}</div>`;
+}
+/** 子音發音地圖：動畫＋6 個部位家族卡（full＝再加上平音／送氣音／硬音卡） */
+function cmapHtml(full) {
+  const jsBtns = js => `<div class="fam-js">${[...js].map(j => `<button data-act="sa-play" data-j="${j}" aria-label="播放 ${j}">${j}</button>`).join('')}</div>`;
+  return `<div class="cmap" data-sa-scope>
+    <div class="cm-stage">${SA.stage()}<div class="sa-cap">點任何一個子音開始</div>${saCtl()}</div>
+    <div class="cm-cards">${SA.FAM.map((f, i) => `<div class="fam" data-fam="${f.id}" style="--c:${f.c};--d:${f.d}">${SA.closeup(f.id)}<div class="tx">
+      <b class="fam-t"><span class="num">${i + 1}</span>${h(f.nm)}（${h(f.team)}）</b>${jsBtns(f.js)}
+      <div class="fam-r"><b>位置：</b>${h(f.pos)}</div><div class="fam-r"><b>像注音：</b>${h(f.zy)}</div><div class="fam-r"><b>口訣：</b>${h(f.tips.join('、'))}</div></div></div>`).join('')}</div>
+    ${full ? `<div class="manner"><b class="fam-t" style="justify-content:center">平音・送氣音・硬音（最容易搞混的地方！）</b><div class="mgrid">${SA.MANNERS.map(m => `<div>${SA.closeup(m.ic)}<div class="tx">
+      <b>${h(m.nm)}（${h(m.team)}）</b>${jsBtns(m.js)}<div class="fam-r"><b>口訣：</b>${h(m.tip)}</div><div class="fam-r sub2">${h(m.sub)}</div></div></div>`).join('')}</div></div>` : ''}
+  </div>`;
+}
+function vCmap() {
+  return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0">子音發音地圖</h2></div>
+  <div class="sub mb">點任何一個子音：人物會放大嘴巴，讓你看到舌頭怎麼動、氣怎麼走，同時念出聲音。</div>${cmapHtml(true)}`;
+}
+function saPlay(scope, j) {
+  const stg = scope && scope.querySelector('svg[data-sa]');
+  if (!stg || !SA.C[j]) return;
+  scope.querySelectorAll('[data-act="sa-play"]').forEach(b => b.classList.toggle('on', b.dataset.j === j));
+  const fam = SA.FAM.find(f => f.js.includes(j));
+  scope.querySelectorAll('.fam').forEach(c => c.classList.toggle('on', !!fam && c.dataset.fam === fam.id));
+  SA.play(stg, j, { slow: U.saSlow, labels: U.saLbl, cap: scope.querySelector('.sa-cap'), onRelease: t => speak(t, U.saSlow ? 0.6 : null) });
 }
 
 /* ================= 發音檢查：念給 App 聽，看它聽成哪個字 =================
@@ -767,8 +803,8 @@ function vSheet() {
 
 /* ================= 繪製 ================= */
 const VIEWS = { home: vHome, learn: vLearn, chart: vChart, builder: vBuilder, lesson: vLesson, done: vDone, games: vGames, game: vGame,
-  review: vReview, words: vWords, me: vMe };
-const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
+  review: vReview, words: vWords, me: vMe, cmap: vCmap };
+const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
 const TABS = [['home', '🏠', '首頁'], ['learn', '📘', '學習'], ['games', '🎮', '遊戲'], ['review', '📇', '複習'], ['me', '🐯', '我的']];
 function applySkin() {
   document.body.dataset.skin = S.skin;
@@ -776,8 +812,9 @@ function applySkin() {
   if (m) m.content = (SKIN_SW[S.skin] || SKIN_SW.fresh)[0];
 }
 function render() {
-  resetDay(); applySkin();
+  resetDay(); applySkin(); SA.stop();
   $('#main').innerHTML = (VIEWS[U.view] || vHome)();
+  SA.mountAll($('#main'));
   const tab = TAB_OF[U.view];
   $('#tabs .in').innerHTML = TABS.map(([v, i, nm]) => `<button class="${tab === v ? 'on' : ''}" data-act="go" data-v="${v}"><span class="i">${i}</span>${nm}</button>`).join('');
   $('#top .in').innerHTML = `<div class="brand">${mascot(S.wear, 34)}<span class="ko">호야</span> 韓語</div>
@@ -798,6 +835,7 @@ function autoPlay() {
   let t = null;
   if (U.view === 'lesson' && U.ls) {
     const s = U.ls.steps[U.ls.i];
+    if (s.k === 'letter' && SA.C[s.x.j]) { setTimeout(() => { if (U.ls && U.ls.steps[U.ls.i] === s) saPlay($('#main [data-sa-scope]'), s.x.j); }, 300); return; }
     t = s.k === 'letter' ? s.x.say : s.k === 'word' ? s.w.ko : s.k === 'sent' ? s.s.ko : s.k === 'quiz' && s.picked == null ? s.audio : null;
   } else if (U.view === 'game' && U.g && !U.g.end) {
     const g = U.g;
@@ -842,6 +880,9 @@ const ACT = {
       save(); render();
     });
   },
+  'sa-play': (d, el) => saPlay(el.closest('[data-sa-scope]'), d.j),
+  'sa-slow': (d, el) => { U.saSlow = !U.saSlow; document.querySelectorAll('[data-act="sa-slow"]').forEach(b => b.classList.toggle('on', U.saSlow)); },
+  'sa-lbl': (d, el) => { U.saLbl = !U.saLbl; document.querySelectorAll('[data-act="sa-lbl"]').forEach(b => b.classList.toggle('on', U.saLbl)); },
   'ck-pick': d => { abortRec(); U.ck = { key: d.k, si: Number(d.s), wi: Number(d.w) }; render(); speak(CK_REG[d.k][d.s][d.w][0]); },
   ck: d => {
     const sets = CK_REG[d.k]; if (!sets) return;

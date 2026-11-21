@@ -34,6 +34,8 @@ const INIT = () => {
   p.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::/.test(m.text())) errs.push(m.text()); });
   await p.goto(srv.url); await p.waitForSelector('#tabs button');
   const ev = (f, a) => p.evaluate(f, a);
+  // 點固定畫面下面的按鈕：先捲到畫面中間（上方的發音動畫是固定的）
+  const tapC = async sel => { await p.$eval(sel, e => e.scrollIntoView({ block: 'center' })); await p.click(sel); };
   const prog = () => ev(() => JSON.parse(localStorage.getItem('hoya-korean-v1') || 'null'));
 
   // E1 首頁進入第一課，用點的上完所有課
@@ -273,12 +275,18 @@ const INIT = () => {
   // E14 子音聽辨特訓：側面圖、念給 App 聽（念對／念成別的字／很接近／沒聽清楚）
   await ev(() => { S.set.auto = false; save(); startLesson('cs'); });
   await p.click('[data-act=ls-next]');
-  ok(await ev(() => U.ls.steps[U.ls.i].k) === 'cplace' && (await p.$$('.cplaces svg.cart')).length === 6, 'E14 部位總覽 6 張側面圖');
-  await p.click('.cplaces [data-act=say] >> nth=0'); ok(await ev(() => window.__spoken.at(-1)) === '마', 'E14 點字母念');
+  ok(await ev(() => U.ls.steps[U.ls.i].k) === 'cplace' && (await p.$$('svg[data-sa]')).length === 1 && (await p.$$('.fam')).length === 6, 'E14 發音地圖 6 個部位');
+  await tapC('.fam-js [data-j="ㅁ"]');
+  await p.waitForFunction(() => window.__spoken.at(-1) === '마');
+  ok(await ev(() => SA.isPlaying() && document.querySelector('.fam[data-fam=lips]').classList.contains('on')), 'E14 點子音播動畫、念出來、亮起家族卡');
+  ok(await ev(() => document.querySelector('svg[data-sa]').getAttribute('viewBox') !== '24 24 1206 1206'), 'E14 播放時放大嘴巴');
   await p.click('[data-act=ls-next]');
-  ok((await p.$$('.vpair svg.cart')).length === 3, 'E14 三種出氣方式');
+  ok(await ev(() => !SA.isPlaying()) && (await p.$$('svg[data-sa]')).length === 1 && (await p.$$('.sa-j')).length === 3, 'E14 三種出氣方式（換步驟會停掉動畫）');
   await p.click('[data-act=ls-next]');
-  ok(await ev(() => U.ls.steps[U.ls.i].k) === 'ctrio' && (await p.$$('.vpair svg.cart')).length === 3, 'E14 ㄷㅌㄸ 卡片');
+  ok(await ev(() => U.ls.steps[U.ls.i].k) === 'ctrio' && (await p.$$('svg[data-sa]')).length === 1 && (await p.$$('.sa-j')).length === 3, 'E14 ㄷㅌㄸ 卡片');
+  await p.click('.sa-j[data-j="ㅌ"]'); await p.waitForFunction(() => window.__spoken.at(-1) === '타');
+  await p.waitForFunction(() => /吐一大口氣/.test(document.querySelector('.sa-cap').textContent), null, { timeout: 3000 });
+  ok(true, 'E14 送氣音放開時的說明');
   const ckc = async () => { await p.click('.ckbox [data-act=ck]'); await p.waitForSelector('.ckres:not(.sub)'); return (await p.textContent('.ckres')).trim(); };
   const k0 = (await prog()).coins;
   await ev(() => { window.__heardAlts = ['달']; });
@@ -313,13 +321,39 @@ const INIT = () => {
   ok(await ev(() => ckHint('거리', '고리') === '嘴唇太圓了，放鬆、不要嘟。' && ckHint('사다', '싸다') !== ''), 'E14 母音與子音提示');
   // 字母卡：子音有側面圖、字形由來與念給 App 聽；母音卡也有
   await ev(() => startLesson('c1')); await p.click('[data-act=ls-next]');
-  ok(await p.$('.card svg.cart') && /字形由來/.test(await p.textContent('.tip')) && await p.$('.ckbox'), 'E14 子音卡');
+  ok(await p.$('.card svg[data-sa]') && /字形由來/.test(await p.textContent('.tip')) && await p.$('.ckbox'), 'E14 子音卡');
   await ev(() => { window.__heardAlts = ['가방']; }); ok(/念對了/.test(await ckc()), 'E14 子音卡例字念對');
   await ev(() => startLesson('v1')); await p.click('[data-act=ls-next]');
-  ok(await p.$('.ckbox') && !(await p.$('.card svg.cart')), 'E14 母音卡有檢查、沒有側面圖');
+  ok(await p.$('.ckbox') && !(await p.$('.card svg[data-sa]')), 'E14 母音卡有檢查、沒有子音動畫');
   await ev(() => { startLesson('v3'); U.ls.i = U.ls.steps.findIndex(x => x.k === 'vpair'); render(); });
   await ev(() => { window.__heardAlts = ['고리']; }); t = await ckc(); ok(/고리/.test(t) && /嘴唇太圓/.test(t), 'E14 母音對比念錯提示：' + t);
   await ev(() => { window.__heardAlts = null; go('home'); });
+
+  // E15 子音發音地圖：從學習頁進入、19 個子音都能播放、慢動作、離開會停止
+  await ev(() => { S.set.auto = true; save(); go('learn'); });
+  await p.click('[data-act=go][data-v=cmap]');
+  ok((await p.$$('.cmap .fam')).length === 6 && (await p.$$('.manner .fam-js button')).length === 14, 'E15 地圖畫面');
+  await p.waitForFunction(() => { const im = document.querySelector('svg[data-sa] image'); return im && im.getAttribute('href') === 'img/girl.webp'; });
+  const imgOk = await ev(() => new Promise(r => { const i = new Image(); i.onload = () => r(i.naturalWidth); i.onerror = () => r(0); i.src = 'img/girl.webp'; }));
+  ok(imgOk === 1254, 'E15 人物圖片載入 ' + imgOk);
+  for (const j of await ev(() => Object.keys(SA.C))) {
+    await ev(() => { window.__spoken = []; });
+    await tapC(`.cm-cards [data-j="${j}"]`);
+    await p.waitForFunction(s => window.__spoken.includes(s), await ev(j => SA.syl(j), j), { timeout: 5000 });
+  }
+  ok(true, 'E15 19 個子音都會播放並念出');
+  await p.click('[data-act=sa-slow]'); ok(await ev(() => U.saSlow && document.querySelector('[data-act=sa-slow]').classList.contains('on')), 'E15 慢動作開關');
+  await tapC('.cm-cards [data-j="ㄷ"]');
+  const t0 = Date.now(); await p.waitForFunction(() => window.__spoken.at(-1) === '다');
+  ok(Date.now() - t0 > 1500, 'E15 慢動作比較慢才念 ' + (Date.now() - t0));
+  await p.click('[data-act=sa-slow]');
+  await p.click('[data-act=go][data-v=home]');
+  ok(await ev(() => !SA.isPlaying()), 'E15 離開畫面停止動畫');
+  // 子音字母卡：自動播放＝播動畫並念出
+  await ev(() => { window.__spoken = []; startLesson('c1'); }); await p.click('[data-act=ls-next]');
+  await p.waitForFunction(() => window.__spoken.includes('가'));
+  ok(await ev(() => SA.isPlaying()), 'E15 子音卡自動播動畫');
+  await ev(() => { S.set.auto = false; save(); go('home'); });
 
   // E12 名稱或內容不會被當成 HTML
   ok(await ev(() => h('<img src=x onerror=alert(1)>') === '&lt;img src=x onerror=alert(1)&gt;'), 'E12 跳脫');

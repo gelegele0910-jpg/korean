@@ -192,3 +192,67 @@ function vowelMap() {
       <circle cx="${x}" cy="${y}" r="19" fill="${r ? 'var(--accent2)' : 'var(--accent)'}"/><text x="${x}" y="${y + 7}" text-anchor="middle" class="vt">${v}</text></g>`; }).join('')}
   </svg>`;
 }
+
+/* ================= 子音發音側面圖 =================
+ * 從側面看（臉朝左）：舌頭碰哪裡（p）＋怎麼出氣（m：plain 輕／asp 送氣／tense 硬音／nasal 鼻音）。 */
+const CART = {
+  'ㄱ':['back'], 'ㅋ':['back','asp'], 'ㄲ':['back','tense'], 'ㅇ':['back','nasal'],
+  'ㄴ':['tip','nasal'], 'ㄷ':['tip'], 'ㅌ':['tip','asp'], 'ㄸ':['tip','tense'], 'ㄹ':['flap'],
+  'ㅁ':['lips','nasal'], 'ㅂ':['lips'], 'ㅍ':['lips','asp'], 'ㅃ':['lips','tense'],
+  'ㅅ':['s'], 'ㅆ':['s','tense'], 'ㅈ':['blade'], 'ㅊ':['blade','asp'], 'ㅉ':['blade','tense'], 'ㅎ':['h','asp'],
+};
+const CPLACE = { lips:'雙唇閉起來', tip:'舌尖頂住上牙齦', flap:'舌尖輕彈上牙齦', s:'舌尖靠近上牙齦、留一條縫', blade:'舌面貼住上顎', back:'舌根頂住軟顎', h:'嘴巴打開、從喉嚨送氣' };
+const CMANNER = { plain:'輕輕的', asp:'吐一大口氣', tense:'喉嚨繃緊・不吐氣', nasal:'從鼻子出聲' };
+// 字形由來：基本字是模仿發音器官，加一畫＝聲音更強
+const CSHAPE = {
+  'ㄱ':'ㄱ 的形狀＝舌根往上頂住的樣子。', 'ㄴ':'ㄴ 的形狀＝舌尖往上碰牙齦的樣子。', 'ㅁ':'ㅁ 的形狀＝嘴巴（雙唇）。', 'ㅅ':'ㅅ 的形狀＝牙齒。', 'ㅇ':'ㅇ 的形狀＝喉嚨。',
+  'ㅋ':'ㄱ 加一畫＝多吐氣。', 'ㄷ':'ㄴ 加一畫＝舌尖頂住後放開。', 'ㅌ':'ㄷ 再加一畫＝多吐氣。', 'ㅂ':'ㅁ 加兩畫＝雙唇閉住後放開。', 'ㅍ':'ㅂ 再變化＝多吐氣。',
+  'ㅈ':'ㅅ 加一畫。', 'ㅊ':'ㅈ 再加一點＝多吐氣。', 'ㅎ':'ㅇ 加上面兩畫＝從喉嚨吐氣。', 'ㄹ':'ㄹ 是舌頭彈動的樣子。',
+  'ㄲ':'兩個 ㄱ 並排＝硬音（喉嚨繃緊）。', 'ㄸ':'兩個 ㄷ 並排＝硬音。', 'ㅃ':'兩個 ㅂ 並排＝硬音。', 'ㅆ':'兩個 ㅅ 並排＝硬音。', 'ㅉ':'兩個 ㅈ 並排＝硬音。',
+};
+const TONGUE = {
+  rest:  'M30 68 Q34 60 46 60 Q70 57 90 61 Q100 67 102 80 L102 100 L44 100 Q40 82 30 68 Z',
+  lips:  'M30 68 Q34 60 46 60 Q70 57 90 61 Q100 67 102 80 L102 100 L44 100 Q40 82 30 68 Z',
+  tip:   'M33 63 Q31 51 37 47.5 Q43 49 48 57 Q70 58 90 61 Q100 67 102 80 L102 100 L44 100 Q40 82 33 63 Z',
+  flap:  'M33 63 Q31 51 37 47.5 Q43 49 48 57 Q70 58 90 61 Q100 67 102 80 L102 100 L44 100 Q40 82 33 63 Z',
+  s:     'M33 64 Q32 54 37 51.5 Q43 52 48 58 Q70 58 90 61 Q100 67 102 80 L102 100 L44 100 Q40 82 33 64 Z',
+  blade: 'M32 66 Q33 54 43 46 Q53 41 62 44.5 Q76 54 92 61 Q100 67 102 80 V100 H44 Q40 82 32 66 Z',
+  back:  'M30 68 Q34 62 46 61 Q66 58 77 48 Q87 41.5 96 46 Q102 58 102 80 V100 H44 Q40 82 30 68 Z',
+  h:     'M30 70 Q34 64 46 64 Q70 62 90 65 Q100 70 102 82 L102 100 L44 100 Q40 84 30 70 Z',
+};
+const CTOUCH = { lips:[18,55], tip:[37,47], flap:[37,47], s:[37,49], blade:[52,42], back:[90,43], h:[103,72] };
+function consSvg(j, size) {
+  const a = CART[j]; if (!a) return '';
+  size = size || 110;
+  const p = a[0], m = a[1] || 'plain';
+  const lipsClosed = p === 'lips';
+  const id = 'cs' + Math.random().toString(36).slice(2, 8);
+  const air = 'var(--accent2,#3B82F6)';
+  let flow = '';
+  if (m === 'nasal') flow = `<path d="M100 62 Q101 40 84 37 L30 40" fill="none" stroke="${air}" stroke-width="2.6" stroke-linecap="round"/><path d="M20 41 l8 -5 v10z" fill="${air}"/>`;
+  else if (m === 'asp') flow = `<g stroke="${air}" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M12 50 h-10"/><path d="M12 56 q-6 -3 -11 0"/><path d="M12 62 h-10"/></g><text x="2" y="76" class="cs-t" fill="${air}">呼～</text>`;
+  else if (m === 'plain' && p !== 'h') flow = `<path d="M12 56 h-6" stroke="${air}" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>`;
+  const tense = m === 'tense' ? `<path d="M106 62 l4 4 -4 4 4 4 -4 4 4 4" stroke="#E5484D" stroke-width="2.6" fill="none" stroke-linejoin="round"/><text x="2" y="76" class="cs-t" fill="#E5484D">不吐氣</text>` : '';
+  const flap = p === 'flap' ? `<path d="M44 58 q6 -4 2 -10" stroke="#E5484D" stroke-width="2" fill="none" marker-end=""/><path d="M44 46 l2 2 2 -3" stroke="#E5484D" stroke-width="2" fill="none"/>` : '';
+  const sGap = p === 's' ? `<path d="M30 49.5 h-12" stroke="${air}" stroke-width="2" stroke-dasharray="2 2"/>` : '';
+  const [tx, ty] = CTOUCH[p];
+  return `<svg class="cart" viewBox="0 0 120 100" width="${size}" height="${size * 100 / 120}" role="img" aria-label="${j}：${CPLACE[p]}，${CMANNER[m]}">
+    <defs><clipPath id="${id}"><path d="M62 0 C44 0 32 8 29 20 L19 33 Q14 38 21 40 L22 43 Q15 46 15 50 L15 62 Q14 72 24 76 Q28 82 34 84 L36 100 H120 V0 Z"/></clipPath></defs>
+    <path d="M62 0 C44 0 32 8 29 20 L19 33 Q14 38 21 40 L22 43 Q15 46 15 50 L15 62 Q14 72 24 76 Q28 82 34 84 L36 100 H120 V0 Z" fill="#F6D2BC"/>
+    <g clip-path="url(#${id})">
+      <path d="M24 37 Q50 30 90 33 Q100 35 101 44 L96 44 Q90 38 60 39 Q40 40 26 43 Z" fill="#E9A99A"/>
+      <path d="M22 50 Q30 47 36 45.5 Q44 41 60 39.5 Q80 38.5 92 43 L104 46 L104 100 L80 100 Q60 72 30 68 Z" fill="#7A2E3A"/>
+      <path d="${TONGUE[p]}" fill="#E45B6B"/>
+      <rect x="25" y="${lipsClosed ? 47 : 45.5}" width="6" height="6" rx="1.5" fill="#fff"/><rect x="25" y="${lipsClosed ? 60 : 62}" width="6" height="5" rx="1.5" fill="#fff"/>
+      <ellipse cx="18" cy="${lipsClosed ? 52 : 49}" rx="6" ry="4" fill="#D9707A"/><ellipse cx="18" cy="${lipsClosed ? 59 : 65}" rx="6" ry="4.2" fill="#D9707A"/>
+      <rect x="104" y="40" width="16" height="60" fill="#F6D2BC"/>
+    </g>
+    ${flow}${tense}${flap}${sGap}
+    <circle cx="${tx}" cy="${ty}" r="4.5" fill="#FFD43B" stroke="#B8860B" stroke-width="1.2"/>
+  </svg>`;
+}
+/** 側面圖＋說明 */
+function consHtml(j, size) {
+  const a = CART[j]; if (!a) return '';
+  return `<figure class="mouthfig">${consSvg(j, size)}<figcaption>${CPLACE[a[0]]}<br>${CMANNER[a[1] || 'plain']}</figcaption></figure>`;
+}

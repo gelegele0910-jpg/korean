@@ -4,7 +4,7 @@ const { seeded } = require('./server.js');
 const ROOT = path.resolve(__dirname, '..');
 const KH = require('../js/hangul.js');
 const ctx = { KH }; vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/data.js'), 'utf8') + ';this.D={VOWELS,VOWELS2,CONSONANTS,DOUBLES,BATCHIM,RULES,TOPICS,LESSONS,TRIOS,VPAIRS,VCHAINS};', ctx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/data.js'), 'utf8') + ';this.D={VOWELS,VOWELS2,CONSONANTS,DOUBLES,BATCHIM,RULES,TOPICS,LESSONS,TRIOS,VPAIRS,VCHAINS,CTRIOS,CPLACES};', ctx);
 const D = ctx.D;
 let fail = 0, n = 0;
 const ok = (c, msg) => { n++; if (!c) { fail++; console.log('  ✗', msg); } };
@@ -60,7 +60,7 @@ for (const r of D.RULES) for (const [w, , wrong] of r.ex) { ok(KH.pronounce(w) !
 
 // H6 母音對比：每組單字只差這兩個母音（其他字母、長度都一樣），而且兩個母音都有嘴型
 const actx = { KH }; vm.createContext(actx);
-vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/art.js'), 'utf8') + ';this.A={MOUTH,MOUTH_SEQ,mouthSvg,mouthHtml,VMAP};', actx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/art.js'), 'utf8') + ';this.A={MOUTH,MOUTH_SEQ,mouthSvg,mouthHtml,VMAP,CART,CSHAPE,consSvg,consHtml};', actx);
 for (const [a, b, tip, ws] of D.VPAIRS) {
   ok(tip && ws.length >= 2, 'H6 每組至少 2 對單字 ' + a + b);
   for (const [x, y] of ws) {
@@ -73,6 +73,23 @@ for (const [a, b, tip, ws] of D.VPAIRS) {
 for (const v of [...D.VOWELS, ...D.VOWELS2].map(x => x.j)) ok(actx.A.mouthHtml(v, 90).includes('<svg'), 'H6 嘴型 ' + v);
 for (const c of D.VCHAINS) for (const v of c.v) ok(actx.A.MOUTH[v], 'H6 連續動作嘴型 ' + v);
 for (const [v] of actx.A.VMAP) ok(actx.A.MOUTH[v], 'H6 位置圖 ' + v);
+
+// H7 子音對比：同一組單字只差那組子音、每個子音都有側面圖與字形由來
+for (const [js, tip, ws] of D.CTRIOS) {
+  ok(tip && ws.length >= 1, 'H7 子音組 ' + js.join(''));
+  for (const set of ws) {
+    ok(set.length >= 2 && set.length <= js.length, 'H7 單字數 ' + set.map(w => w[0]).join('/'));
+    const jm = set.map(w => KH.jamo(w[0]));
+    ok(jm.every(x => x.length === jm[0].length), 'H7 長度一樣 ' + set.map(w => w[0]).join('/'));
+    const diffAt = jm[0].map((_, i) => i).filter(i => jm.some(x => x[i] !== jm[0][i]));
+    ok(diffAt.length === 1 && set.every((w, k) => js.includes(jm[k][diffAt[0]])), 'H7 只差這組子音 ' + set.map(w => w[0]).join('/'));
+    ok(new Set(set.map(w => w[0])).size === set.length && set.every(w => w[1]), 'H7 單字不重複、有中文 ' + set[0][0]);
+  }
+}
+for (const x of [...D.CONSONANTS, ...D.DOUBLES]) {
+  ok(actx.A.consHtml(x.j, 100).includes('<svg') && actx.A.CSHAPE[x.j], 'H7 側面圖與字形 ' + x.j);
+}
+ok(D.CPLACES.flatMap(c => c[1]).sort().join('') === Object.keys(actx.A.CART).sort().join(''), 'H7 部位總覽包含所有子音');
 
 console.log(fail ? `hangul: ${fail}/${n} 失敗` : `hangul: ${n} 項全部通過`);
 process.exit(fail ? 1 : 0);

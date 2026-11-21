@@ -57,7 +57,7 @@ function save() {
 }
 
 let S = load();
-const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
+const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
 
 /* ================= 進度工具 ================= */
 function owned(id, s) { s = s || S; const it = SHOP.find(x => x.id === id); return !!it && (it.price === 0 || !!s.own[id]); }
@@ -130,12 +130,12 @@ function abortRec() { clearTimeout(recTimer); if (recog) { const r = recog; reco
 function startRec(target, cb) {
   abortRec(); stopSpeak();
   const r = new SR(); const me = r; let fin = false;
-  const end = (best, err) => { if (fin || recog !== me) return; fin = true; clearTimeout(recTimer); recog = null; cb(best, err); };
+  const end = (best, err, alts) => { if (fin || recog !== me) return; fin = true; clearTimeout(recTimer); recog = null; cb(best, err, alts || []); };
   r.lang = 'ko-KR'; r.interimResults = false; r.maxAlternatives = 5; r.continuous = false;
   r.onresult = e => {
-    const res = e.results[0]; let best = null;
-    for (let i = 0; i < res.length; i++) { const tx = res[i].transcript; const sc = KH.score(target, tx); if (!best || sc > best.sc) best = { sc, heard: tx }; }
-    end(best, null); try { r.stop(); } catch (e2) { /* 已經結束 */ }
+    const res = e.results[0]; let best = null; const alts = [];
+    for (let i = 0; i < res.length; i++) { const tx = res[i].transcript; alts.push(tx); const sc = KH.score(target, tx); if (!best || sc > best.sc) best = { sc, heard: tx }; }
+    end(best, null, alts); try { r.stop(); } catch (e2) { /* 已經結束 */ }
   };
   r.onerror = e => end(null, e.error || 'error');
   r.onend = () => end(null, 'no-speech');
@@ -214,6 +214,14 @@ function buildLesson(L) {
     shuffle(pool.concat(shuffle(pool))).slice(0, 10).forEach(([p, ws]) => {
       const [a, b] = Math.random() < .5 ? ws : [ws[1], ws[0]];
       st.push(mkQuiz({ q: `聽聽看：是 ${p[0]} 還是 ${p[1]}？`, audio: a[0], ans: a[0], wrong: [b[0]], ko: true, exp: `${a[0]}（${a[1]}）／${b[0]}（${b[1]}）` }));
+    });
+  } else if (L.kind === 'consonants') {
+    st.push({ k: 'cplace' }, { k: 'cair' });
+    CTRIOS.forEach(c => st.push({ k: 'ctrio', c }));
+    const pool = CTRIOS.flatMap(c => c[2].map(ws => [c, ws]));
+    shuffle(pool.concat(shuffle(pool))).slice(0, 10).forEach(([c, ws]) => {
+      const a = pick(ws);
+      st.push(mkQuiz({ q: `聽聽看：是 ${c[0].slice(0, ws.length).join('、')} 哪一個？`, audio: a[0], ans: a[0], wrong: ws.filter(w => w !== a).map(w => w[0]), ko: true, exp: ws.map(w => `${w[0]}（${w[1]}）`).join('／') }));
     });
   } else if (L.kind === 'syllable') {
     st.push({ k: 'syl', n: 0 }, { k: 'syl', n: 1 }, { k: 'syl', n: 2 }, { k: 'syl', n: 3 });
@@ -344,11 +352,11 @@ function vStep(s) {
       <button class="btn main block mt" data-act="ls-next">開始 ▶</button></div>`;
     case 'letter': { const x = s.x; return `<div class="card center"><div class="big">${h(x.j)}</div>
       <div>${x.nm ? `<span class="ko sub">${h(x.nm)}</span>　` : ''}<span class="rr" style="font-size:1.3rem">${h(x.rr)}</span></div>
-      ${mouthHtml(x.j, 110) ? `<div class="mouthrow">${mouthHtml(x.j, 110)}</div>` : ''}
+      ${mouthHtml(x.j, 110) ? `<div class="mouthrow">${mouthHtml(x.j, 110)}</div>` : CART[x.j] ? `<div class="mouthrow">${consHtml(x.j, 130)}</div>` : ''}
       <div class="btns" style="justify-content:center"><button class="btn main" data-act="say" data-t="${h(x.say)}">🔊 ${h(x.say)}</button><button class="btn" data-act="say" data-t="${h(x.say)}" data-r="0.6">🐢 慢慢念</button></div>
-      <div class="tip" style="text-align:left">${h(x.tip)}</div>
+      <div class="tip" style="text-align:left">${h(x.tip)}${CSHAPE[x.j] ? `<div style="margin-top:6px">✏️ 字形由來：${h(CSHAPE[x.j])}</div>` : ''}</div>
       ${myRecHtml('l-' + x.j, x.say)}
-      <div style="text-align:left">${koLine(x.ex[0], x.ex[1])}</div></div>${stepNav()}`; }
+      <div style="text-align:left">${koLine(x.ex[0], x.ex[1])}</div>${checkHtml('ex-' + x.j, [[x.ex]])}</div>${stepNav()}`; }
     case 'vmap': return `<div class="card"><h3>母音位置圖</h3><div class="sub">點圓圈聽發音。橙色＝嘴唇不圓，藍色＝嘴唇嘟圓。虛線連起來的兩個，舌頭位置幾乎一樣，<b>只差嘴唇圓不圓</b>。</div>
       ${vowelMap()}<div class="sub small center">虛線＝只差嘴唇圓不圓</div><div class="tip">💡 所以只要記住：<b class="ko">ㅓ</b>＋嘟嘴＝<b class="ko">ㅗ</b>；<b class="ko">ㅡ</b>＋嘟嘴＝<b class="ko">ㅜ</b>。</div></div>${stepNav()}`;
     case 'vchain': return `<div class="card"><h3>嘴型連續動作</h3><div class="sub">依序點下去，邊聽邊跟著做嘴型，感覺每次只改變一個地方。可以對著鏡子或手機前鏡頭練習。</div>
@@ -359,7 +367,22 @@ function vStep(s) {
       <div class="tip">${h(tip)}</div>
       <div class="sub">只差一個母音、意思就不一樣的單字，交替點來聽：</div>
       ${ws.map(([x, y]) => `<div class="wpair"><button data-act="say" data-t="${h(x[0])}"><b>${h(x[0])}</b><small>${h(x[1])}</small></button><span class="vs">vs</span><button data-act="say" data-t="${h(y[0])}"><b>${h(y[0])}</b><small>${h(y[1])}</small></button></div>`).join('')}
+      ${checkHtml('vp-' + a + b, ws)}
       <div class="mt"><b>錄自己的聲音比比看</b><div class="sub small">念「${h(ws[0][0][0])}、${h(ws[0][1][0])}」，再和標準發音對照。</div>${myRecHtml('p-' + a + b, ws[0][0][0] + ', ' + ws[0][1][0])}</div></div>${stepNav()}`; }
+    case 'cplace': return `<div class="card"><h3>舌頭碰哪裡？</h3><div class="sub">從側面看嘴巴（臉朝左）。黃點＝碰到的地方，點字母聽發音。韓文子音的字形就是照這些位置畫的！</div>
+      <div class="cplaces">${CPLACES.map(([nm, js]) => `<div><b>${nm}</b>${consSvg(js.find(j => !CART[j][1]) || js[0], 104)}
+        <div class="seg" style="justify-content:center">${js.map(j => `<button data-act="say" data-t="${j === 'ㅇ' ? '앙' : KH.comp(j, 'ㅏ')}" ${j === 'ㅇ' ? 'title="收音時念 ng"' : ''}><span class="ko">${j}</span></button>`).join('')}</div></div>`).join('')}</div></div>${stepNav()}`;
+    case 'cair': return `<div class="card"><h3>三種出氣方式</h3><div class="sub">舌頭位置一樣，差別在「氣」：</div>
+      <div class="vpair">${['ㄷ', 'ㅌ', 'ㄸ'].map((j, i) => `<div><div class="vj">${KH.comp(j, 'ㅏ')}</div><div class="small" style="font-weight:800">${['平音', '送氣音', '硬音'][i]}</div>${consSvg(j, 104)}
+        <div class="sub small">${CMANNER[CART[j][1] || 'plain']}</div><div class="btns" style="justify-content:center;margin-top:6px">${sayBtn(KH.comp(j, 'ㅏ'))}</div></div>`).join('')}</div>
+      <div class="tip">🧻 <b>面紙測試</b>：拿一張面紙放在嘴巴前面。念 타 面紙會被吹動；念 다、따 面紙幾乎不動。<br>🎵 <b>聽音調</b>：送氣音、硬音開頭的字音調比較高，平音開頭的字音調比較低。<br>💪 <b>硬音</b>：像要憋氣一樣先把喉嚨繃緊，再短短地發出來。</div></div>${stepNav()}`;
+    case 'ctrio': { const [js, tip, ws] = s.c; return `<div class="card"><h3>${js.map(j => `<span class="ko">${j}</span>`).join('・')}</h3>
+      <div class="vpair">${js.map(j => `<div><div class="vj">${KH.comp(j, 'ㅏ')}</div>${consHtml(j, 96)}<div class="btns" style="justify-content:center;margin-top:6px">${sayBtn(KH.comp(j, 'ㅏ'))}${slowBtn(KH.comp(j, 'ㅏ'))}</div></div>`).join('')}</div>
+      <div class="tip">${h(tip)}</div>
+      <div class="sub">只差一個子音、意思就不一樣的單字，交替點來聽：</div>
+      ${ws.map(set => `<div class="wtrio">${set.map(w => `<button data-act="say" data-t="${h(w[0])}"><b>${h(w[0])}</b><small>${h(w[1])}</small></button>`).join('')}</div>`).join('')}
+      ${checkHtml('ct-' + js.join(''), ws)}
+      ${myRecHtml('ct-' + js.join(''), ws[0].map(w => w[0]).join(', '))}</div>${stepNav()}`; }
     case 'trio': return `<div class="card"><h3>三種比較：平音・送氣音・硬音</h3><div class="sub">一組一組點來聽，注意吐氣和喉嚨的感覺。手放在嘴巴前面：送氣音會感覺到風。</div>
       ${TRIOS.map(tr => `<div class="trio">${tr.map((x, i) => x ? `<button data-act="say" data-t="${x}">${x}<small>${['平音・輕', '送氣・吐氣', '硬音・繃緊'][i]}</small></button>` : '<span></span>').join('')}</div>`).join('')}</div>${stepNav()}`;
     case 'syl': { const c = SYL_CARDS[s.n]; return `<div class="card"><h3>${h(c.t)}</h3><p>${h(c.d)}</p>
@@ -413,6 +436,56 @@ function cmpHtml(s) {
   const ko = s.opts.filter(o => /^[가-힣 ]+$/.test(o));
   if (ko.length < 2) return '';
   return `<div class="cmp"><span class="lbl">比較聽聽看：</span>${ko.map(o => `<button class="btn sm" data-act="say" data-t="${h(o)}">🔊 ${h(o)}</button>`).join('')}</div>`;
+}
+
+/* ================= 發音檢查：念給 App 聽，看它聽成哪個字 =================
+ * sets：對比單字組 [[[韓文, 中文], ...], ...]；同一組裡的其他字是「容易念成的字」。 */
+const CK_REG = {};
+const CK_PLAIN = 'ㄱㄷㅂㅈㅅ', CK_ASP = 'ㅋㅌㅍㅊㅎ', CK_TENSE = 'ㄲㄸㅃㅉㅆ';
+const CK_VHINT = { 'ㅓ>ㅗ':'嘴唇太圓了，放鬆、不要嘟。', 'ㅕ>ㅛ':'嘴唇太圓了，放鬆、不要嘟。', 'ㅗ>ㅓ':'嘴唇要嘟成小圓。', 'ㅛ>ㅕ':'嘴唇要嘟成小圓。',
+  'ㅡ>ㅜ':'嘴唇不要嘟，往兩邊拉平。', 'ㅜ>ㅡ':'嘴唇要嘟起來。', 'ㅏ>ㅓ':'嘴巴要張大一點。', 'ㅓ>ㅏ':'嘴巴小一點、下巴放鬆。',
+  'ㅗ>ㅜ':'嘴巴圓大一點，不要嘟得太小。', 'ㅜ>ㅗ':'嘟得更小、更前面。' };
+function ckHint(target, rival) {
+  const a = KH.jamo(target), b = KH.jamo(rival);
+  const i = a.findIndex((x, k) => x !== b[k]); if (i < 0) return '';
+  const t = a[i], r = b[i];
+  if (CK_VHINT[t + '>' + r]) return CK_VHINT[t + '>' + r];
+  const cls = j => CK_PLAIN.includes(j) ? 'p' : CK_ASP.includes(j) ? 'a' : CK_TENSE.includes(j) ? 't' : '';
+  return ({ pa:'吐氣太多了。平音要輕輕的，手放嘴前幾乎感覺不到風，音調低一點。', pt:'喉嚨太緊了。平音要放鬆、輕輕的，音調低一點。',
+    ap:'要用力吐一口氣，手放嘴前要感覺到風。', at:'要吐氣，不要把喉嚨繃緊。',
+    tp:'喉嚨要繃緊，聲音短而有力、音調高一點。', ta:'不要吐氣，喉嚨繃緊、短短的。' })[cls(t) + cls(r)] || '';
+}
+/** 判斷辨識結果：照辨識的可能性順序，先碰到目標字＝念對，先碰到同組其他字＝念成那個字 */
+function judgeSay(target, rivals, alts) {
+  const n = x => String(x || '').replace(/[^가-힣]/g, ''), T = n(target);
+  for (const a of alts) {
+    const x = n(a); if (!x) continue;
+    if (x === T || x.includes(T)) return { kind: 'ok', heard: a };
+    const r = rivals.find(w => { const y = n(w[0]); return x === y || x.includes(y); });
+    if (r) return { kind: 'rival', heard: a, rival: r, hint: ckHint(target, r[0]) };
+  }
+  let best = null;
+  for (const a of alts) { const sc = KH.score(target, a); if (!best || sc > best.sc) best = { heard: a, sc }; }
+  return best ? { kind: best.sc >= 80 ? 'near' : 'miss', heard: best.heard, sc: best.sc } : { kind: 'miss', heard: '', sc: 0 };
+}
+function checkHtml(key, sets) {
+  CK_REG[key] = sets;
+  if (!SR) return `<div class="ckbox"><b>念給 App 聽</b><div class="sub small">這個瀏覽器不能自動檢查發音（建議用 Chrome）。可以用錄音自己比較。</div></div>`;
+  const ck = U.ck && U.ck.key === key ? U.ck : null;
+  const si = ck ? ck.si : 0, wi = ck ? ck.wi : 0, w = sets[si][wi];
+  const many = sets.flat().length > 1;
+  let res = '';
+  if (ck && ck.on) res = `<div class="ckres sub">正在聽…請念「<span class="ko">${h(w[0])}</span>」</div>`;
+  else if (ck && ck.r) {
+    const r = ck.r;
+    res = r.kind === 'ok' ? `<div class="ckres good">✅ 念對了！App 聽到「<span class="ko">${h(r.heard)}</span>」${ck.gain ? ` <span class="coin-up">+₩${ck.gain}</span>` : ''}</div>`
+      : r.kind === 'rival' ? `<div class="ckres bad">🤔 聽起來像「<span class="ko">${h(r.rival[0])}</span>」（${h(r.rival[1])}）<div class="small" style="margin-top:4px">${h(r.hint || '再聽一次標準發音，慢慢念。')}</div></div>`
+      : r.kind === 'near' ? `<div class="ckres good">👍 很接近！App 聽到「<span class="ko">${h(r.heard)}</span>」</div>`
+      : `<div class="ckres bad">再試一次：App 聽到「<span class="ko">${h(r.heard || '（沒聽清楚）')}</span>」</div>`;
+  } else if (ck && ck.err) res = `<div class="ckres sub">${h(recErrMsg(ck.err))}</div>`;
+  return `<div class="ckbox"><b>🎯 念給 App 聽</b><div class="sub small">${many ? '選一個字，' : ''}按麥克風念出來，App 會告訴你它聽成哪個字。</div>
+    ${many ? `<div class="ckpick">${sets.map((set, a) => set.map((x, b) => `<button class="${a === si && b === wi ? 'on' : ''}" data-act="ck-pick" data-k="${h(key)}" data-s="${a}" data-w="${b}">${h(x[0])}</button>`).join('')).join('')}</div>` : ''}
+    <div class="row" style="justify-content:center;margin-top:8px"><button class="btn ${ck && ck.on ? 'alt' : 'main'}" data-act="ck" data-k="${h(key)}">${ck && ck.on ? '■ 停止' : `🎤 念「${h(w[0])}」`}</button>${sayBtn(w[0])}</div>${res}</div>`;
 }
 
 /* ================= 錄自己的聲音（和標準發音對照） ================= */
@@ -715,7 +788,7 @@ function render() {
 function go(v) {
   abortRec(); stopSpeak();
   if (v !== 'game') stopQuick();
-  U.sp = null; U.arm = ''; myStop(true);
+  U.sp = null; U.ck = null; U.arm = ''; myStop(true);
   U.view = v; render(); window.scrollTo(0, 0);
   autoPlay();
 }
@@ -746,9 +819,9 @@ const ACT = {
     const ls = U.ls, s = ls.steps[ls.i];
     if (s.k === 'quiz' && s.picked == null) return;
     if (ls.i >= ls.steps.length - 1) { finishLesson(); return; }
-    ls.i++; U.sp = null; abortRec(); myStop(true); render(); window.scrollTo(0, 0); autoPlay();
+    ls.i++; U.sp = null; U.ck = null; abortRec(); myStop(true); render(); window.scrollTo(0, 0); autoPlay();
   },
-  'ls-prev': () => { const ls = U.ls; let i = ls.i - 1; while (i > 0 && ls.steps[i].k === 'quiz') i--; ls.i = Math.max(1, i); U.sp = null; abortRec(); myStop(true); render(); autoPlay(); },
+  'ls-prev': () => { const ls = U.ls; let i = ls.i - 1; while (i > 0 && ls.steps[i].k === 'quiz') i--; ls.i = Math.max(1, i); U.sp = null; U.ck = null; abortRec(); myStop(true); render(); autoPlay(); },
   'ls-quit': () => { U.ls = null; go('learn'); },
   'ls-ans': d => {
     const s = U.ls.steps[U.ls.i]; if (s.picked != null) return;
@@ -757,7 +830,7 @@ const ACT = {
   },
   rec: d => {
     if (U.sp && U.sp.on) { abortRec(); U.sp = null; render(); return; }
-    myStop(true); U.sp = { id: d.id, on: true };
+    myStop(true); U.ck = null; U.sp = { id: d.id, on: true };
     render();
     startRec(d.t, (best, err) => {
       if (!U.sp || U.sp.id !== d.id) return;
@@ -769,7 +842,28 @@ const ACT = {
       save(); render();
     });
   },
+  'ck-pick': d => { abortRec(); U.ck = { key: d.k, si: Number(d.s), wi: Number(d.w) }; render(); speak(CK_REG[d.k][d.s][d.w][0]); },
+  ck: d => {
+    const sets = CK_REG[d.k]; if (!sets) return;
+    const prev = U.ck && U.ck.key === d.k ? U.ck : { si: 0, wi: 0 };
+    if (prev.on) { abortRec(); U.ck = { key: d.k, si: prev.si, wi: prev.wi }; render(); return; }
+    myStop(true); U.sp = null;
+    const set = sets[prev.si], w = set[prev.wi], rivals = set.filter(x => x !== w);
+    const me = U.ck = { key: d.k, si: prev.si, wi: prev.wi, on: true };
+    render();
+    startRec(w[0], (best, err, alts) => {
+      if (U.ck !== me) return;
+      if (!alts.length) { U.ck = { key: d.k, si: me.si, wi: me.wi, err }; render(); return; }
+      resetDay(); bump('s');
+      const r = judgeSay(w[0], rivals, alts);
+      let gain = 0;
+      if (r.kind === 'ok' && !S.day.spk['ck:' + w[0]]) { S.day.spk['ck:' + w[0]] = 1; gain = earn(10); }
+      U.ck = { key: d.k, si: me.si, wi: me.wi, r, gain };
+      save(); render();
+    });
+  },
   'my-rec': d => {
+    abortRec(); if (U.ck && U.ck.on) U.ck = null;
     if (U.my && U.my.key === d.k && U.my.on) { if (myMr) { const m = myMr; myMr = null; m.stop(); } else { U.my = null; render(); } return; }
     myStart(d.k);
   },
@@ -903,7 +997,7 @@ document.addEventListener('change', e => {
     rd.readAsText(f);
   }
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden) { abortRec(); stopSpeak(); if (U.my && U.my.on) { myStop(true); render(); } if (U.sp && U.sp.on) { U.sp = null; render(); } } });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { abortRec(); stopSpeak(); if (U.ck && U.ck.on) { U.ck = null; render(); } if (U.my && U.my.on) { myStop(true); render(); } if (U.sp && U.sp.on) { U.sp = null; render(); } } });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && U.pops.length) ACT['pop-ok'](); });
 
 /* ================= 啟動 ================= */

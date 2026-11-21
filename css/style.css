@@ -239,3 +239,19 @@ select { font:inherit; padding:8px; border-radius:10px; border:1.5px solid var(-
 .myrec { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px; }
 .cmp { margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
 .cmp .lbl { font-size:.85rem; color:var(--sub); font-weight:700; }
+.cart .cs-t { font-size:9px; font-weight:800; }
+.cplaces { display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:10px; margin-top:10px; }
+.cplaces > div { background:var(--chip); border-radius:14px; padding:8px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:0; }
+.cplaces .seg button { min-width:38px; font-size:1.05rem; }
+.wtrio { display:grid; grid-template-columns:repeat(auto-fit, minmax(72px, 1fr)); gap:6px; margin-top:8px; }
+.wtrio button { border:1.5px solid var(--line); background:var(--card); border-radius:12px; padding:6px 4px; cursor:pointer; min-width:0; }
+.wtrio button b { display:block; font-family:var(--font-ko); font-size:1.3rem; }
+.wtrio button small { color:var(--sub); font-size:.75rem; }
+.ckbox { margin-top:14px; padding:12px; border-radius:14px; border:2px dashed var(--line); text-align:center; }
+.ckpick { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:8px; }
+.ckpick button { border:1.5px solid var(--line); background:var(--card); border-radius:10px; padding:4px 10px; cursor:pointer; font-family:var(--font-ko); font-size:1.05rem; font-weight:700; }
+.ckpick button.on { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+.ckres { margin-top:10px; padding:10px; border-radius:12px; font-weight:700; }
+.ckres.good { background:var(--good-bg); color:var(--good); }
+.ckres.bad { background:var(--bad-bg); color:var(--bad); }
+.mouthfig figcaption { text-align:center; line-height:1.35; }

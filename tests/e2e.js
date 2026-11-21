@@ -9,8 +9,8 @@ const INIT = () => {
   window.__spoken = []; window.__heard = null;
   window.speechSynthesis.speak = u => window.__spoken.push(u.text);
   class FakeRec { start() { const me = this; setTimeout(() => {
-      if (window.__heard == null) { me.onerror && me.onerror({ error: 'no-speech' }); me.onend && me.onend(); return; }
-      const alt = [{ transcript: window.__heard }]; me.onresult && me.onresult({ results: [alt] }); me.onend && me.onend(); }, 30); }
+      if (window.__heard == null && window.__heardAlts == null) { me.onerror && me.onerror({ error: 'no-speech' }); me.onend && me.onend(); return; }
+      const alt = (window.__heardAlts || [window.__heard]).map(t => ({ transcript: t })); me.onresult && me.onresult({ results: [alt] }); me.onend && me.onend(); }, window.__srDelay || 30); }
     stop() {} abort() {} }
   window.SpeechRecognition = FakeRec;
   // 假的錄音：getUserMedia＋MediaRecorder
@@ -269,6 +269,57 @@ const INIT = () => {
   await ev(() => startLesson('c1')); await p.click('[data-act=ls-next]');
   ok(!(await p.$('.card svg.mouth')), 'E13 子音卡沒有嘴型');
   await ev(() => go('home'));
+
+  // E14 子音聽辨特訓：側面圖、念給 App 聽（念對／念成別的字／很接近／沒聽清楚）
+  await ev(() => { S.set.auto = false; save(); startLesson('cs'); });
+  await p.click('[data-act=ls-next]');
+  ok(await ev(() => U.ls.steps[U.ls.i].k) === 'cplace' && (await p.$$('.cplaces svg.cart')).length === 6, 'E14 部位總覽 6 張側面圖');
+  await p.click('.cplaces [data-act=say] >> nth=0'); ok(await ev(() => window.__spoken.at(-1)) === '마', 'E14 點字母念');
+  await p.click('[data-act=ls-next]');
+  ok((await p.$$('.vpair svg.cart')).length === 3, 'E14 三種出氣方式');
+  await p.click('[data-act=ls-next]');
+  ok(await ev(() => U.ls.steps[U.ls.i].k) === 'ctrio' && (await p.$$('.vpair svg.cart')).length === 3, 'E14 ㄷㅌㄸ 卡片');
+  const ckc = async () => { await p.click('.ckbox [data-act=ck]'); await p.waitForSelector('.ckres:not(.sub)'); return (await p.textContent('.ckres')).trim(); };
+  const k0 = (await prog()).coins;
+  await ev(() => { window.__heardAlts = ['달']; });
+  ok(/念對了/.test(await ckc()), 'E14 念對');
+  ok((await prog()).coins - k0 === 10, 'E14 念對 +10');
+  ok(/念對了/.test(await ckc()) && (await prog()).coins - k0 === 10, 'E14 同一個字同一天只送一次');
+  await ev(() => { window.__heardAlts = ['탈', '달']; });
+  let t = await ckc(); ok(/탈/.test(t) && /面具/.test(t) && /吐氣太多/.test(t), 'E14 念成送氣音有提示：' + t);
+  await p.click('.ckpick button:has-text("딸")'); ok(await ev(() => window.__spoken.at(-1)) === '딸', 'E14 選字會念');
+  await ev(() => { window.__heardAlts = ['탈']; });
+  t = await ckc(); ok(/面具/.test(t) && /不要吐氣/.test(t), 'E14 硬音念成送氣音提示：' + t);
+  await ev(() => { window.__heardAlts = ['딸기']; });
+  ok(/念對了/.test(await ckc()), 'E14 句子裡有目標字也算對');
+  await p.click('.ckpick button:has-text("떡")');
+  await ev(() => { window.__heardAlts = ['덕'] }); t = await ckc(); ok(/德/.test(t) && /繃緊/.test(t), 'E14 第二組單字：' + t);
+  await ev(() => { window.__heardAlts = ['바나나'] }); t = await ckc(); ok(/再試一次/.test(t) && /바나나/.test(t), 'E14 聽成無關的字');
+  await ev(() => { window.__heardAlts = null; window.__heard = null; }); await p.click('.ckbox [data-act=ck]'); await p.waitForSelector('.ckres:has-text("沒有聽到")');
+  ok(true, 'E14 沒聲音提示');
+  // 檢查中按錄音：檢查停止
+  await ev(() => { window.__heardAlts = ['달']; window.__srDelay = 400; }); await p.click('.ckbox [data-act=ck]');
+  await p.waitForSelector('.ckres:has-text("正在聽")');
+  await p.click('[data-act=my-rec]');
+  await p.waitForSelector('[data-act=my-rec]:has-text("停止")');
+  ok(await ev(() => U.ck === null), 'E14 錄音時檢查會停止');
+  await p.waitForTimeout(500); // 等舊的辨識結果送達
+  ok(await ev(() => U.ck === null && !document.querySelector('.ckres')), 'E14 停止後晚到的辨識結果不會出現');
+  await ev(() => { window.__srDelay = 0; });
+  await p.click('[data-act=my-rec]'); await p.waitForSelector('[data-act=my-play]');
+  await p.click('[data-act=ls-next]'); ok(await ev(() => U.ck === null && U.my === null), 'E14 換步驟清掉');
+  ok(await ev(() => judgeSay('사다', [['싸다', '便宜']], ['싸다', '사다']).kind === 'rival' && judgeSay('사다', [['싸다', '便宜']], ['사다', '싸다']).kind === 'ok'), 'E14 依辨識順序判斷');
+  ok(await ev(() => judgeSay('이', [], ['2']).kind === 'near'), 'E14 數字也接受');
+  ok(await ev(() => ckHint('거리', '고리') === '嘴唇太圓了，放鬆、不要嘟。' && ckHint('사다', '싸다') !== ''), 'E14 母音與子音提示');
+  // 字母卡：子音有側面圖、字形由來與念給 App 聽；母音卡也有
+  await ev(() => startLesson('c1')); await p.click('[data-act=ls-next]');
+  ok(await p.$('.card svg.cart') && /字形由來/.test(await p.textContent('.tip')) && await p.$('.ckbox'), 'E14 子音卡');
+  await ev(() => { window.__heardAlts = ['가방']; }); ok(/念對了/.test(await ckc()), 'E14 子音卡例字念對');
+  await ev(() => startLesson('v1')); await p.click('[data-act=ls-next]');
+  ok(await p.$('.ckbox') && !(await p.$('.card svg.cart')), 'E14 母音卡有檢查、沒有側面圖');
+  await ev(() => { startLesson('v3'); U.ls.i = U.ls.steps.findIndex(x => x.k === 'vpair'); render(); });
+  await ev(() => { window.__heardAlts = ['고리']; }); t = await ckc(); ok(/고리/.test(t) && /嘴唇太圓/.test(t), 'E14 母音對比念錯提示：' + t);
+  await ev(() => { window.__heardAlts = null; go('home'); });
 
   // E12 名稱或內容不會被當成 HTML
   ok(await ev(() => h('<img src=x onerror=alert(1)>') === '&lt;img src=x onerror=alert(1)&gt;'), 'E12 跳脫');

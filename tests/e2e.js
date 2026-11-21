@@ -13,6 +13,12 @@ const INIT = () => {
       const alt = [{ transcript: window.__heard }]; me.onresult && me.onresult({ results: [alt] }); me.onend && me.onend(); }, 30); }
     stop() {} abort() {} }
   window.SpeechRecognition = FakeRec;
+  // 假的錄音：getUserMedia＋MediaRecorder
+  window.__tracksOpen = 0; window.__played = 0;
+  navigator.mediaDevices.getUserMedia = async () => { if (window.__micDeny) throw new Error('NotAllowed'); window.__tracksOpen++; return { getTracks: () => [{ stop: () => window.__tracksOpen-- }] }; };
+  window.MediaRecorder = class { constructor() { this.state = 'inactive'; this.mimeType = 'audio/webm'; } start() { this.state = 'recording'; }
+    stop() { if (this.state !== 'recording') return; this.state = 'inactive'; setTimeout(() => { this.ondataavailable && this.ondataavailable({ data: new Blob(['x']) }); this.onstop && this.onstop(); }, 10); } };
+  window.Audio = class { constructor(u) { this.src = u; } play() { window.__played++; return Promise.resolve(); } };
   const RD = Date; const off = () => Number(localStorage.getItem('__off') || 0);
   class D extends RD { constructor(...a) { if (a.length) super(...a); else super(RD.now() + off()); } static now() { return RD.now() + off(); } }
   window.Date = D;
@@ -220,6 +226,50 @@ const INIT = () => {
     const s = await ev(() => ({ coins: S.coins, skin: S.skin, hat: S.wear.hat, rate: S.set.rate }));
     ok(s.coins >= 0 && s.skin === 'fresh' && s.hat === '' && s.rate === 0.9, 'E11 修正壞資料 ' + bad.slice(0, 20));
   }
+  // E13 母音聽辨特訓：位置圖、對比單字、錄自己的聲音、答完比較
+  await ev(() => localStorage.setItem('__off', '0')); await p.reload(); await p.waitForSelector('#tabs button');
+  await ev(() => { S.set.auto = false; save(); startLesson('v3'); });
+  await p.click('[data-act=ls-next]');
+  ok(await ev(() => U.ls.steps[U.ls.i].k) === 'vmap', 'E13 位置圖');
+  await p.click('.vdot[data-t="오"]'); ok(await ev(() => window.__spoken.at(-1)) === '오', 'E13 點位置圖播放');
+  await p.click('[data-act=ls-next]');
+  ok(await ev(() => U.ls.steps[U.ls.i].k) === 'vchain' && (await p.$$('.chain svg.mouth')).length === 6, 'E13 嘴型連續動作');
+  await p.click('[data-act=ls-next]');
+  ok((await p.$$('.vpair svg.mouth')).length === 2, 'E13 對比卡兩個嘴型');
+  await p.click('.wpair button >> nth=1'); ok(await ev(() => window.__spoken.at(-1)) === '고리', 'E13 對比單字播放');
+  const s0 = ((await prog()).log[await ev(() => today())] || {}).s || 0;
+  await p.click('[data-act=my-rec]'); await p.waitForSelector('[data-act=my-rec]:has-text("停止")');
+  await p.click('[data-act=my-rec]'); await p.waitForSelector('[data-act=my-play]');
+  ok(await ev(() => window.__played) === 1, 'E13 錄完自動播放自己的聲音');
+  ok(await ev(() => window.__tracksOpen) === 0, 'E13 錄完關掉麥克風');
+  ok(((await prog()).log[await ev(() => today())].s || 0) === s0 + 1, 'E13 錄音算一次跟讀');
+  await p.click('[data-act=my-play]'); ok(await ev(() => window.__played) === 2, 'E13 再聽一次');
+  await p.click('.myrec [data-act=say]'); ok(await ev(() => window.__spoken.at(-1)) === '거리, 고리', 'E13 標準發音');
+  // 錄音中換下一步：丟掉、關麥克風
+  await p.click('[data-act=ls-next]'); await p.click('[data-act=my-rec]'); await p.waitForSelector('[data-act=my-rec]:has-text("停止")');
+  await p.click('[data-act=ls-next]');
+  await p.waitForFunction(() => window.__tracksOpen === 0);
+  ok(await ev(() => U.my === null && !document.querySelector('[data-act=my-play]')), 'E13 錄音中換步驟會丟掉');
+  // 麥克風被拒絕
+  await ev(() => { window.__micDeny = true; }); await p.click('[data-act=my-rec]');
+  await p.waitForFunction(() => /麥克風/.test(document.querySelector('#toast').textContent) && U.my === null);
+  ok(true, 'E13 麥克風被拒絕有提示'); await ev(() => { window.__micDeny = false; });
+  // 測驗：只有兩個選項，答完可以比較
+  await ev(() => { U.ls.i = U.ls.steps.findIndex(x => x.k === 'quiz'); render(); });
+  const q = await ev(() => U.ls.steps[U.ls.i]);
+  ok(q.opts.length === 2, 'E13 對比題兩個選項');
+  await p.click(`.opt[data-i="${q.ans}"]`);
+  ok((await p.$$('.cmp [data-act=say]')).length === 2, 'E13 答完可以比較兩個發音');
+  await ev(() => go('home'));
+  // 第一課的母音卡有嘴型，子音卡沒有
+  await ev(() => startLesson('v1')); await p.click('[data-act=ls-next]');
+  ok(await p.$('.card svg.mouth'), 'E13 母音卡有嘴型');
+  await ev(() => { startLesson('v2'); U.ls.i = U.ls.steps.findIndex(x => x.k === 'letter' && x.x.j === 'ㅘ'); render(); });
+  ok((await p.$$('.mouthseq svg.mouth')).length === 2, 'E13 雙母音兩個嘴型');
+  await ev(() => startLesson('c1')); await p.click('[data-act=ls-next]');
+  ok(!(await p.$('.card svg.mouth')), 'E13 子音卡沒有嘴型');
+  await ev(() => go('home'));
+
   // E12 名稱或內容不會被當成 HTML
   ok(await ev(() => h('<img src=x onerror=alert(1)>') === '&lt;img src=x onerror=alert(1)&gt;'), 'E12 跳脫');
 

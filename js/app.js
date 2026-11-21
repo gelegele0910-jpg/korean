@@ -57,7 +57,7 @@ function save() {
 }
 
 let S = load();
-const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
+const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
 
 /* ================= 進度工具 ================= */
 function owned(id, s) { s = s || S; const it = SHOP.find(x => x.id === id); return !!it && (it.price === 0 || !!s.own[id]); }
@@ -207,6 +207,14 @@ function buildLesson(L) {
       const row = tr.filter(Boolean), x = pick(row);
       st.push(mkQuiz({ q: '平音、送氣音、硬音：聽到的是哪一個？', audio: x, ans: x, wrong: row, ko: true, exp: `${row.join('・')}：輕輕的・吐氣・繃緊` }));
     });
+  } else if (L.kind === 'vowels') {
+    st.push({ k: 'vmap' }, { k: 'vchain' });
+    VPAIRS.forEach(p => st.push({ k: 'vpair', p }));
+    const pool = VPAIRS.flatMap(p => p[3].map(ws => [p, ws]));
+    shuffle(pool.concat(shuffle(pool))).slice(0, 10).forEach(([p, ws]) => {
+      const [a, b] = Math.random() < .5 ? ws : [ws[1], ws[0]];
+      st.push(mkQuiz({ q: `聽聽看：是 ${p[0]} 還是 ${p[1]}？`, audio: a[0], ans: a[0], wrong: [b[0]], ko: true, exp: `${a[0]}（${a[1]}）／${b[0]}（${b[1]}）` }));
+    });
   } else if (L.kind === 'syllable') {
     st.push({ k: 'syl', n: 0 }, { k: 'syl', n: 1 }, { k: 'syl', n: 2 }, { k: 'syl', n: 3 });
     for (let i = 0; i < 8; i++) {
@@ -336,9 +344,22 @@ function vStep(s) {
       <button class="btn main block mt" data-act="ls-next">開始 ▶</button></div>`;
     case 'letter': { const x = s.x; return `<div class="card center"><div class="big">${h(x.j)}</div>
       <div>${x.nm ? `<span class="ko sub">${h(x.nm)}</span>　` : ''}<span class="rr" style="font-size:1.3rem">${h(x.rr)}</span></div>
+      ${mouthHtml(x.j, 110) ? `<div class="mouthrow">${mouthHtml(x.j, 110)}</div>` : ''}
       <div class="btns" style="justify-content:center"><button class="btn main" data-act="say" data-t="${h(x.say)}">🔊 ${h(x.say)}</button><button class="btn" data-act="say" data-t="${h(x.say)}" data-r="0.6">🐢 慢慢念</button></div>
       <div class="tip" style="text-align:left">${h(x.tip)}</div>
+      ${myRecHtml('l-' + x.j, x.say)}
       <div style="text-align:left">${koLine(x.ex[0], x.ex[1])}</div></div>${stepNav()}`; }
+    case 'vmap': return `<div class="card"><h3>母音位置圖</h3><div class="sub">點圓圈聽發音。橙色＝嘴唇不圓，藍色＝嘴唇嘟圓。虛線連起來的兩個，舌頭位置幾乎一樣，<b>只差嘴唇圓不圓</b>。</div>
+      ${vowelMap()}<div class="sub small center">虛線＝只差嘴唇圓不圓</div><div class="tip">💡 所以只要記住：<b class="ko">ㅓ</b>＋嘟嘴＝<b class="ko">ㅗ</b>；<b class="ko">ㅡ</b>＋嘟嘴＝<b class="ko">ㅜ</b>。</div></div>${stepNav()}`;
+    case 'vchain': return `<div class="card"><h3>嘴型連續動作</h3><div class="sub">依序點下去，邊聽邊跟著做嘴型，感覺每次只改變一個地方。可以對著鏡子或手機前鏡頭練習。</div>
+      ${VCHAINS.map((c, k) => `<h3 class="mt">${h(c.t)}</h3><div class="chain">${c.v.map((v, i) => `${i ? '<span class="arr">→</span>' : ''}<button data-act="say" data-t="${KH.comp('ㅇ', v)}">${mouthSvg(v, 52)}<b>${v}</b></button>`).join('')}</div>
+        <div class="center"><button class="btn sm" data-act="say" data-t="${c.v.map(v => KH.comp('ㅇ', v)).join(', ')}" data-r="0.6">▶ 連續慢慢念</button></div>`).join('')}</div>${stepNav()}`;
+    case 'vpair': { const [a, b, tip, ws] = s.p; return `<div class="card"><h3><span class="ko">${a}</span> 和 <span class="ko">${b}</span></h3>
+      <div class="vpair">${[a, b].map(v => `<div><div class="vj">${v}</div><div class="rr">${KH.RR_V[v]}</div>${mouthHtml(v, 90)}<div class="btns" style="justify-content:center;margin-top:6px">${sayBtn(KH.comp('ㅇ', v))}${slowBtn(KH.comp('ㅇ', v))}</div></div>`).join('')}</div>
+      <div class="tip">${h(tip)}</div>
+      <div class="sub">只差一個母音、意思就不一樣的單字，交替點來聽：</div>
+      ${ws.map(([x, y]) => `<div class="wpair"><button data-act="say" data-t="${h(x[0])}"><b>${h(x[0])}</b><small>${h(x[1])}</small></button><span class="vs">vs</span><button data-act="say" data-t="${h(y[0])}"><b>${h(y[0])}</b><small>${h(y[1])}</small></button></div>`).join('')}
+      <div class="mt"><b>錄自己的聲音比比看</b><div class="sub small">念「${h(ws[0][0][0])}、${h(ws[0][1][0])}」，再和標準發音對照。</div>${myRecHtml('p-' + a + b, ws[0][0][0] + ', ' + ws[0][1][0])}</div></div>${stepNav()}`; }
     case 'trio': return `<div class="card"><h3>三種比較：平音・送氣音・硬音</h3><div class="sub">一組一組點來聽，注意吐氣和喉嚨的感覺。手放在嘴巴前面：送氣音會感覺到風。</div>
       ${TRIOS.map(tr => `<div class="trio">${tr.map((x, i) => x ? `<button data-act="say" data-t="${x}">${x}<small>${['平音・輕', '送氣・吐氣', '硬音・繃緊'][i]}</small></button>` : '<span></span>').join('')}</div>`).join('')}</div>${stepNav()}`;
     case 'syl': { const c = SYL_CARDS[s.n]; return `<div class="card"><h3>${h(c.t)}</h3><p>${h(c.d)}</p>
@@ -384,7 +405,48 @@ function vQuiz(s, ansAct, nextAct) {
     ${s.audio ? `<div class="center">${sayBtn(s.audio)} ${slowBtn(s.audio)}</div>` : ''}
     <div class="opts">${s.opts.map((o, i) => `<button class="opt ${s.ko ? 'ko' : ''} ${done && i === s.ans ? 'good' : ''} ${done && i === s.picked && i !== s.ans ? 'bad' : ''}" data-act="${ansAct}" data-i="${i}" ${done ? 'disabled' : ''}>${h(o)}</button>`).join('')}</div>
     ${done ? `<div class="fb ${s.picked === s.ans ? 'good' : 'bad'}">${s.picked === s.ans ? '答對了！' : '再記一下：'}${s.exp ? ' ' + h(s.exp) : ''}</div>
-      <button class="btn main block mt" data-act="${nextAct}">${'下一題 →'}</button>` : ''}</div>`;
+      ${cmpHtml(s)}<button class="btn main block mt" data-act="${nextAct}">${'下一題 →'}</button>` : ''}</div>`;
+}
+/** 聽力題答完後，可以一個一個聽選項比較（只限韓文選項） */
+function cmpHtml(s) {
+  if (!s.audio || !s.ko) return '';
+  const ko = s.opts.filter(o => /^[가-힣 ]+$/.test(o));
+  if (ko.length < 2) return '';
+  return `<div class="cmp"><span class="lbl">比較聽聽看：</span>${ko.map(o => `<button class="btn sm" data-act="say" data-t="${h(o)}">🔊 ${h(o)}</button>`).join('')}</div>`;
+}
+
+/* ================= 錄自己的聲音（和標準發音對照） ================= */
+let myMr = null;
+function myRecHtml(key, ko) {
+  if (!navigator.mediaDevices || !window.MediaRecorder) return '';
+  const my = U.my && U.my.key === key ? U.my : null;
+  if (my && my.on) return `<div class="myrec"><button class="btn alt" data-act="my-rec" data-k="${h(key)}">■ 停止錄音（錄音中…）</button></div>`;
+  if (my && my.url) return `<div class="myrec"><button class="btn main" data-act="my-play">▶ 我的聲音</button><button class="btn" data-act="say" data-t="${h(ko)}">🔊 標準發音</button><button class="btn" data-act="my-rec" data-k="${h(key)}">🎙 再錄一次</button></div>`;
+  return `<div class="myrec"><button class="btn" data-act="my-rec" data-k="${h(key)}">🎙 錄我的聲音來比較</button></div>`;
+}
+function myStop(discard) {
+  if (myMr && myMr.state === 'recording') { myMr.discard = !!discard; try { myMr.stop(); } catch (e) { /* 已停止 */ } }
+  myMr = null;
+  if (discard && U.my) { if (U.my.url) URL.revokeObjectURL(U.my.url); U.my = null; }
+}
+async function myStart(key) {
+  myStop(true); abortRec(); stopSpeak();
+  U.my = { key, on: true }; render();
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch (e) { U.my = null; render(); toast('沒辦法使用麥克風：請在瀏覽器設定允許這個網站使用麥克風'); return; }
+  if (!U.my || U.my.key !== key || !U.my.on) { stream.getTracks().forEach(t => t.stop()); return; } // 等待授權時已經離開
+  const mr = new MediaRecorder(stream), chunks = [];
+  myMr = mr;
+  mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  mr.onstop = () => {
+    stream.getTracks().forEach(t => t.stop());
+    if (mr.discard || !U.my || U.my.key !== key) return;
+    U.my = { key, url: URL.createObjectURL(new Blob(chunks, { type: mr.mimeType || 'audio/webm' })) };
+    bump('s'); save(); render(); ACT['my-play']();
+  };
+  mr.start();
+  setTimeout(() => { if (myMr === mr && mr.state === 'recording') { myMr = null; mr.stop(); } }, 5000);
 }
 function vLesson() {
   const ls = U.ls; if (!ls) return vLearn();
@@ -653,7 +715,7 @@ function render() {
 function go(v) {
   abortRec(); stopSpeak();
   if (v !== 'game') stopQuick();
-  U.sp = null; U.arm = '';
+  U.sp = null; U.arm = ''; myStop(true);
   U.view = v; render(); window.scrollTo(0, 0);
   autoPlay();
 }
@@ -684,9 +746,9 @@ const ACT = {
     const ls = U.ls, s = ls.steps[ls.i];
     if (s.k === 'quiz' && s.picked == null) return;
     if (ls.i >= ls.steps.length - 1) { finishLesson(); return; }
-    ls.i++; U.sp = null; abortRec(); render(); window.scrollTo(0, 0); autoPlay();
+    ls.i++; U.sp = null; abortRec(); myStop(true); render(); window.scrollTo(0, 0); autoPlay();
   },
-  'ls-prev': () => { const ls = U.ls; let i = ls.i - 1; while (i > 0 && ls.steps[i].k === 'quiz') i--; ls.i = Math.max(1, i); U.sp = null; abortRec(); render(); autoPlay(); },
+  'ls-prev': () => { const ls = U.ls; let i = ls.i - 1; while (i > 0 && ls.steps[i].k === 'quiz') i--; ls.i = Math.max(1, i); U.sp = null; abortRec(); myStop(true); render(); autoPlay(); },
   'ls-quit': () => { U.ls = null; go('learn'); },
   'ls-ans': d => {
     const s = U.ls.steps[U.ls.i]; if (s.picked != null) return;
@@ -695,7 +757,7 @@ const ACT = {
   },
   rec: d => {
     if (U.sp && U.sp.on) { abortRec(); U.sp = null; render(); return; }
-    U.sp = { id: d.id, on: true };
+    myStop(true); U.sp = { id: d.id, on: true };
     render();
     startRec(d.t, (best, err) => {
       if (!U.sp || U.sp.id !== d.id) return;
@@ -707,6 +769,11 @@ const ACT = {
       save(); render();
     });
   },
+  'my-rec': d => {
+    if (U.my && U.my.key === d.k && U.my.on) { if (myMr) { const m = myMr; myMr = null; m.stop(); } else { U.my = null; render(); } return; }
+    myStart(d.k);
+  },
+  'my-play': () => { if (U.my && U.my.url) { stopSpeak(); const a = new Audio(U.my.url); a.play().catch(() => toast('播放失敗，再錄一次看看')); } },
   'rec-self': d => { bump('s'); save(); toast('很棒！再多念幾次會更順'); U.sp = { id: d.id }; render(); },
   game: d => startGame(d.id, d.m),
   'g-quit': () => { stopQuick(); U.g = null; go('games'); },
@@ -836,7 +903,7 @@ document.addEventListener('change', e => {
     rd.readAsText(f);
   }
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden) { abortRec(); stopSpeak(); if (U.sp && U.sp.on) { U.sp = null; render(); } } });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { abortRec(); stopSpeak(); if (U.my && U.my.on) { myStop(true); render(); } if (U.sp && U.sp.on) { U.sp = null; render(); } } });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && U.pops.length) ACT['pop-ok'](); });
 
 /* ================= 啟動 ================= */

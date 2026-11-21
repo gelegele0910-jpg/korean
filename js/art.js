@@ -140,3 +140,55 @@ const SHOP_CATS = [['skin','介面風格'],['hat','頭上'],['face','臉上'],['
 
 // 吉祥物的話
 const HOYA_LINES = ['오늘도 화이팅！今天也加油！', '천천히 해도 괜찮아요. 慢慢來沒關係。', '잘하고 있어요！你做得很好！', '한 걸음씩！一步一步來！', '같이 공부해요！一起學習吧！'];
+
+/* ================= 嘴型圖（母音） =================
+ * w 嘴巴寬、h 張開高度、r 圓唇（嘴唇往前嘟）、s 扁平（嘴角往兩邊拉）、c 說明。
+ * 雙母音（ㅑ、ㅘ…）用 MOUTH_SEQ 畫「起點 → 終點」兩張。 */
+const MOUTH = {
+  'ㅏ': { w:58, h:40, c:'張大' },
+  'ㅓ': { w:46, h:26, c:'半開・不圓' },
+  'ㅗ': { w:26, h:24, r:1, c:'圓・往前嘟' },
+  'ㅜ': { w:16, h:14, r:1, c:'小圓・嘟更前' },
+  'ㅡ': { w:62, h:6,  s:1, c:'扁平・嘴角拉開' },
+  'ㅣ': { w:64, h:9,  s:1, c:'扁平・像微笑' },
+  'ㅐ': { w:54, h:30, c:'半開・嘴角稍拉' },
+  'ㅔ': { w:52, h:24, c:'半開・嘴角稍拉' },
+};
+const MOUTH_SEQ = { 'ㅑ':['ㅣ','ㅏ'], 'ㅕ':['ㅣ','ㅓ'], 'ㅛ':['ㅣ','ㅗ'], 'ㅠ':['ㅣ','ㅜ'], 'ㅒ':['ㅣ','ㅐ'], 'ㅖ':['ㅣ','ㅔ'],
+  'ㅘ':['ㅗ','ㅏ'], 'ㅙ':['ㅗ','ㅐ'], 'ㅚ':['ㅜ','ㅔ'], 'ㅝ':['ㅜ','ㅓ'], 'ㅞ':['ㅜ','ㅔ'], 'ㅟ':['ㅜ','ㅣ'], 'ㅢ':['ㅡ','ㅣ'] };
+function mouthSvg(v, size) {
+  const m = MOUTH[v]; if (!m) return '';
+  size = size || 96;
+  const lipX = m.w / 2 + (m.r ? 13 : 9), lipY = m.h / 2 + (m.r ? 12 : 8);
+  const teeth = !m.r && m.h > 5 ? `<rect x="${60 - m.w / 2}" y="${45 - m.h / 2}" width="${m.w}" height="${Math.min(7, m.h / 2.5)}" fill="#fff"/>` : '';
+  const tongue = m.h >= 24 && !m.r ? `<ellipse cx="60" cy="${45 + m.h / 2}" rx="${m.w / 3}" ry="${m.h / 4}" fill="#E86A7A"/>` : '';
+  const arrows = m.s ? `<path d="M10 45 h12 M14 41 l-4 4 4 4 M110 45 h-12 M106 41 l4 4 -4 4" stroke="var(--sub,#888)" stroke-width="2.2" fill="none" stroke-linecap="round"/>`
+    : m.r ? `<path d="M60 ${45 - lipY - 8} v-5 M60 ${45 + lipY + 8} v5" stroke="var(--sub,#888)" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="45" r="${lipX + 6}" fill="none" stroke="var(--sub,#888)" stroke-width="1.5" stroke-dasharray="3 4"/>` : '';
+  const id = 'mo' + Math.random().toString(36).slice(2, 8);
+  return `<svg class="mouth" viewBox="0 0 120 90" width="${size}" height="${size * .75}" role="img" aria-label="${v} 的嘴型：${m.c}">
+    <defs><clipPath id="${id}"><ellipse cx="60" cy="45" rx="${m.w / 2}" ry="${m.h / 2}"/></clipPath></defs>
+    ${arrows}<ellipse cx="60" cy="45" rx="${lipX}" ry="${lipY}" fill="${m.r ? '#E8737F' : '#F0939C'}"/>
+    <ellipse cx="60" cy="45" rx="${m.w / 2}" ry="${m.h / 2}" fill="#5B1F2E"/><g clip-path="url(#${id})">${teeth}${tongue}</g></svg>`;
+}
+/** 嘴型＋說明；雙母音畫兩張中間加箭頭 */
+function mouthHtml(v, size) {
+  if (MOUTH[v]) return `<figure class="mouthfig">${mouthSvg(v, size)}<figcaption>${MOUTH[v].c}</figcaption></figure>`;
+  const q = MOUTH_SEQ[v]; if (!q) return '';
+  return `<div class="mouthseq">${mouthHtml(q[0], size * .8)}<span class="arr">→</span>${mouthHtml(q[1], size * .8)}</div>
+    <div class="sub small center">從 ${q[0]} 的嘴型快速滑到 ${q[1]}</div>`;
+}
+
+/* 母音位置圖：左＝舌頭在前、右＝舌頭在後；上＝嘴巴閉、下＝嘴巴開。圓唇的母音用藍色。 */
+const VMAP = [['ㅣ',48,36],['ㅔ',78,96],['ㅐ',104,146],['ㅏ',168,190],['ㅓ',236,140],['ㅗ',262,92],['ㅡ',196,36],['ㅜ',270,36]];
+function vowelMap() {
+  const pos = Object.fromEntries(VMAP.map(([v, x, y]) => [v, [x, y]]));
+  const link = (a, b) => `<line x1="${pos[a][0]}" y1="${pos[a][1]}" x2="${pos[b][0]}" y2="${pos[b][1]}" stroke="var(--accent2)" stroke-width="2" stroke-dasharray="5 5"/>`;
+  return `<svg class="vmap" viewBox="0 0 320 236" role="img" aria-label="母音位置圖">
+    <path d="M28 20 H300 V214 H120 Z" fill="var(--chip)" stroke="var(--line)" stroke-width="2"/>
+    <text x="30" y="14" class="ax">← 舌頭在前</text><text x="300" y="14" class="ax" text-anchor="end">舌頭在後 →</text>
+    <text x="30" y="232" class="ax">↓ 嘴巴張大</text>
+    ${link('ㅡ', 'ㅜ')}${link('ㅓ', 'ㅗ')}
+    ${VMAP.map(([v, x, y]) => { const r = MOUTH[v].r; return `<g class="vdot" data-act="say" data-t="${KH.comp('ㅇ', v)}" tabindex="0" role="button" aria-label="播放 ${v}">
+      <circle cx="${x}" cy="${y}" r="19" fill="${r ? 'var(--accent2)' : 'var(--accent)'}"/><text x="${x}" y="${y + 7}" text-anchor="middle" class="vt">${v}</text></g>`; }).join('')}
+  </svg>`;
+}

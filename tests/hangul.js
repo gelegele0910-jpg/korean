@@ -4,7 +4,7 @@ const { seeded } = require('./server.js');
 const ROOT = path.resolve(__dirname, '..');
 const KH = require('../js/hangul.js');
 const ctx = { KH }; vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/data.js'), 'utf8') + ';this.D={VOWELS,VOWELS2,CONSONANTS,DOUBLES,BATCHIM,RULES,TOPICS,LESSONS,TRIOS};', ctx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/data.js'), 'utf8') + ';this.D={VOWELS,VOWELS2,CONSONANTS,DOUBLES,BATCHIM,RULES,TOPICS,LESSONS,TRIOS,VPAIRS,VCHAINS};', ctx);
 const D = ctx.D;
 let fail = 0, n = 0;
 const ok = (c, msg) => { n++; if (!c) { fail++; console.log('  ✗', msg); } };
@@ -57,6 +57,22 @@ for (const set of [D.VOWELS, D.VOWELS2, D.CONSONANTS, D.DOUBLES]) for (const x o
 ok(D.VOWELS.length + D.VOWELS2.length + D.CONSONANTS.length + D.DOUBLES.length === 40, 'H5 40 音');
 for (const b of D.BATCHIM) for (const [w] of b.ex) ok(KH.pronounce(w).endsWith(KH.comp(KH.dec(KH.pronounce(w).slice(-1)).l, KH.dec(KH.pronounce(w).slice(-1)).v, b.j)), 'H5 收音例字 ' + w);
 for (const r of D.RULES) for (const [w, , wrong] of r.ex) { ok(KH.pronounce(w) !== wrong, 'H5 錯誤選項等於正確發音 ' + w); ok(KH.pronounce(w) !== w || r.id === 'tense', 'H5 規則例字發音要不同 ' + w); }
+
+// H6 母音對比：每組單字只差這兩個母音（其他字母、長度都一樣），而且兩個母音都有嘴型
+const actx = { KH }; vm.createContext(actx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/art.js'), 'utf8') + ';this.A={MOUTH,MOUTH_SEQ,mouthSvg,mouthHtml,VMAP};', actx);
+for (const [a, b, tip, ws] of D.VPAIRS) {
+  ok(tip && ws.length >= 2, 'H6 每組至少 2 對單字 ' + a + b);
+  for (const [x, y] of ws) {
+    const p = KH.jamo(x[0]), q = KH.jamo(y[0]);
+    const diff = p.map((j, i) => [j, q[i]]).filter(([j, k]) => j !== k);
+    ok(p.length === q.length && diff.length === 1 && diff[0][0] === a && diff[0][1] === b, `H6 ${x[0]}/${y[0]} 要只差 ${a}/${b}`);
+    ok(x[1] && y[1], 'H6 中文 ' + x[0]);
+  }
+}
+for (const v of [...D.VOWELS, ...D.VOWELS2].map(x => x.j)) ok(actx.A.mouthHtml(v, 90).includes('<svg'), 'H6 嘴型 ' + v);
+for (const c of D.VCHAINS) for (const v of c.v) ok(actx.A.MOUTH[v], 'H6 連續動作嘴型 ' + v);
+for (const [v] of actx.A.VMAP) ok(actx.A.MOUTH[v], 'H6 位置圖 ' + v);
 
 console.log(fail ? `hangul: ${fail}/${n} 失敗` : `hangul: ${n} 項全部通過`);
 process.exit(fail ? 1 : 0);

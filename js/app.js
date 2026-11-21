@@ -354,13 +354,13 @@ function vStep(s) {
       <button class="btn main block mt" data-act="ls-next">開始 ▶</button></div>`;
     case 'letter': { const x = s.x; return `<div class="card center"><div class="big">${h(x.j)}</div>
       <div>${x.nm ? `<span class="ko sub">${h(x.nm)}</span>　` : ''}<span class="rr" style="font-size:1.3rem">${h(x.rr)}</span></div>
-      ${mouthHtml(x.j, 110) ? `<div class="mouthrow">${mouthHtml(x.j, 110)}</div>` : SA.C[x.j] ? saBox([x.j], { one: true }) : ''}
+      ${SA.C[x.j] || SA.isVowel(x.j) ? saBox([x.j], { one: true }) : ''}
       <div class="btns" style="justify-content:center"><button class="btn main" data-act="say" data-t="${h(x.say)}">🔊 ${h(x.say)}</button><button class="btn" data-act="say" data-t="${h(x.say)}" data-r="0.6">🐢 慢慢念</button></div>
       <div class="tip" style="text-align:left">${h(x.tip)}${CSHAPE[x.j] ? `<div style="margin-top:6px">✏️ 字形由來：${h(CSHAPE[x.j])}</div>` : ''}</div>
       ${myRecHtml('l-' + x.j, x.say)}
       <div style="text-align:left">${koLine(x.ex[0], x.ex[1])}</div>${checkHtml('ex-' + x.j, [[x.ex]])}</div>${stepNav()}`; }
-    case 'vmap': return `<div class="card"><h3>母音位置圖</h3><div class="sub">點圓圈聽發音。橙色＝嘴唇不圓，藍色＝嘴唇嘟圓。虛線連起來的兩個，舌頭位置幾乎一樣，<b>只差嘴唇圓不圓</b>。</div>
-      ${vowelMap()}<div class="sub small center">虛線＝只差嘴唇圓不圓</div><div class="tip">💡 所以只要記住：<b class="ko">ㅓ</b>＋嘟嘴＝<b class="ko">ㅗ</b>；<b class="ko">ㅡ</b>＋嘟嘴＝<b class="ko">ㅜ</b>。</div></div>${stepNav()}`;
+    case 'vmap': return `<div class="card"><h3>母音發音地圖</h3><div class="sub">點任何一個母音：側面看舌頭的高低前後，左上角是正面的嘴型。<b>ㅓ 和 ㅗ、ㅡ 和 ㅜ 的舌頭位置幾乎一樣，只差嘴唇圓不圓</b>。</div>
+      ${vmapHtml(false)}<div class="tip">💡 所以只要記住：<b class="ko">ㅓ</b>＋嘟嘴＝<b class="ko">ㅗ</b>；<b class="ko">ㅡ</b>＋嘟嘴＝<b class="ko">ㅜ</b>。</div></div>${stepNav()}`;
     case 'vchain': return `<div class="card"><h3>嘴型連續動作</h3><div class="sub">依序點下去，邊聽邊跟著做嘴型，感覺每次只改變一個地方。可以對著鏡子或手機前鏡頭練習。</div>
       ${VCHAINS.map((c, k) => `<h3 class="mt">${h(c.t)}</h3><div class="chain">${c.v.map((v, i) => `${i ? '<span class="arr">→</span>' : ''}<button data-act="say" data-t="${KH.comp('ㅇ', v)}">${mouthSvg(v, 52)}<b>${v}</b></button>`).join('')}</div>
         <div class="center"><button class="btn sm" data-act="say" data-t="${c.v.map(v => KH.comp('ㅇ', v)).join(', ')}" data-r="0.6">▶ 連續慢慢念</button></div>`).join('')}</div>${stepNav()}`;
@@ -446,7 +446,9 @@ function saCtl() {
 function saBox(js, o) {
   o = o || {};
   const btn = j => `<button class="sa-j" data-act="sa-play" data-j="${j}"><b class="ko">${KH.comp(j === 'ㅇ' ? 'ㅇ' : j, 'ㅏ', j === 'ㅇ' ? 'ㅇ' : '')}</b><small>${SA.KIND[SA.C[j][1]]}</small></button>`;
-  return `<div class="sa-box" data-sa-scope>${SA.stage()}
+  const vow = SA.isVowel(js[0]);
+  const stg = vow ? `<div class="sa-wrap">${SA.stage('母音發音動畫', 'v')}<div class="sa-mouth on" aria-hidden="true">${mouthHtml(js[0], 64)}</div></div>` : SA.stage();
+  return `<div class="sa-box" data-sa-scope>${stg}
     <div class="sa-cap">${o.one ? '按「看嘴巴怎麼動」，看舌頭和氣怎麼走' : '點下面的字，看嘴巴裡怎麼動'}</div>
     <div class="sa-row">${o.one ? `<button class="btn main" data-act="sa-play" data-j="${js[0]}">▶ 看嘴巴怎麼動</button>` : js.map(btn).join('')}</div>${saCtl()}</div>`;
 }
@@ -856,7 +858,7 @@ function autoPlay() {
   let t = null;
   if (U.view === 'lesson' && U.ls) {
     const s = U.ls.steps[U.ls.i];
-    if (s.k === 'letter' && SA.C[s.x.j]) { setTimeout(() => { if (U.ls && U.ls.steps[U.ls.i] === s) saPlay($('#main [data-sa-scope]'), s.x.j); }, 300); return; }
+    if (s.k === 'letter' && (SA.C[s.x.j] || SA.isVowel(s.x.j))) { setTimeout(() => { if (U.ls && U.ls.steps[U.ls.i] === s) saPlay($('#main [data-sa-scope]'), s.x.j); }, 300); return; }
     t = s.k === 'letter' ? s.x.say : s.k === 'word' ? s.w.ko : s.k === 'sent' ? s.s.ko : s.k === 'quiz' && s.picked == null ? s.audio : null;
   } else if (U.view === 'game' && U.g && !U.g.end) {
     const g = U.g;

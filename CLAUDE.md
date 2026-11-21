@@ -10,7 +10,7 @@
   - `js/hangul.js`：韓文核心（`KH`）：組字／拆字、`pronounce()` 實際發音、`romanize()` 羅馬拼音、`score()` 跟讀分數。瀏覽器是 `window.KH`，Node 可以 `require`
   - `js/data.js`：課程內容：`VOWELS`、`VOWELS2`、`CONSONANTS`、`DOUBLES`（共 40 音）、`TRIOS`、`BATCHIM`、`RULES`、`VPAIRS`（母音對比）、`VCHAINS`（嘴型連續動作）、`CTRIOS`（子音對比）、`TOPICS`、`LESSONS`
   - `js/art.js`：吉祥物 `mascot(wear, size, mood)`（平面色塊 SVG，mood：normal／happy／think）、配件 `MA_HAT`／`MA_FACE`／`MA_NECK`／`MA_HAND`／`MA_BG`、商店 `SHOP`；母音嘴型 `MOUTH`／`MOUTH_SEQ`（`mouthSvg()`、`mouthHtml()`）與母音位置圖 `vowelMap()`；子音字形由來 `CSHAPE`
-  - `js/speech-art.js`：子音發音動畫（`window.SA`）。人物外觀是使用者提供、可公開的插畫 `img/girl.webp`（1254×1254），只有口腔用 SVG 疊上去做動畫（`drawHybrid()`，口腔座標經 `HY_T` 換算到圖片像素；`patch` 範圍蓋掉原圖的剖面與編號）。`stateAt(子音, 毫秒)` 是時間軸（準備→頂住→放開→念母音），`FAM` 是 6 個部位家族卡、`MANNERS` 是平音／送氣音／硬音卡、`closeup()` 是卡片的圓形特寫圖。對外：`SA.stage()` 產生畫面、`SA.mountAll()` 畫靜止畫面、`SA.play(svg, 子音, {slow, labels, cap, onRelease})`（播放時自動放大嘴巴，放開那一刻呼叫 `onRelease` 念字）、`SA.stop()`。減少動態時直接停在「放開」那一格
+  - `js/speech-art.js`：子音與母音發音動畫（`window.SA`）。人物外觀是使用者提供、可公開的插畫 `img/girl.webp`（1254×1254），只有口腔用 SVG 疊上去做動畫（`drawHybrid()`，口腔座標經 `HY_T` 換算到圖片像素；`patch` 範圍蓋掉原圖的剖面與編號）。`stateAt(子音, 毫秒)` 是時間軸（準備→頂住→放開→念母音），`FAM` 是 6 個部位家族卡、`MANNERS` 是平音／送氣音／硬音卡、`closeup()` 是卡片的圓形特寫圖。對外：`SA.stage()` 產生畫面、`SA.mountAll()` 畫靜止畫面、`SA.play(svg, 子音, {slow, labels, cap, onRelease})`（播放時自動放大嘴巴，放開那一刻呼叫 `onRelease` 念字）、`SA.stop()`。減少動態時直接停在「放開」那一格。母音：`VPOSE`（舌頭四點＋下巴 `j`＋嘴唇 `r`：1 嘟圓往前、-1 拉平）、`VSEQ`（雙母音起點→終點）、`vStateAt(母音, 毫秒)`、`VFAM`（6 張母音家族卡）、`vsyl()`；`SA.play()` 子音、母音都能播，母音畫面用 `SA.stage(說明, 'v')`（不顯示子音的 ①～⑥）
   - `js/app.js`：主程式
   - `css/style.css`：樣式與 6 種介面風格
   - `tools/make-icons.js`：由吉祥物產生 `icon.svg`、`apple-touch-icon.png`
@@ -39,7 +39,7 @@ GitHub Pages 從 `main` 的根目錄發佈（網址 `https://gelegele0910-jpg.gi
 - 點數：只能用 `earn()` 加；購買要點兩次（`U.arm`）。新增欄位要在 `newProg()` 加預設值，`migrate()` 會補齊舊資料並修正壞資料（負數、沒買的風格／配件）。
 - 語音：`speak()`（`ko-KR`，優先挑 Google／Yuna 等聲音）；辨識 `startRec()` 同時只開一個，`abortRec()` 關掉，舊的結果不可蓋掉新的。
 - 發音檢查「念給 App 聽」（`checkHtml(key, 對比單字組)`，狀態在 `U.ck`）：用語音辨識的所有候選，`judgeSay()` 依可能性順序先碰到目標字＝念對、先碰到同組其他字＝念成那個字，`ckHint()` 依兩字差的字母給提示（平音／送氣／硬音、圓唇／拉平…）。念對每個字每天 +10。與錄音互斥：開始一個就停掉另一個。
-- 子音發音動畫在 app 裡：`saBox(子音...)`（一個畫面＋子音按鈕）、`cmapHtml(full)`（發音地圖，`cplace` 步驟與 `cmap` 畫面共用）、`saPlay(scope, 子音)`；按鈕是 `data-act="sa-play"`，同一個 `data-sa-scope` 裡找畫面。`render()` 會先 `SA.stop()` 再 `SA.mountAll()`；子音字母卡的自動播放改成播動畫（動畫放開時念字）。
+- 發音動畫在 app 裡：`saBox(字母...)`（一個畫面＋按鈕；母音會加左上角的正面嘴型 `.sa-mouth`）、`cmapHtml(full)`（子音發音地圖，`cplace` 步驟與 `cmap` 畫面共用）、`vmapHtml(full)`（母音發音地圖，`vmap` 步驟與 `vwmap` 畫面共用）、`saPlay(scope, 字母)`；按鈕是 `data-act="sa-play"`，同一個 `data-sa-scope` 裡找畫面。`render()` 會先 `SA.stop()` 再 `SA.mountAll()`；子音與母音字母卡的自動播放改成播動畫（子音在放開時、母音在擺好嘴型時念字）。
 - 錄自己的聲音（`myRecHtml(key, 標準句)`、`myStart()`／`myStop()`，狀態在 `U.my`）：MediaRecorder，最長 5 秒，錄完自動播放並記一次跟讀；換步驟、切畫面、切到背景一律 `myStop(true)` 丟掉並關麥克風。
 - 介面風格：`body[data-skin]` 切換 CSS 變數，深色是 `night`、`neon`；新樣式一律用變數（`--ink`、`--card`、`--accent`、`--r`…）。
 - 手機為主：最小 320 寬；格子用 `repeat(auto-fill, minmax(...))`；1000 寬以上頁籤移到左側。
@@ -53,8 +53,8 @@ node tests/run-all.js
 | 腳本 | 內容 |
 |---|---|
 | `check-syntax.js` | js 語法、index.html 引用的檔案存在、人物插畫 `img/girl.webp` 存在且是 WebP |
-| `hangul.js` | 11172 字組字往返、羅馬拼音與實際發音標準答案、數字、跟讀分數（所有課程句 100 分、隨機輸入範圍）、課程內容完整性、母音／子音對比單字只差那個字母、每個母音有嘴型、每個子音有動畫資料與字形由來、每個子音每個時間點都畫得出來 |
-| `e2e.js` | 用點的上完所有課、5 種遊戲與點數、任務簽到不重複、跟讀（假麥克風）、換日複習、商店兩段確認與點數不為負、6 風格、設定、備份匯入、壞資料、母音特訓（位置圖、嘴型、錄自己的聲音＝假 MediaRecorder、答完比較）、子音特訓與念給 App 聽（念對／念成同組別的字＋提示／無關的字／沒聲音、每日只加一次點數、與錄音互斥、晚到的辨識結果不出現）、子音發音地圖（圖片載入、19 個子音都會播放並念出、慢動作、離開畫面停止、子音卡自動播動畫） |
+| `hangul.js` | 11172 字組字往返、羅馬拼音與實際發音標準答案、數字、跟讀分數（所有課程句 100 分、隨機輸入範圍）、課程內容完整性、母音／子音對比單字只差那個字母、每個母音有嘴型、每個子音有動畫資料與字形由來、每個子音與母音每個時間點都畫得出來、每個字母剛好屬於一張家族卡 |
+| `e2e.js` | 用點的上完所有課、5 種遊戲與點數、任務簽到不重複、跟讀（假麥克風）、換日複習、商店兩段確認與點數不為負、6 風格、設定、備份匯入、壞資料、母音特訓（位置圖、嘴型、錄自己的聲音＝假 MediaRecorder、答完比較）、子音特訓與念給 App 聽（念對／念成同組別的字＋提示／無關的字／沒聲音、每日只加一次點數、與錄音互斥、晚到的辨識結果不出現）、子音發音地圖（圖片載入、19 個子音都會播放並念出、慢動作、離開畫面停止、子音卡自動播動畫）、母音發音地圖（21 個母音都會播放並念出、正面嘴型） |
 | `mobile.js` | 所有畫面 × 7 種尺寸（320～1440）× 淺深風格：不可超出螢幕、文字擠出、被頁籤擋住；`--shots` 存 320 寬截圖到 `tests/output/` |
 
 修改後一律跑完全部測試；新增畫面要加進 `mobile.js` 的 `SCENES`，新增流程加進 `e2e.js`。測試用 `blockExternal(page)` 擋掉外部請求；語音播放與真實麥克風在無頭瀏覽器裡無法驗證，回報時要註明。

@@ -233,7 +233,8 @@ const INIT = () => {
   await ev(() => { S.set.auto = false; save(); startLesson('v3'); });
   await p.click('[data-act=ls-next]');
   ok(await ev(() => U.ls.steps[U.ls.i].k) === 'vmap', 'E13 位置圖');
-  await p.click('.vdot[data-t="오"]'); ok(await ev(() => window.__spoken.at(-1)) === '오', 'E13 點位置圖播放');
+  await tapC('.fam-js [data-j="ㅗ"]'); await p.waitForFunction(() => window.__spoken.at(-1) === '오');
+  ok(await ev(() => SA.isPlaying() && document.querySelector('.sa-mouth.on svg.mouth') !== null), 'E13 點母音地圖播放動畫並念出');
   await p.click('[data-act=ls-next]');
   ok(await ev(() => U.ls.steps[U.ls.i].k) === 'vchain' && (await p.$$('.chain svg.mouth')).length === 6, 'E13 嘴型連續動作');
   await p.click('[data-act=ls-next]');
@@ -324,7 +325,7 @@ const INIT = () => {
   ok(await p.$('.card svg[data-sa]') && /字形由來/.test(await p.textContent('.tip')) && await p.$('.ckbox'), 'E14 子音卡');
   await ev(() => { window.__heardAlts = ['가방']; }); ok(/念對了/.test(await ckc()), 'E14 子音卡例字念對');
   await ev(() => startLesson('v1')); await p.click('[data-act=ls-next]');
-  ok(await p.$('.ckbox') && !(await p.$('.card svg[data-sa]')), 'E14 母音卡有檢查、沒有子音動畫');
+  ok(await p.$('.ckbox') && await p.$('.card svg[data-sa][data-mode="v"]'), 'E14 母音卡有檢查、有母音動畫');
   await ev(() => { startLesson('v3'); U.ls.i = U.ls.steps.findIndex(x => x.k === 'vpair'); render(); });
   await ev(() => { window.__heardAlts = ['고리']; }); t = await ckc(); ok(/고리/.test(t) && /嘴唇太圓/.test(t), 'E14 母音對比念錯提示：' + t);
   await ev(() => { window.__heardAlts = null; go('home'); });

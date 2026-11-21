@@ -104,6 +104,15 @@ for (const j of allC) {
   ok(rel > 0 || j === 'ㅇ', 'H7 有「放開」階段 ' + j);
   ok(SA.syl(j) && KH.isSyl(SA.syl(j)), 'H7 念的字 ' + j);
 }
+// 母音動畫：每個母音（含雙母音）每個時間點都畫得出來、念的字正確、家族卡剛好涵蓋每個母音一次
+for (const v of [...D.VOWELS, ...D.VOWELS2].map(x => x.j)) {
+  ok(SA.isVowel(v) && SA.vsyl(v) === KH.comp('ㅇ', v), 'H8 母音動畫 ' + v);
+  ok(SA.VFAM.filter(f => f.vs.includes(v)).length === 1, 'H8 母音家族卡剛好一張 ' + v);
+  for (let ms = 0; ms <= 2100; ms += 50) {
+    const st = SA.vStateAt(v, ms); st.now = ms; st.mode = 'v';
+    if (/NaN|undefined/.test(SA.drawHybrid(st, 't'))) { ok(false, `H8 ${v} ${ms}ms 畫不出來`); break; }
+  }
+}
 ok(Object.keys(SA.C).sort().join('') === [...allC].sort().join(''), 'H7 動畫子音＝40 音的子音');
 ok(SA.MANNERS.map(m => m.js).join('').split('').sort().join('') === 'ㄱㄲㄷㄸㅂㅃㅅㅆㅈㅉㅊㅋㅌㅍ'.split('').sort().join(''), 'H7 平音・送氣音・硬音卡');
 

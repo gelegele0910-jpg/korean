@@ -45,7 +45,7 @@ const BLOCK_X = { lips:52, tip:74, flap:74, blade:96, back:164 };
 const lerp = (a, b, k) => a + (b - a) * k;
 const ease = k => k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
 function mix(p, q, k) {
-  return { t: p.t.map((pt, i) => [lerp(pt[0], q.t[i][0], k), lerp(pt[1], q.t[i][1], k)]), j: lerp(p.j, q.j, k), l: lerp(p.l, q.l, k), v: lerp(p.v, q.v, k) };
+  return { t: p.t.map((pt, i) => [lerp(pt[0], q.t[i][0], k), lerp(pt[1], q.t[i][1], k)]), j: lerp(p.j, q.j, k), l: lerp(p.l, q.l, k), v: lerp(p.v, q.v, k), r: lerp(p.r || 0, q.r || 0, k) };
 }
 function smooth(pts) { // Catmull-Rom → 三次貝茲
   let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
@@ -219,7 +219,7 @@ function drawHybrid(s, u) {
     puff = `<g transform="translate(${cx} 108) scale(${sc.toFixed(2)})" opacity="${op}"><path d="M-14 6 a8 8 0 0 1 2 -14 a9 9 0 0 1 16 -4 a8 8 0 0 1 13 6 a7 7 0 0 1 -2 13 Z" fill="#DDF0FF" stroke="#7CC0F5" stroke-width="1.8"/></g>`
       + (big ? `<text x="${4 - k * 6}" y="88" font-size="11" font-weight="900" fill="#4D97E6" opacity="${op}">呼！</text>` : '');
   }
-  const pins = s.idle ? FAM.map((f, i) => `<g><circle cx="${f.pin[0]}" cy="${f.pin[1]}" r="${(6.5 * ui).toFixed(1)}" fill="${f.d}" stroke="#fff" stroke-width="${(1.4 * ui).toFixed(1)}"/><text x="${f.pin[0]}" y="${(f.pin[1] + 3 * ui).toFixed(1)}" font-size="${(8 * ui).toFixed(1)}" font-weight="900" text-anchor="middle" fill="#fff">${i + 1}</text></g>`).join('')
+  const pins = s.idle && s.mode !== 'v' ? FAM.map((f, i) => `<g><circle cx="${f.pin[0]}" cy="${f.pin[1]}" r="${(6.5 * ui).toFixed(1)}" fill="${f.d}" stroke="#fff" stroke-width="${(1.4 * ui).toFixed(1)}"/><text x="${f.pin[0]}" y="${(f.pin[1] + 3 * ui).toFixed(1)}" font-size="${(8 * ui).toFixed(1)}" font-weight="900" text-anchor="middle" fill="#fff">${i + 1}</text></g>`).join('')
     : s.contact ? `<circle cx="${s.contact[0]}" cy="${s.contact[1]}" r="${6.5 + Math.sin(s.now / 90)}" fill="#FFE04D" stroke="#F2B400" stroke-width="1.2" opacity=".95"/>` : '';
   // 要蓋掉的範圍（原圖的剖面、編號、下半臉）
   const patch = 'M18 86 C30 74 52 66 80 60 L194 56 L195 122 L201 128 L201 178 L196 186 L196 206 L14 206 Z';
@@ -246,19 +246,65 @@ function drawHybrid(s, u) {
       <rect x="177" y="${182 - g.gGap / 2 - 3}" width="10" height="3" rx="1.5" fill="${fc}"/><rect x="177" y="${182 + g.gGap / 2}" width="10" height="3" rx="1.5" fill="${fc}"/>
     </g>
     ${s.tense ? `<path d="M192 172 l4 3.5 -4 3.5 4 3.5 -4 3.5" stroke="#E5484D" stroke-width="2.2" fill="none"/>` : ''}
+    <g transform="translate(${((s.pose.r || 0) > 0 ? -5 * s.pose.r : -2.5 * (s.pose.r || 0)).toFixed(2)} 0)">
     <path d="${g.upLip}" fill="#F7A0AA" stroke="#EC8A98" stroke-width="1"/>
-    <path d="M36 ${112 + (1 - g.ld) * jd - g.ld * 6.5} Q48 ${109 + (1 - g.ld) * jd - g.ld * 6.5} 58 ${113 + (1 - g.ld) * jd - g.ld * 6.5} L58 ${125 + (1 - g.ld) * jd - g.ld * 6.5} Q46 ${132 + (1 - g.ld) * jd - g.ld * 6.5} 36 ${126 + (1 - g.ld) * jd - g.ld * 6.5} Q29 ${119 + (1 - g.ld) * jd - g.ld * 6.5} 36 ${112 + (1 - g.ld) * jd - g.ld * 6.5} Z" fill="#F38F9E" stroke="#EC8A98" stroke-width="1"/>
+    <path d="M36 ${112 + (1 - g.ld) * jd - g.ld * 6.5} Q48 ${109 + (1 - g.ld) * jd - g.ld * 6.5} 58 ${113 + (1 - g.ld) * jd - g.ld * 6.5} L58 ${125 + (1 - g.ld) * jd - g.ld * 6.5} Q46 ${132 + (1 - g.ld) * jd - g.ld * 6.5} 36 ${126 + (1 - g.ld) * jd - g.ld * 6.5} Q29 ${119 + (1 - g.ld) * jd - g.ld * 6.5} 36 ${112 + (1 - g.ld) * jd - g.ld * 6.5} Z" fill="#F38F9E" stroke="#EC8A98" stroke-width="1"/></g>
     ${dots}${puff}${pins}${lbl}
   </g>`;
 }
+
+/* ---------- 母音：舌頭高低前後＋下巴＋嘴唇（r：1＝嘟圓往前、-1＝往兩邊拉平） ---------- */
+const VL = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+const vsyl = v => String.fromCharCode(0xAC00 + 11 * 588 + VL.indexOf(v) * 28);
+const VPOSE = {
+  'ㅏ': { t:[[70,133],[92,127],[124,123],[154,124]], j:1,   l:0, v:0, r:0 },
+  'ㅓ': { t:[[68,129],[92,124],[126,114],[154,106]], j:.62, l:0, v:0, r:0 },
+  'ㅗ': { t:[[68,127],[92,120],[128,105],[156,97]],  j:.35, l:0, v:0, r:1 },
+  'ㅜ': { t:[[68,126],[92,117],[131,97],[158,89]],   j:.15, l:0, v:0, r:1.25 },
+  'ㅡ': { t:[[68,126],[92,117],[129,98],[157,90]],   j:.12, l:0, v:0, r:-1 },
+  'ㅣ': { t:[[70,111],[87,96],[117,92],[150,108]],   j:.1,  l:0, v:0, r:-1 },
+  'ㅔ': { t:[[70,119],[89,105],[119,102],[152,113]], j:.42, l:0, v:0, r:-.4 },
+  'ㅐ': { t:[[70,123],[90,110],[120,107],[153,116]], j:.55, l:0, v:0, r:-.3 },
+};
+// 雙母音：起點 → 終點
+const VSEQ = { 'ㅑ':['ㅣ','ㅏ'], 'ㅕ':['ㅣ','ㅓ'], 'ㅛ':['ㅣ','ㅗ'], 'ㅠ':['ㅣ','ㅜ'], 'ㅒ':['ㅣ','ㅐ'], 'ㅖ':['ㅣ','ㅔ'],
+  'ㅘ':['ㅗ','ㅏ'], 'ㅙ':['ㅗ','ㅐ'], 'ㅚ':['ㅜ','ㅔ'], 'ㅝ':['ㅜ','ㅓ'], 'ㅞ':['ㅜ','ㅔ'], 'ㅟ':['ㅜ','ㅣ'], 'ㅢ':['ㅡ','ㅣ'] };
+const VDESC = {
+  'ㅏ':'嘴巴張大，舌頭放低放平', 'ㅓ':'下巴放鬆、嘴唇不圓，舌頭往後縮', 'ㅗ':'嘴唇嘟成圓形，舌頭往後抬高一點',
+  'ㅜ':'嘴唇嘟得更小、更前面，舌根抬高', 'ㅡ':'嘴唇往兩邊拉平，舌根抬高（和 ㅜ 一樣，只是不嘟嘴）',
+  'ㅣ':'嘴角往兩邊拉開，舌頭往前抬高', 'ㅔ':'嘴巴半開、嘴角稍微拉開，舌頭往前', 'ㅐ':'嘴巴比 ㅔ 再張大一點，舌頭往前',
+};
+const isVowel = v => !!(VPOSE[v] || VSEQ[v]);
+/** 母音的時間軸：① 準備 → ② 擺好嘴型並念 →（雙母音）③ 滑到終點 → ④ 拉長聲音 → 回到原位 */
+function vStateAt(v, ms) {
+  const seq = VSEQ[v], a = VPOSE[seq ? seq[0] : v], b = seq ? VPOSE[seq[1]] : a, N = POSE.neutral;
+  const T = seq ? { a:350, b:600, c:900, d:1500, e:1950 } : { a:350, b:500, c:500, d:1450, e:1900 };
+  const st = { pose: N, flows: [], puff: 0, contact: null, tense: false, voice: false, step: 0, cap: '', end: T.e, release: T.a };
+  const flow = { path: MOUTH_PATH, from: 0, to: 1, speed: 1.1, n: 10, op: .55 };
+  if (ms < T.a) { st.pose = mix(N, a, ease(ms / T.a)); st.step = 0; st.cap = seq ? `先擺出 ${seq[0]} 的嘴型` : VDESC[v]; }
+  else if (ms < T.b) { st.pose = a; st.step = 1; st.voice = true; st.flows.push(flow); st.cap = seq ? `從 ${seq[0]} 開始…` : VDESC[v]; }
+  else if (ms < T.c) { st.pose = mix(a, b, ease((ms - T.b) / (T.c - T.b))); st.step = 2; st.voice = true; st.flows.push(flow); st.cap = `快速滑到 ${seq[1]}`; }
+  else if (ms < T.d) { st.pose = b; st.step = 3; st.voice = true; st.flows.push(flow); st.cap = seq ? `${seq[0]} → ${seq[1]}＝${v}（${vsyl(v)}）` : `${VDESC[v]} → ${vsyl(v)}`; }
+  else { st.pose = mix(b, N, ease(Math.min(1, (ms - T.d) / (T.e - T.d)))); st.step = 3; }
+  return st;
+}
+// 母音家族卡（pin：在側面圖上標舌頭的位置）
+const VFAM = [
+  { id:'open',   c:'#FFD3B0', d:'#E07A2E', nm:'張大嘴隊', vs:'ㅏㅑ', pos:'嘴巴張大，舌頭放低', zy:'ㄚ', tips:['「嘴巴張大說 ㄚ」'], m:'ㅏ' },
+  { id:'relax',  c:'#FCE38A', d:'#C99A00', nm:'放鬆嘴隊', vs:'ㅓㅕ', pos:'下巴放鬆，嘴唇不圓，舌頭往後', zy:'介於 ㄛ 和 ㄜ', tips:['「先說 ㅏ，嘴巴稍微合起來」'], m:'ㅓ' },
+  { id:'round',  c:'#BFE0FF', d:'#2F7FD0', nm:'圓嘴隊', vs:'ㅗㅛㅜㅠ', pos:'嘴唇嘟圓往前，舌頭往後抬高', zy:'ㄛ（ㅗ）、ㄨ（ㅜ）', tips:['「ㅗ 圓圓的、ㅜ 嘟更小」'], m:'ㅗ' },
+  { id:'flat',   c:'#B9EBD3', d:'#2E9E6A', nm:'扁嘴隊', vs:'ㅡㅣ', pos:'嘴角往兩邊拉平', zy:'ㄜ 不圓（ㅡ）、ㄧ（ㅣ）', tips:['「ㅡ＝ㅜ 不嘟嘴」', '「ㅣ 像微笑」'], m:'ㅡ' },
+  { id:'half',   c:'#F7B8C0', d:'#E0607A', nm:'半開嘴隊', vs:'ㅐㅔㅒㅖ', pos:'嘴巴半開，舌頭往前', zy:'ㄝ', tips:['「ㅐ 和 ㅔ 現在念起來幾乎一樣」'], m:'ㅔ' },
+  { id:'glide',  c:'#D9C8F5', d:'#7A55C7', nm:'滑動隊', vs:'ㅘㅙㅚㅝㅞㅟㅢ', pos:'從一個嘴型快速滑到另一個', zy:'ㄨㄚ（ㅘ）、ㄨㄛ（ㅝ）…', tips:['「ㅗ／ㅜ／ㅡ 開始，滑到後面的母音」'], m:'ㅘ' },
+];
 
 /* ---------- 播放器 ---------- */
 let uidN = 0, active = null;
 const reduce = () => !!(root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches);
 /** 產生一個畫面（之後呼叫 mountAll 畫出靜止畫面） */
-function stage(label) {
+function stage(label, mode) {
   const u = 'sa' + (++uidN);
-  return `<svg class="sa-stage" data-sa="${u}" viewBox="${VIEW.full.join(' ')}" role="img" aria-label="${label || '發音側面動畫'}">
+  return `<svg class="sa-stage" data-sa="${u}" ${mode ? `data-mode="${mode}"` : ''} viewBox="${VIEW.full.join(' ')}" role="img" aria-label="${label || '發音側面動畫'}">
     <image href="${IMG}" x="0" y="0" width="${HY_W}" height="${HY_W}" preserveAspectRatio="none"/><g class="sa-dyn"></g></svg>`;
 }
 function setView(el, z) {
@@ -267,7 +313,7 @@ function setView(el, z) {
   el.setAttribute('viewBox', a.map((v, i) => lerp(v, b[i], e).toFixed(2)).join(' '));
 }
 function frame(el, st, now) {
-  st.now = now; st.labels = el._sa.labels !== false; st.zoom = el._sa.zoom;
+  st.now = now; st.labels = el._sa.labels !== false; st.zoom = el._sa.zoom; st.mode = el.dataset.mode;
   el.querySelector('.sa-dyn').innerHTML = drawHybrid(st, el.dataset.sa);
 }
 function idleFrame(el) { const st = stateAt('ㄷ', 0); st.idle = true; frame(el, st, 0); }
@@ -286,7 +332,8 @@ function stop() {
 }
 /** 播放一個子音：opts = { slow, labels, zoom(預設開), cap(說明文字的元素), onRelease(念的字) } */
 function play(el, j, opts) {
-  if (!el || !C[j]) return;
+  if (!el || !(C[j] || isVowel(j))) return;
+  const at = C[j] ? stateAt : vStateAt, say = C[j] ? syl(j) : vsyl(j);
   opts = opts || {};
   stop(); mountAll(el.parentNode || root.document);
   el._sa.labels = opts.labels !== false;
@@ -296,9 +343,9 @@ function play(el, j, opts) {
   const tick = now => {
     if (active !== me) return;
     if (!el.isConnected) { active = null; return; }
-    const ms = reduce() ? stateAt(j, 0).release + 200 : (now - t0) / k;   // 減少動態：直接停在「放開」那一格
-    const st = stateAt(j, ms);
-    if (!spoke && ms >= st.release - 60) { spoke = true; if (opts.onRelease) opts.onRelease(syl(j)); }
+    const ms = reduce() ? at(j, 0).release + 200 : (now - t0) / k;   // 減少動態：直接停在「放開」那一格
+    const st = at(j, ms);
+    if (!spoke && ms >= st.release - 60) { spoke = true; if (opts.onRelease) opts.onRelease(say); }
     if (zoom) setView(el, Math.min(1, ms / 380));
     frame(el, st, now);
     if (opts.cap && st.cap) opts.cap.textContent = st.cap;
@@ -310,7 +357,7 @@ function play(el, j, opts) {
       if (active !== me || !el.isConnected) return;
       const q = Math.max(0, Math.min(1, (now2 - t1) / 600));
       setView(el, z0 * (1 - q));
-      const s2 = stateAt(j, 0); s2.idle = q >= 1; frame(el, s2, now2);
+      const s2 = at(j, 0); s2.idle = q >= 1; frame(el, s2, now2);
       if (q < 1) me.raf = requestAnimationFrame(back); else active = null;
     };
     me.raf = requestAnimationFrame(back);
@@ -318,5 +365,6 @@ function play(el, j, opts) {
   me.raf = requestAnimationFrame(tick);
 }
 root.SA = { C, FAM, MANNERS, KIND, PLACE, closeup, syl, stage, mountAll, play, stop, stateAt, drawHybrid, VIEW,
+  VPOSE, VSEQ, VDESC, VFAM, vsyl, vStateAt, isVowel,
   isPlaying: () => !!active };
 })(typeof window !== 'undefined' ? window : globalThis);

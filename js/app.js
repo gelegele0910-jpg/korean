@@ -302,6 +302,7 @@ function vLearn() {
     <button class="tile" data-act="go" data-v="chart"><span class="ic ko">가</span><b>40 音表</b></button>
     <button class="tile" data-act="go" data-v="builder"><span class="ic">🧩</span><b>拼音工坊</b></button>
     <button class="tile" data-act="go" data-v="cmap"><span class="ic">👄</span><b>子音發音地圖</b></button>
+    <button class="tile" data-act="go" data-v="vwmap"><span class="ic">😮</span><b>母音發音地圖</b></button>
   </div>
   ${secs.map(sec => `<h3 class="mt">${h(sec)}</h3>` + LESSONS.filter(L => L.sec === sec).map(L => `
     <button class="lesson" data-act="lesson" data-id="${L.id}"><div class="ic">${h(L.ic)}</div>
@@ -461,15 +462,35 @@ function cmapHtml(full) {
       <b>${h(m.nm)}（${h(m.team)}）</b>${jsBtns(m.js)}<div class="fam-r"><b>口訣：</b>${h(m.tip)}</div><div class="fam-r sub2">${h(m.sub)}</div></div></div>`).join('')}</div></div>` : ''}
   </div>`;
 }
+/** 母音發音地圖：動畫（角落有正面嘴型）＋6 個母音家族卡（full＝再加上最容易搞混的兩組） */
+function vmapHtml(full) {
+  const vBtns = vs => `<div class="fam-js">${[...vs].map(v => `<button data-act="sa-play" data-j="${v}" aria-label="播放 ${v}">${v}</button>`).join('')}</div>`;
+  const cu = f => `<svg viewBox="0 0 80 80" class="cu" aria-hidden="true"><circle cx="40" cy="40" r="38" fill="#fff"/><g transform="translate(4 12) scale(.6)">${mouthSvg(MOUTH[f.m] ? f.m : MOUTH_SEQ[f.m][0], 120).replace(/^<svg[^>]*>|<\/svg>$/g, '')}</g><circle cx="40" cy="40" r="38" fill="none" stroke="currentColor" stroke-width="3"/></svg>`;
+  return `<div class="cmap" data-sa-scope>
+    <div class="cm-stage"><div class="sa-wrap">${SA.stage('母音發音動畫', 'v')}<div class="sa-mouth" aria-hidden="true"></div></div><div class="sa-cap">點任何一個母音開始</div>${saCtl()}</div>
+    <div class="cm-cards">${SA.VFAM.map((f, i) => `<div class="fam" data-fam="${f.id}" style="--c:${f.c};--d:${f.d}">${cu(f)}<div class="tx">
+      <b class="fam-t"><span class="num">${i + 1}</span>${h(f.nm)}</b>${vBtns(f.vs)}
+      <div class="fam-r"><b>嘴型：</b>${h(f.pos)}</div><div class="fam-r"><b>像注音：</b>${h(f.zy)}</div><div class="fam-r"><b>口訣：</b>${h(f.tips.join('、'))}</div></div></div>`).join('')}</div>
+    ${full ? `<div class="manner"><b class="fam-t" style="justify-content:center">最容易搞混：只差「嘟不嘟嘴」！</b><div class="mgrid">
+      ${[['ㅓ', 'ㅗ', '舌頭位置一樣：ㅓ 嘴唇放鬆，ㅗ 嘟成圓形'], ['ㅡ', 'ㅜ', '舌頭位置一樣：ㅡ 嘴唇拉平，ㅜ 嘟起來']].map(([a, b, t]) => `<div><div class="tx">
+        <b>${a} 和 ${b}</b>${vBtns(a + b)}<div class="fam-r">${h(t)}</div><div class="fam-r sub2">依序點兩個，看嘴唇怎麼變</div></div></div>`).join('')}</div></div>` : ''}
+  </div>`;
+}
+function vVwmap() {
+  return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0">母音發音地圖</h2></div>
+  <div class="sub mb">點任何一個母音：側面看舌頭的高低前後，左上角的小圖是正面的嘴型。</div>${vmapHtml(true)}`;
+}
 function vCmap() {
   return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0">子音發音地圖</h2></div>
   <div class="sub mb">點任何一個子音：人物會放大嘴巴，讓你看到舌頭怎麼動、氣怎麼走，同時念出聲音。</div>${cmapHtml(true)}`;
 }
 function saPlay(scope, j) {
   const stg = scope && scope.querySelector('svg[data-sa]');
-  if (!stg || !SA.C[j]) return;
+  if (!stg || !(SA.C[j] || SA.isVowel(j))) return;
+  const mo = scope.querySelector('.sa-mouth');
+  if (mo) { mo.innerHTML = SA.isVowel(j) ? mouthHtml(j, 64) : ''; mo.classList.toggle('on', SA.isVowel(j)); }
   scope.querySelectorAll('[data-act="sa-play"]').forEach(b => b.classList.toggle('on', b.dataset.j === j));
-  const fam = SA.FAM.find(f => f.js.includes(j));
+  const fam = SA.FAM.find(f => f.js.includes(j)) || SA.VFAM.find(f => f.vs.includes(j));
   scope.querySelectorAll('.fam').forEach(c => c.classList.toggle('on', !!fam && c.dataset.fam === fam.id));
   SA.play(stg, j, { slow: U.saSlow, labels: U.saLbl, cap: scope.querySelector('.sa-cap'), onRelease: t => speak(t, U.saSlow ? 0.6 : null) });
 }
@@ -803,8 +824,8 @@ function vSheet() {
 
 /* ================= 繪製 ================= */
 const VIEWS = { home: vHome, learn: vLearn, chart: vChart, builder: vBuilder, lesson: vLesson, done: vDone, games: vGames, game: vGame,
-  review: vReview, words: vWords, me: vMe, cmap: vCmap };
-const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
+  review: vReview, words: vWords, me: vMe, cmap: vCmap, vwmap: vVwmap };
+const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', vwmap: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
 const TABS = [['home', '🏠', '首頁'], ['learn', '📘', '學習'], ['games', '🎮', '遊戲'], ['review', '📇', '複習'], ['me', '🐯', '我的']];
 function applySkin() {
   document.body.dataset.skin = S.skin;

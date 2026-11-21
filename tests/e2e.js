@@ -349,6 +349,17 @@ const INIT = () => {
   await p.click('[data-act=sa-slow]');
   await p.click('[data-act=go][data-v=home]');
   ok(await ev(() => !SA.isPlaying()), 'E15 離開畫面停止動畫');
+  // 母音發音地圖：21 個母音都會播放並念出、正面嘴型小窗
+  await ev(() => go('learn')); await p.click('[data-act=go][data-v=vwmap]');
+  ok((await p.$$('.cmap .fam')).length === 6, 'E16 母音地圖 6 張家族卡');
+  for (const v of await ev(() => [...VOWELS, ...VOWELS2].map(x => x.j))) {
+    await ev(() => { window.__spoken = []; });
+    await tapC(`.cm-cards [data-j="${v}"]`);
+    await p.waitForFunction(s => window.__spoken.includes(s), await ev(v => SA.vsyl(v), v), { timeout: 5000 });
+  }
+  ok(await ev(() => document.querySelector('.sa-mouth.on svg.mouth') !== null), 'E16 21 個母音都會播放、有正面嘴型');
+  await p.click('[data-act=go][data-v=home]');
+  ok(await ev(() => !SA.isPlaying()), 'E16 離開停止');
   // 子音字母卡：自動播放＝播動畫並念出
   await ev(() => { window.__spoken = []; startLesson('c1'); }); await p.click('[data-act=ls-next]');
   await p.waitForFunction(() => window.__spoken.includes('가'));

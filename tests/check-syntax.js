@@ -2,7 +2,7 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.resolve(__dirname, '..');
 let bad = 0;
-const files = ['js/hangul.js', 'js/data.js', 'js/art.js', 'js/speech-art.js', 'js/app.js'];
+const files = ['js/hangul.js', 'js/data.js', 'js/reading.js', 'js/art.js', 'js/speech-art.js', 'js/app.js'];
 for (const f of files) {
   try { new vm.Script(fs.readFileSync(path.join(ROOT, f), 'utf8'), { filename: f }); console.log('  ok', f); }
   catch (e) { bad++; console.log('  ✗', f, e.message); }

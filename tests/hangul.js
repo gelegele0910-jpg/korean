@@ -116,5 +116,40 @@ for (const v of [...D.VOWELS, ...D.VOWELS2].map(x => x.j)) {
 ok(Object.keys(SA.C).sort().join('') === [...allC].sort().join(''), 'H7 動畫子音＝40 音的子音');
 ok(SA.MANNERS.map(m => m.js).join('').split('').sort().join('') === 'ㄱㄲㄷㄸㅂㅃㅅㅆㅈㅉㅊㅋㅌㅍ'.split('').sort().join(''), 'H7 平音・送氣音・硬音卡');
 
+// R1～R4 閱讀文章：surface 照順序出現在句子裡、vocab_id 對得上、清單單字比例 85～90% 以上、文法編號存在、拼音正常
+const rctx = { KH }; vm.createContext(rctx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/reading.js'), 'utf8') + ';this.RV=READ_VOCAB;this.RA=READ_ARTICLES;', rctx);
+const RV = Object.fromEntries(rctx.RV.map(v => [v.id, v]));
+ok(rctx.RV.length === Object.keys(RV).length, 'R1 單字 id 不重複');
+for (const v of rctx.RV) {
+  ok(/^v_\d{4}$/.test(v.id) && v.word && v.meaning_zh && v.example_ko && v.example_zh && [1, 2, 3, 4, 5, 6].includes(v.level), 'R1 單字欄位 ' + v.id);
+  ok(!['動詞', '形容詞'].includes(v.pos) || v.word.endsWith('다'), 'R1 動詞形容詞以 -다 結尾 ' + v.word);
+  ok(/^[a-z0-9 .,!?']+$/.test(KH.romanize(v.example_ko)), 'R1 例句拼音 ' + v.example_ko);
+}
+const aIds = new Set();
+for (const a of rctx.RA) {
+  ok(!aIds.has(a.article_id), 'R2 文章 id 不重複 ' + a.article_id); aIds.add(a.article_id);
+  const ch = Object.fromEntries(a.challenge_vocab.map(c => [c.id, c]));
+  const gIds = new Set(a.grammar_notes.map(g => g.grammar_id));
+  let list = 0, plus = 0;
+  a.sentences.forEach((s, i) => {
+    ok(s.sentence_index === i + 1 && s.ko && s.zh, `R2 ${a.article_id} 句子編號 ${i + 1}`);
+    ok(/^[a-z0-9 .,!?']+$/.test(KH.romanize(s.ko)), 'R2 句子拼音 ' + s.ko);
+    let pos = 0;
+    for (const t of s.target_words) {
+      const at = s.ko.indexOf(t.surface, pos);
+      ok(at >= 0, `R3 ${a.article_id} 第 ${i + 1} 句找不到「${t.surface}」（要照順序）`); if (at >= 0) pos = at + t.surface.length;
+      const v = t.vocab_id.startsWith('new_') ? ch[t.vocab_id] : RV[t.vocab_id];
+      ok(v && v.word === t.lemma, `R3 ${t.surface} 的 lemma／vocab_id 對不上（${t.lemma} ${t.vocab_id}）`);
+      if (t.vocab_id.startsWith('new_')) plus++; else list++;
+    }
+    for (const g of s.grammar_ids) ok(gIds.has(g), `R4 ${a.article_id} 第 ${i + 1} 句的文法 ${g} 沒有筆記`);
+  });
+  const ratio = list / (list + plus);
+  ok(ratio >= .85 && plus >= 2 && plus <= 3 || a.challenge_vocab.length === 0, `R3 ${a.article_id} 清單單字比例 ${Math.round(ratio * 100)}%、+1 單字 ${plus} 個`);
+  for (const c of a.challenge_vocab) ok(c.level === a.level + 1 && a.sentences.some(s => s.target_words.some(t => t.vocab_id === c.id)), 'R3 +1 單字要高一級且出現在文章裡 ' + c.word);
+  for (const g of a.grammar_notes) ok(g.pattern && g.meaning && g.explanation && g.extra_example_ko && g.extra_example_zh, 'R4 文法筆記欄位 ' + g.grammar_id);
+}
+
 console.log(fail ? `hangul: ${fail}/${n} 失敗` : `hangul: ${n} 項全部通過`);
 process.exit(fail ? 1 : 0);

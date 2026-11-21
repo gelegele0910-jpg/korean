@@ -20,6 +20,12 @@ const fmt = n => Number(n || 0).toLocaleString('en-US');
 const WORDS = TOPICS.flatMap(tp => tp.w.map((w, i) => ({ id: tp.id + '-w' + i, ko: w[0], zh: w[1], tp: tp.id })));
 const SENTS = TOPICS.flatMap(tp => tp.s.map((s, i) => ({ id: tp.id + '-s' + i, ko: s[0], zh: s[1], tp: tp.id })));
 const WORD = Object.fromEntries(WORDS.map(w => [w.id, w]));
+// 閱讀文章的單字：清單單字用 v_xxxx，+1 生字用「文章id:new_xx」（不同文章的 new_01 才不會撞在一起）
+const RWORD = {};
+READ_VOCAB.forEach(v => { RWORD[v.id] = { id: v.id, ko: v.word, zh: v.meaning_zh, src: 'read', v }; });
+READ_ARTICLES.forEach(a => a.challenge_vocab.forEach(c => { const id = a.article_id + ':' + c.id; RWORD[id] = { id, ko: c.word, zh: c.meaning_zh, src: 'read', v: c, art: a.article_id }; }));
+Object.assign(WORD, RWORD);
+const rdKey = (art, vid) => vid.startsWith('new_') ? art.article_id + ':' + vid : vid;
 const ALL_LETTERS = [...VOWELS, ...VOWELS2, ...CONSONANTS, ...DOUBLES];
 
 /* ================= 資料儲存 ================= */
@@ -57,7 +63,7 @@ function save() {
 }
 
 let S = load();
-const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, saSlow: false, saLbl: true, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
+const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, saSlow: false, saLbl: true, rd: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
 
 /* ================= 進度工具 ================= */
 function owned(id, s) { s = s || S; const it = SHOP.find(x => x.id === id); return !!it && (it.price === 0 || !!s.own[id]); }
@@ -304,6 +310,9 @@ function vLearn() {
     <button class="tile" data-act="go" data-v="cmap"><span class="ic">👄</span><b>子音發音地圖</b></button>
     <button class="tile" data-act="go" data-v="vwmap"><span class="ic">😮</span><b>母音發音地圖</b></button>
   </div>
+  <h3 class="mt">閱讀文章</h3>
+  ${READ_ARTICLES.map(a => `<button class="lesson" data-act="rd-open" data-id="${a.article_id}"><div class="ic">📖</div>
+    <div class="tx"><b><span class="ko">${h(a.title_ko)}</span>　${h(a.title_zh)}</b><span class="sub small">TOPIK ${a.level} 級・${h(a.topic)}・${a.sentences.length} 句・點單字看解釋</span></div></button>`).join('')}
   ${secs.map(sec => `<h3 class="mt">${h(sec)}</h3>` + LESSONS.filter(L => L.sec === sec).map(L => `
     <button class="lesson" data-act="lesson" data-id="${L.id}"><div class="ic">${h(L.ic)}</div>
       <div class="tx"><b>${h(L.t)}</b><span class="sub small">${h(L.sub)}</span></div>${S.done[L.id] ? '<span class="ok">✓</span>' : ''}</button>`).join('')).join('')}`;
@@ -436,6 +445,77 @@ function cmpHtml(s) {
   const ko = s.opts.filter(o => /^[가-힣 ]+$/.test(o));
   if (ko.length < 2) return '';
   return `<div class="cmp"><span class="lbl">比較聽聽看：</span>${ko.map(o => `<button class="btn sm" data-act="say" data-t="${h(o)}">🔊 ${h(o)}</button>`).join('')}</div>`;
+}
+
+/* ================= 閱讀文章：點單字看解釋、加入複習 ================= */
+/** 把句子切成一般文字與可以點的單字（照 target_words 的順序往後找） */
+function rdSegs(s) {
+  const out = []; let pos = 0;
+  s.target_words.forEach((t, wi) => {
+    const at = s.ko.indexOf(t.surface, pos);
+    if (at < 0) return;
+    if (at > pos) out.push({ t: s.ko.slice(pos, at) });
+    out.push({ t: t.surface, wi }); pos = at + t.surface.length;
+  });
+  if (pos < s.ko.length) out.push({ t: s.ko.slice(pos) });
+  return out;
+}
+function rdInfo(art, t) {
+  const key = rdKey(art, t.vocab_id), w = RWORD[key];
+  return { key, w, v: w ? w.v : null, plus: t.vocab_id.startsWith('new_') };
+}
+const rdEx = (ko, zh) => `<div class="rd-exl"><div class="row"><b class="ko grow">${h(ko)}</b>${sayBtn(ko, 'sm')}</div>${rrHtml(ko, 'small')}<div class="sub">${h(zh)}</div></div>`;
+function rdCard(art) {
+  const rd = U.rd;
+  if (!rd || rd.si == null) return `<div class="rd-empty">${mascot(S.wear, 70, 'think')}<div>點文章裡<b>有底線的單字</b>，這裡會顯示解釋。<br><span class="rd-mark">黃色</span>是 TOPIK ${art.level + 1} 級的「+1 挑戰單字」。</div></div>`;
+  const s = art.sentences[rd.si], t = s.target_words[rd.wi], { key, v, plus } = rdInfo(art, t);
+  if (!v) return '';
+  const inSrs = !!S.srs[key];
+  const where = rdSegs(s).map(g => g.wi === rd.wi ? `<mark>${h(g.t)}</mark>` : h(g.t)).join('');
+  return `<div class="rd-card"><button class="x rd-close" data-act="rd-close" aria-label="關閉">✕</button>
+    <div class="rd-badges"><span class="rd-lv ${plus ? 'plus' : ''}">${plus ? `+1 挑戰・TOPIK ${v.level}` : `TOPIK ${v.level}`}</span><span class="rd-pos">${h(v.pos)}</span></div>
+    <div class="rd-word ko">${h(v.word)}</div>
+    <div>${rrHtml(v.word)} ${pronHtml(v.word)}</div>
+    ${v.hanja ? `<div class="rd-hanja">漢字：<b>${h(v.hanja)}</b></div>` : ''}
+    <div class="rd-mean">${h(v.meaning_zh)}</div>
+    ${t.surface !== v.word ? `<div class="sub small">文章裡的樣子：<b class="ko">${h(t.surface)}</b>（原型 ${h(v.word)}）</div>` : ''}
+    <div class="rd-acts">${sayBtn(v.word)}${slowBtn(v.word)}
+      <button class="btn grow ${inSrs ? '' : 'main'}" data-act="rd-add" data-k="${h(key)}" ${inSrs ? 'disabled' : ''}>${inSrs ? '✓ 已在複習清單' : '＋ 加入複習'}</button></div>
+    <button class="rd-exbtn" data-act="rd-ex">${rd.ex ? '收起例句 ▴' : (v.example_ko ? '例句' : '文章裡的句子') + ' ▾'}</button>
+    <div class="rd-ex ${rd.ex ? 'open' : ''}"><div class="sub small">${v.example_ko ? '例句' : '文章裡的句子'}</div>
+      ${rdEx(v.example_ko || s.ko, v.example_ko ? v.example_zh : s.zh)}
+      ${v.example_ko ? `<div class="sub small mt" style="margin-top:6px">文章裡：<span class="ko">${where}</span></div>` : ''}</div></div>`;
+}
+function vArticle() {
+  const art = READ_ARTICLES.find(a => a.article_id === (U.rd && U.rd.id));
+  if (!art) return vLearn();
+  const rd = U.rd, gIds = art.grammar_notes.map(g => g.grammar_id);
+  const sents = art.sentences.map((s, si) => `<div class="rd-s ${s.speaker ? 'talk sp-' + h(s.speaker) : ''}">
+    ${s.speaker ? `<span class="rd-sp">${h(s.speaker)}</span>` : ''}<div class="rd-body">
+    <div class="rd-ko ko">${rdSegs(s).map(g => g.wi == null ? h(g.t) : (() => { const { plus } = rdInfo(art, s.target_words[g.wi]);
+      return `<button class="rw ${plus ? 'plus' : ''} ${rd.si === si && rd.wi === g.wi ? 'on' : ''}" data-act="rd-word" data-s="${si}" data-w="${g.wi}">${h(g.t)}</button>`; })()).join('')}</div>
+    <div class="rd-tools">${sayBtn(s.ko, 'sm')}<button class="say sm slow" data-act="say" data-t="${h(s.ko)}" data-r="0.6" aria-label="慢速播放">慢</button>
+      <button class="rd-tr ${rd.zh[si] || rd.allZh ? 'on' : ''}" data-act="rd-zh" data-s="${si}">譯</button>
+      ${s.grammar_ids.map(g => `<button class="rd-g" data-act="rd-gram" data-g="${h(g)}">文法 ${gIds.indexOf(g) + 1}</button>`).join('')}</div>
+    ${rd.zh[si] || rd.allZh ? `<div class="rd-zh">${h(s.zh)}</div>` : ''}${S.set.rr === 'show' ? `<div class="small">${rrHtml(s.ko)}</div>` : ''}</div></div>`).join('');
+  const plusList = art.challenge_vocab.map(c => { const si = art.sentences.findIndex(s => s.target_words.some(t => t.vocab_id === c.id));
+    const wi = si < 0 ? -1 : art.sentences[si].target_words.findIndex(t => t.vocab_id === c.id);
+    return `<button class="rw plus big" data-act="rd-word" data-s="${si}" data-w="${wi}">${h(c.word)}</button><span class="sub small">${h(c.meaning_zh)}</span>`; }).join('<br>');
+  const listN = art.sentences.flatMap(s => s.target_words).filter(t => !t.vocab_id.startsWith('new_')).length;
+  const allN = art.sentences.flatMap(s => s.target_words).length;
+  return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0" class="grow"><span class="ko">${h(art.title_ko)}</span>　<span class="sub">${h(art.title_zh)}</span></h2></div>
+  <div class="rd ${rd.si != null ? 'has-card' : ''}">
+    <div class="rd-main">
+      <div class="card"><div class="row wrap"><span class="rd-lv">TOPIK ${art.level}</span><span class="sub small grow">${h(art.topic)}・已學單字佔 ${Math.round(listN / allN * 100)}%・+1 挑戰單字 ${art.challenge_vocab.length} 個</span>
+        <button class="btn sm" data-act="say" data-t="${h(art.sentences.map(s => s.ko).join(' '))}">🔊 全文</button>
+        <button class="btn sm ${rd.allZh ? 'alt' : ''}" data-act="rd-allzh">${rd.allZh ? '隱藏翻譯' : '顯示翻譯'}</button></div>
+        <div class="rd-text">${sents}</div></div>
+      <div class="card"><h3>🌱 +1 挑戰單字</h3><div class="sub small mb">比這篇高一級的生字，點了看解釋。</div>${plusList}</div>
+      <div class="card"><h3>📐 文法筆記</h3>${art.grammar_notes.map((g, i) => `<div class="rd-gn" id="g-${h(g.grammar_id)}"><div class="rd-gp"><span class="rd-gnum">${i + 1}</span>${h(g.pattern)}</div>
+        <div class="rd-gm">${h(g.meaning)}</div><div class="rd-ge">${h(g.explanation)}</div>${koLine(g.extra_example_ko, g.extra_example_zh)}</div>`).join('')}</div>
+    </div>
+    <aside class="rd-side" aria-live="polite">${rdCard(art)}</aside>
+  </div>`;
 }
 
 /* ================= 子音發音動畫（js/speech-art.js 的 SA） =================
@@ -755,10 +835,16 @@ function vReview() {
       <div class="btns"><button class="btn" data-act="rv-ans" data-ok="0">還不熟 🤔</button><button class="btn main" data-act="rv-ans" data-ok="1">記得 ✓</button></div>`
       : `<div class="sub mt">先想一想意思，再看答案</div><button class="btn main block mt" data-act="rv-show">看答案</button>`}</div>`;
 }
+function vReadWords() {
+  const ids = Object.keys(S.srs).filter(id => RWORD[id]);
+  if (!ids.length) return '';
+  const st = id => { const r = S.srs[id]; return r.m ? '<span class="small" style="color:var(--good);font-weight:700">已熟練</span>' : `<span class="small sub">Lv ${r.l}</span>`; };
+  return `<div class="card"><h3>📖 閱讀加入的單字</h3>${ids.map(id => koLine(RWORD[id].ko, RWORD[id].zh, st(id))).join('')}</div>`;
+}
 function vWords() {
   const st = id => { const r = S.srs[id]; return !r ? '' : r.m ? '<span class="small" style="color:var(--good);font-weight:700">已熟練</span>' : `<span class="small sub">Lv ${r.l}</span>`; };
   return `<div class="step-top"><button class="x" data-act="go" data-v="review" aria-label="返回">←</button><h2 style="margin:0">單字本</h2></div>
-  ${TOPICS.map(tp => `<div class="card"><h3>${tp.ic} ${h(tp.t)} ${S.done['t-' + tp.id] ? '' : '<span class="sub small">（還沒學）</span>'}</h3>
+  ${vReadWords()}${TOPICS.map(tp => `<div class="card"><h3>${tp.ic} ${h(tp.t)} ${S.done['t-' + tp.id] ? '' : '<span class="sub small">（還沒學）</span>'}</h3>
     ${WORDS.filter(w => w.tp === tp.id).map(w => koLine(w.ko, w.zh, st(w.id))).join('')}</div>`).join('')}`;
 }
 
@@ -826,8 +912,8 @@ function vSheet() {
 
 /* ================= 繪製 ================= */
 const VIEWS = { home: vHome, learn: vLearn, chart: vChart, builder: vBuilder, lesson: vLesson, done: vDone, games: vGames, game: vGame,
-  review: vReview, words: vWords, me: vMe, cmap: vCmap, vwmap: vVwmap };
-const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', vwmap: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
+  review: vReview, words: vWords, me: vMe, cmap: vCmap, vwmap: vVwmap, article: vArticle };
+const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', vwmap: 'learn', article: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
 const TABS = [['home', '🏠', '首頁'], ['learn', '📘', '學習'], ['games', '🎮', '遊戲'], ['review', '📇', '複習'], ['me', '🐯', '我的']];
 function applySkin() {
   document.body.dataset.skin = S.skin;
@@ -902,6 +988,23 @@ const ACT = {
       U.sp = { id: d.id, sc: best.sc, heard: best.heard, gain };
       save(); render();
     });
+  },
+  'rd-open': d => { U.rd = { id: d.id, si: null, wi: null, zh: {}, allZh: false }; go('article'); },
+  'rd-word': d => {
+    const si = Number(d.s), wi = Number(d.w); if (!U.rd || si < 0 || wi < 0) return;
+    U.rd.si = si; U.rd.wi = wi; render();
+    const art = READ_ARTICLES.find(a => a.article_id === U.rd.id), t = art.sentences[si].target_words[wi];
+    speak(rdInfo(art, t).v.word);
+  },
+  'rd-ex': () => { U.rd.ex = !U.rd.ex; render(); },
+  'rd-close': () => { U.rd.si = U.rd.wi = null; render(); },
+  'rd-zh': d => { U.rd.zh[d.s] = !U.rd.zh[d.s]; render(); },
+  'rd-allzh': () => { U.rd.allZh = !U.rd.allZh; U.rd.zh = {}; render(); },
+  'rd-gram': d => { const el = document.getElementById('g-' + d.g); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } },
+  'rd-add': d => {
+    if (!RWORD[d.k] || S.srs[d.k]) return;
+    S.srs[d.k] = { l: 0, d: dayNo(), m: 0 };   // 加入後今天就能複習
+    save(); toast('已加入複習清單，今天就能到「複習」練習'); render();
   },
   'sa-play': (d, el) => saPlay(el.closest('[data-sa-scope]'), d.j),
   'sa-slow': (d, el) => { U.saSlow = !U.saSlow; document.querySelectorAll('[data-act="sa-slow"]').forEach(b => b.classList.toggle('on', U.saSlow)); },

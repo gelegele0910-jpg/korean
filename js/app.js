@@ -31,7 +31,7 @@ const ALL_LETTERS = [...VOWELS, ...VOWELS2, ...CONSONANTS, ...DOUBLES];
 /* ================= 資料儲存 ================= */
 const KEY = 'hoya-korean-v1';
 function newProg() {
-  return { v: 1, created: Date.now(), updated: 0, coins: 0, earned: 0, done: {}, srs: {}, own: {}, best: {},
+  return { v: 1, vocabV: 2, created: Date.now(), updated: 0, coins: 0, earned: 0, done: {}, srs: {}, own: {}, best: {},
     wear: { bg: '', hat: '', face: '', neck: '', hand: '' }, skin: 'fresh',
     set: { rr: 'show', pron: true, rate: 0.9, voice: '', auto: true },
     log: {}, streak: { last: null, count: 0, best: 0 }, ms: {},
@@ -40,6 +40,12 @@ function newProg() {
 function migrate(o) {
   const n = newProg();
   if (!o || typeof o !== 'object' || Array.isArray(o)) return n;
+  if (o.vocabV !== 2 && o.srs && typeof o.srs === 'object' && !Array.isArray(o.srs)) {   // 2026-11 單字重新編號：把複習進度換到新 id
+    const old = o.srs, srs = {};
+    for (const k in old) { const nk = VOCAB_ID_MAP[k] || ARTICLE_ID_MAP[k] || k; if (!srs[nk]) srs[nk] = old[k]; }
+    o.srs = srs;
+  }
+  o.vocabV = 2;
   for (const k in n) {
     const want = n[k];
     if (o[k] === undefined || o[k] === null || typeof o[k] !== typeof want || Array.isArray(o[k]) !== Array.isArray(want)) o[k] = want;
@@ -63,7 +69,7 @@ function save() {
 }
 
 let S = load();
-const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, saSlow: false, saLbl: true, rd: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
+const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, saSlow: false, saLbl: true, rd: null, tp: null, tpx: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
 
 /* ================= 進度工具 ================= */
 function owned(id, s) { s = s || S; const it = SHOP.find(x => x.id === id); return !!it && (it.price === 0 || !!s.own[id]); }
@@ -310,9 +316,11 @@ function vLearn() {
     <button class="tile" data-act="go" data-v="cmap"><span class="ic">👄</span><b>子音發音地圖</b></button>
     <button class="tile" data-act="go" data-v="vwmap"><span class="ic">😮</span><b>母音發音地圖</b></button>
   </div>
-  <h3 class="mt">閱讀文章</h3>
-  ${READ_ARTICLES.map(a => `<button class="lesson" data-act="rd-open" data-id="${a.article_id}"><div class="ic">📖</div>
-    <div class="tx"><b><span class="ko">${h(a.title_ko)}</span>　${h(a.title_zh)}</b><span class="sub small">TOPIK ${a.level} 級・${h(a.topic)}・${a.sentences.length} 句・點單字看解釋</span></div></button>`).join('')}
+  <h3 class="mt">TOPIK 1 級主題單字與閱讀</h3><div class="sub small mb">每個主題約 34 個單字＋一篇 i+1 閱讀文章，陸續增加中。</div>
+  <div class="tp-grid">${TOPIK_TOPICS.filter(t => t.level === 1).map(t => { const ws = tpWords(t.no), art = tpArticle(t.no), inR = ws.filter(w => S.srs[w.id]).length;
+    return ws.length ? `<button class="tp-tile" data-act="tp-open" data-n="${t.no}"><span class="tp-no">${String(t.no).padStart(2, '0')}</span><b>${h(t.title)}</b>
+      <span class="sub small">${ws.length} 字${art ? '・📖 文章' : ''}${inR ? `・複習中 ${inR}` : ''}</span>${ws.length < 34 ? '<span class="tp-part">部分完成</span>' : ''}</button>`
+      : `<div class="tp-tile off"><span class="tp-no">${String(t.no).padStart(2, '0')}</span><b>${h(t.title)}</b><span class="sub small">準備中</span></div>`; }).join('')}</div>
   ${secs.map(sec => `<h3 class="mt">${h(sec)}</h3>` + LESSONS.filter(L => L.sec === sec).map(L => `
     <button class="lesson" data-act="lesson" data-id="${L.id}"><div class="ic">${h(L.ic)}</div>
       <div class="tx"><b>${h(L.t)}</b><span class="sub small">${h(L.sub)}</span></div>${S.done[L.id] ? '<span class="ok">✓</span>' : ''}</button>`).join('')).join('')}`;
@@ -447,6 +455,28 @@ function cmpHtml(s) {
   return `<div class="cmp"><span class="lbl">比較聽聽看：</span>${ko.map(o => `<button class="btn sm" data-act="say" data-t="${h(o)}">🔊 ${h(o)}</button>`).join('')}</div>`;
 }
 
+/* ================= TOPIK 主題：單字列表＋文章 ================= */
+const tpRange = no => { const a = 1001 + (no - 1) * 34; return [a, a + 33]; };
+const tpWords = no => { const [a, b] = tpRange(no); return READ_VOCAB.filter(v => { const n = Number(v.id.slice(2)); return v.level === 1 && n >= a && n <= b; }); };
+const tpArticle = no => READ_ARTICLES.find(a => a.article_id === 'art_1' + String(no).padStart(2, '0'));
+function vTopic() {
+  const t = TOPIK_TOPICS.find(x => x.no === U.tp); if (!t) return vLearn();
+  const ws = tpWords(t.no), art = tpArticle(t.no), notIn = ws.filter(w => !S.srs[w.id]).length;
+  return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0" class="grow">${String(t.no).padStart(2, '0')}. ${h(t.title)}</h2></div>
+  <div class="sub mb">TOPIK ${t.level} 級・${h(t.desc)}</div>
+  ${art ? `<button class="lesson" data-act="rd-open" data-id="${art.article_id}"><div class="ic">📖</div><div class="tx"><b><span class="ko">${h(art.title_ko)}</span>　${h(art.title_zh)}</b>
+    <span class="sub small">閱讀文章・${art.sentences.length} 句・點單字看解釋、+1 挑戰單字 ${art.challenge_vocab.length} 個</span></div><span class="ok">▶</span></button>` : ''}
+  <div class="card"><div class="row wrap"><h3 class="grow" style="margin:0">單字 ${ws.length} 個</h3>
+    <button class="btn sm ${notIn ? 'main' : ''}" data-act="tp-addall" ${notIn ? '' : 'disabled'}>${notIn ? `＋ 全部加入複習（${notIn}）` : '✓ 全部已在複習'}</button></div>
+    <div class="sub small" style="margin:4px 0 6px">點單字看例句；加入後今天就能到「複習」練習。</div>
+    ${ws.map(v => { const inS = !!S.srs[v.id], open = U.tpx === v.id;
+      return `<div class="tp-w ${open ? 'open' : ''}"><div class="tp-row">${sayBtn(v.word, 'sm')}
+        <button class="tp-main" data-act="tp-ex" data-id="${v.id}" aria-expanded="${open}"><b class="ko">${h(v.word)}</b><span class="tp-pos">${h(v.pos)}</span>${v.hanja ? `<span class="tp-hj">${h(v.hanja)}</span>` : ''}
+          <span class="tp-m">${h(v.meaning_zh)}</span></button>
+        <button class="tp-add ${inS ? 'on' : ''}" data-act="tp-add" data-id="${v.id}" ${inS ? 'disabled' : ''} aria-label="${inS ? '已在複習' : '加入複習'}">${inS ? '✓' : '＋'}</button></div>
+        ${open ? `<div class="tp-ex">${rrHtml(v.word)} ${pronHtml(v.word)}${rdEx(v.example_ko, v.example_zh)}</div>` : ''}</div>`; }).join('')}</div>`;
+}
+
 /* ================= 閱讀文章：點單字看解釋、加入複習 ================= */
 /** 把句子切成一般文字與可以點的單字（照 target_words 的順序往後找） */
 function rdSegs(s) {
@@ -503,7 +533,8 @@ function vArticle() {
     return `<button class="rw plus big" data-act="rd-word" data-s="${si}" data-w="${wi}">${h(c.word)}</button><span class="sub small">${h(c.meaning_zh)}</span>`; }).join('<br>');
   const listN = art.sentences.flatMap(s => s.target_words).filter(t => !t.vocab_id.startsWith('new_')).length;
   const allN = art.sentences.flatMap(s => s.target_words).length;
-  return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0" class="grow"><span class="ko">${h(art.title_ko)}</span>　<span class="sub">${h(art.title_zh)}</span></h2></div>
+  const tpNo = Number(art.article_id.slice(5));
+  return `<div class="step-top"><button class="x" data-act="tp-open" data-n="${tpNo}" aria-label="返回">←</button><h2 style="margin:0" class="grow"><span class="ko">${h(art.title_ko)}</span>　<span class="sub">${h(art.title_zh)}</span></h2></div>
   <div class="rd ${rd.si != null ? 'has-card' : ''}">
     <div class="rd-main">
       <div class="card"><div class="row wrap"><span class="rd-lv">TOPIK ${art.level}</span><span class="sub small grow">${h(art.topic)}・已學單字佔 ${Math.round(listN / allN * 100)}%・+1 挑戰單字 ${art.challenge_vocab.length} 個</span>
@@ -912,8 +943,8 @@ function vSheet() {
 
 /* ================= 繪製 ================= */
 const VIEWS = { home: vHome, learn: vLearn, chart: vChart, builder: vBuilder, lesson: vLesson, done: vDone, games: vGames, game: vGame,
-  review: vReview, words: vWords, me: vMe, cmap: vCmap, vwmap: vVwmap, article: vArticle };
-const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', vwmap: 'learn', article: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
+  review: vReview, words: vWords, me: vMe, cmap: vCmap, vwmap: vVwmap, article: vArticle, topic: vTopic };
+const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', vwmap: 'learn', article: 'learn', topic: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
 const TABS = [['home', '🏠', '首頁'], ['learn', '📘', '學習'], ['games', '🎮', '遊戲'], ['review', '📇', '複習'], ['me', '🐯', '我的']];
 function applySkin() {
   document.body.dataset.skin = S.skin;
@@ -988,6 +1019,13 @@ const ACT = {
       U.sp = { id: d.id, sc: best.sc, heard: best.heard, gain };
       save(); render();
     });
+  },
+  'tp-open': d => { U.tp = Number(d.n); U.tpx = null; go('topic'); },
+  'tp-ex': d => { U.tpx = U.tpx === d.id ? null : d.id; render(); if (U.tpx) speak(RWORD[d.id].ko); },
+  'tp-add': d => { if (!RWORD[d.id] || S.srs[d.id]) return; S.srs[d.id] = { l: 0, d: dayNo(), m: 0 }; save(); toast('已加入複習清單'); render(); },
+  'tp-addall': () => {
+    let n = 0; tpWords(U.tp).forEach(w => { if (!S.srs[w.id]) { S.srs[w.id] = { l: 0, d: dayNo(), m: 0 }; n++; } });
+    if (n) { save(); toast(`已加入 ${n} 個單字，今天就能到「複習」練習`); render(); }
   },
   'rd-open': d => { U.rd = { id: d.id, si: null, wi: null, zh: {}, allZh: false }; go('article'); },
   'rd-word': d => {

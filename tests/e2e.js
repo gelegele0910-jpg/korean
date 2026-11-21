@@ -362,8 +362,9 @@ const INIT = () => {
   await p.click('[data-act=go][data-v=home]');
   ok(await ev(() => !SA.isPlaying()), 'E16 離開停止');
   // E17 閱讀文章：點單字看解釋卡、+1 挑戰單字、加入複習（今天就到期）、翻譯、文法、重新整理保留
-  await ev(() => go('learn')); await p.click('[data-act=rd-open]');
-  ok(await ev(() => U.view === 'article') && (await p.$$('.rd-text .rw')).length === 21, 'E17 文章 21 個可以點的單字');
+  await ev(() => go('learn')); await p.click('[data-act=tp-open][data-n="12"]'); await p.click('[data-act=rd-open][data-id=art_112]');
+  const nTW = await ev(() => READ_ARTICLES.find(a => a.article_id === 'art_112').sentences.reduce((n, s) => n + s.target_words.length, 0));
+  ok(await ev(() => U.view === 'article') && (await p.$$('.rd-text .rw')).length === nTW, 'E17 文章可以點的單字 ' + nTW);
   ok(!(await p.$('.rd-card')), 'E17 一開始沒有解釋卡');
   const tapW = async sel => { await p.$eval(sel, e => e.scrollIntoView({ block: 'start' })); await p.click(sel); };
   await ev(() => { window.__spoken = []; });
@@ -374,11 +375,11 @@ const INIT = () => {
   ok(/挑戰/.test(await p.textContent('.rd-badges')) && /시키다/.test(await p.textContent('.rd-word')), 'E17 +1 挑戰單字');
   const dN = await ev(() => due().length);
   await p.click('[data-act=rd-add]');
-  ok(await ev(() => S.srs['art_101:new_01'] && S.srs['art_101:new_01'].d === dayNo()), 'E17 加入複習、今天到期');
+  ok(await ev(() => S.srs['art_112:new_01'] && S.srs['art_112:new_01'].d === dayNo()), 'E17 加入複習、今天到期');
   ok(await ev(() => due().length) === dN + 1 && await p.$('[data-act=rd-add][disabled]'), 'E17 複習數 +1、按鈕變已加入');
   await tapW('.rd-text .rw >> text=불고기를');
   await p.click('[data-act=rd-add]');
-  ok(await ev(() => !!S.srs['v_1016']), 'E17 清單單字加入複習');
+  ok(await ev(() => !!S.srs['v_1346']), 'E17 清單單字加入複習');
   await tapW('.rd-text .rw >> text=불고기는');
   ok(await p.$('[data-act=rd-add][disabled]'), 'E17 同一個單字的其他變化形也顯示已加入');
   await p.click('[data-act=rd-allzh]'); ok((await p.$$('.rd-zh')).length === 6, 'E17 顯示全部翻譯');
@@ -388,12 +389,32 @@ const INIT = () => {
   ok(/물 한 잔 주세요/.test(await p.textContent('.rd-ex.open')), 'E17 手機上點開例句');
   ok((await p.$$('.rd-gn')).length === 2, 'E17 文法筆記');
   await p.reload(); await p.waitForSelector('#tabs button');
-  ok(await ev(() => !!S.srs['art_101:new_01'] && WORD['art_101:new_01'].ko === '시키다'), 'E17 重新整理後還在複習清單');
-  ok(await ev(() => due().includes('art_101:new_01') && due().includes('v_1016')), 'E17 複習清單裡有閱讀加入的單字');
-  await ev(() => { U.rv = { ids: ['art_101:new_01'], i: 0, show: false, ok: 0, free: false, gain: 0 }; go('review'); });
+  ok(await ev(() => !!S.srs['art_112:new_01'] && WORD['art_112:new_01'].ko === '시키다'), 'E17 重新整理後還在複習清單');
+  ok(await ev(() => due().includes('art_112:new_01') && due().includes('v_1346')), 'E17 複習清單裡有閱讀加入的單字');
+  await ev(() => { U.rv = { ids: ['art_112:new_01'], i: 0, show: false, ok: 0, free: false, gain: 0 }; go('review'); });
   ok(/시키다/.test(await p.textContent('#main')), 'E17 複習卡顯示閱讀單字');
   await p.click('[data-act=rv-show]'); await p.click('[data-act=rv-ans][data-ok="1"]');
-  ok(await ev(() => S.srs['art_101:new_01'].l === 1), 'E17 閱讀單字照間隔複習');
+  ok(await ev(() => S.srs['art_112:new_01'].l === 1), 'E17 閱讀單字照間隔複習');
+  // E18 TOPIK 主題頁：34 個字、看例句、單一加入、全部加入、文章入口與返回
+  await ev(() => go('learn'));
+  ok((await p.$$('.tp-tile[data-act=tp-open]')).length >= 5 && (await p.$$('.tp-tile.off')).length > 0, 'E18 主題列表（完成的可以點、其他準備中）');
+  await p.click('[data-act=tp-open][data-n="1"]');
+  ok((await p.$$('.tp-w')).length === 34, 'E18 主題 1 有 34 個字');
+  await ev(() => { window.__spoken = []; }); await p.click('[data-act=tp-ex][data-id=v_1009]');
+  ok(/이름이 뭐예요/.test(await p.textContent('.tp-ex')) && await ev(() => window.__spoken.includes('이름')), 'E18 點單字看例句並念出');
+  await p.click('[data-act=tp-add][data-id=v_1009]');
+  ok(await ev(() => S.srs['v_1009'] && S.srs['v_1009'].d === dayNo()) && await p.$('[data-act=tp-add][data-id=v_1009][disabled]'), 'E18 單一加入複習');
+  await p.click('[data-act=tp-addall]');
+  ok(await ev(() => tpWords(1).every(w => S.srs[w.id])) && await p.$('[data-act=tp-addall][disabled]'), 'E18 全部加入複習');
+  await p.click('[data-act=rd-open][data-id=art_101]'); ok(await ev(() => U.view === 'article'), 'E18 進入主題文章');
+  await p.click('.step-top [data-act=tp-open]'); ok(await ev(() => U.view === 'topic' && U.tp === 1), 'E18 文章返回主題頁');
+  // E19 舊編號的複習進度會換到新編號（只換一次）
+  await ev(() => { const o = JSON.parse(localStorage.getItem('hoya-korean-v1')); o.srs = { v_1029: { l: 3, d: 5, m: 0 }, v_1016: { l: 2, d: 6, m: 0 }, 'art_101:new_01': { l: 1, d: 7, m: 0 }, 'me-w0': { l: 1, d: 8, m: 0 } }; delete o.vocabV; localStorage.setItem('hoya-korean-v1', JSON.stringify(o)); });
+  await p.reload(); await p.waitForSelector('#tabs button');
+  const mig = await ev(() => S.srs);
+  ok(mig.v_1118 && mig.v_1118.l === 3 && mig.v_1346 && mig.v_1346.l === 2 && mig['art_112:new_01'] && mig['art_112:new_01'].l === 1 && mig['me-w0'] && !mig.v_1029 && !mig.v_1016 && !mig['art_101:new_01'], 'E19 舊編號轉到新編號');
+  await p.reload(); await p.waitForSelector('#tabs button');
+  ok(await ev(() => S.vocabV === 2 && !!S.srs.v_1118 && !S.srs.v_1149), 'E19 只轉換一次'); 
   await ev(() => go('words')); ok(/閱讀加入的單字/.test(await p.textContent('#main')), 'E17 單字本有閱讀單字');
   await ev(() => go('home'));
   // 子音字母卡：自動播放＝播動畫並念出

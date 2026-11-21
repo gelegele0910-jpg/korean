@@ -118,7 +118,7 @@ ok(SA.MANNERS.map(m => m.js).join('').split('').sort().join('') === 'ㄱㄲㄷ�
 
 // R1～R4 閱讀文章：surface 照順序出現在句子裡、vocab_id 對得上、清單單字比例 85～90% 以上、文法編號存在、拼音正常
 const rctx = { KH }; vm.createContext(rctx);
-vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/reading.js'), 'utf8') + ';this.RV=READ_VOCAB;this.RA=READ_ARTICLES;', rctx);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/reading.js'), 'utf8') + ';this.RV=READ_VOCAB;this.RA=READ_ARTICLES;this.RT=TOPIK_TOPICS;this.RM=VOCAB_ID_MAP;this.RAM=ARTICLE_ID_MAP;', rctx);
 const RV = Object.fromEntries(rctx.RV.map(v => [v.id, v]));
 ok(rctx.RV.length === Object.keys(RV).length, 'R1 單字 id 不重複');
 for (const v of rctx.RV) {
@@ -126,6 +126,20 @@ for (const v of rctx.RV) {
   ok(!['動詞', '形容詞'].includes(v.pos) || v.word.endsWith('다'), 'R1 動詞形容詞以 -다 結尾 ' + v.word);
   ok(/^[a-z0-9 .,!?']+$/.test(KH.romanize(v.example_ko)), 'R1 例句拼音 ' + v.example_ko);
 }
+// R5 TOPIK 主題：每個字的編號落在所屬主題的區段、完成的主題剛好 34 個字、同一個字不重複出現、舊編號對照都指得到
+const seenWM = new Set();
+for (const v of rctx.RV) {
+  const n = Number(v.id.slice(2)), t = rctx.RT.find(x => x.level === v.level && n >= Number(x.ids[0].slice(2)) && n <= Number(x.ids[1].slice(2)));
+  ok(t && t.title === v.topic, `R5 ${v.id} ${v.word} 的主題要是區段的主題（${t && t.title}／${v.topic}）`);
+  const k = v.word + '|' + v.meaning_zh; ok(!seenWM.has(k), 'R5 單字重複 ' + k); seenWM.add(k);
+}
+for (const t of rctx.RT.filter(t => t.ready)) {
+  const ws = rctx.RV.filter(v => { const n = Number(v.id.slice(2)); return n >= Number(t.ids[0].slice(2)) && n <= Number(t.ids[1].slice(2)); });
+  ok(ws.length === 34, `R5 主題 ${t.no} 要有 34 個字（現在 ${ws.length}）`);
+  ok(rctx.RA.some(a => a.article_id === 'art_1' + String(t.no).padStart(2, '0')), `R5 主題 ${t.no} 要有文章`);
+}
+for (const [o, nw] of Object.entries(rctx.RM)) ok(RV[nw], `R5 舊編號 ${o} 對到 ${nw}`);
+for (const [o, nw] of Object.entries(rctx.RAM)) { const [a, c] = nw.split(':'); ok(rctx.RA.some(x => x.article_id === a && x.challenge_vocab.some(y => y.id === c)), 'R5 舊文章單字 ' + o); }
 const aIds = new Set();
 for (const a of rctx.RA) {
   ok(!aIds.has(a.article_id), 'R2 文章 id 不重複 ' + a.article_id); aIds.add(a.article_id);

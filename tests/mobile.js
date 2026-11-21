@@ -13,6 +13,7 @@ const SCENES = {
   rule: lessonAt('r1', 'rule'), cplace: lessonAt('cs', 'cplace'), cair: lessonAt('cs', 'cair'), ctrio: lessonAt('cs', 'ctrio'),
   ctrioRes: lessonAt('cs', 'ctrio') + " U.ck={key:'ct-ㄷㅌㄸ', si:1, wi:2, r:{kind:'rival', heard:'턱', rival:['턱','下巴'], hint:'不要吐氣，喉嚨繃緊、短短的。'}}; render();",
   ctrioOk: lessonAt('cs', 'ctrio') + " U.ck={key:'ct-ㄷㅌㄸ', si:0, wi:0, r:{kind:'ok', heard:'달'}, gain:10}; render();",
+  topic: "U.tp = 3; U.tpx = 'v_1098'; go('topic')",
   article: "U.rd = { id: 'art_101', si: null, wi: null, zh: {}, allZh: true }; go('article')",
   articleCard: "U.rd = { id: 'art_101', si: 3, wi: 1, zh: { 0: true }, allZh: false }; go('article')",
   cmap: "go('cmap')", vwmap: "go('vwmap')", vwmapPlay: "go('vwmap'); saPlay(document.querySelector('[data-sa-scope]'), 'ㅘ');", cmapPlay: "go('cmap'); setTimeout(() => saPlay(document.querySelector('[data-sa-scope]'), 'ㅌ'), 0);",

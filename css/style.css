@@ -372,3 +372,22 @@ select { font:inherit; padding:8px; border-radius:10px; border:1.5px solid var(-
   .rd-acts { margin-top:4px; }
   .rd-exbtn { margin-top:2px; }
 }
+
+/* TOPIK 主題 */
+.tp-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:8px; }
+.tp-tile { position:relative; background:var(--card); border:0; border-radius:var(--r); box-shadow:var(--shadow); padding:10px 12px; text-align:left; display:flex; flex-direction:column; gap:2px; cursor:pointer; min-width:0; color:var(--ink); }
+.tp-tile b { font-size:.92rem; line-height:1.35; }
+.tp-tile.off { opacity:.5; cursor:default; box-shadow:none; background:var(--chip); }
+.tp-no { font-weight:900; color:var(--accent); font-size:.8rem; }
+.tp-part { position:absolute; top:8px; right:8px; font-size:.68rem; font-weight:800; background:var(--soft); color:var(--accent); border-radius:999px; padding:1px 6px; }
+.tp-w { border-bottom:1px solid var(--line); }
+.tp-w:last-child { border-bottom:0; }
+.tp-row { display:flex; align-items:center; gap:8px; padding:8px 0; }
+.tp-main { flex:1; min-width:0; background:none; border:0; text-align:left; color:var(--ink); cursor:pointer; padding:0; display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; font:inherit; }
+.tp-main b { font-size:1.2rem; }
+.tp-pos { font-size:.72rem; font-weight:700; background:var(--chip); border-radius:999px; padding:0 7px; }
+.tp-hj { font-size:.8rem; color:var(--sub); }
+.tp-m { flex-basis:100%; font-size:.9rem; color:var(--sub); }
+.tp-add { width:40px; height:40px; flex:0 0 40px; border-radius:50%; border:1.5px solid var(--accent); background:var(--card); color:var(--accent); font-size:1.2rem; font-weight:800; cursor:pointer; }
+.tp-add.on { border-color:var(--good); color:var(--good); background:var(--good-bg); }
+.tp-ex { background:var(--chip); border-radius:12px; padding:8px 12px; margin:0 0 10px; }

@@ -407,6 +407,10 @@ select { font:inherit; padding:8px; border-radius:10px; border:1.5px solid var(-
 .tp-add.on { border-color:var(--good); color:var(--good); background:var(--good-bg); }
 .tp-ex { background:var(--chip); border-radius:12px; padding:8px 12px; margin:0 0 10px; }
 
-/* 小老虎換裝：分層插畫疊在一起（img/wear），沒有背景時用風格的圓形底色 */
-.mascot { position:relative; display:inline-block; flex:none; border-radius:50%; overflow:hidden; background:var(--mascot-bg); vertical-align:middle; }
+/* 小老虎換裝：對齊好的圖層疊在一起（img/wear），沒有背景時用風格的圓形底色；邊框時整隻縮小放在框裡 */
+.mascot { position:relative; display:inline-block; flex:none; vertical-align:middle; }
+.mascot .mi { position:absolute; inset:0; border-radius:50%; overflow:hidden; background:var(--mascot-bg); }
+.mascot.framed .mi { inset:17%; }
+.mascot.zoom-face .mi img { transform:scale(2); transform-origin:50% 46%; }
+.mascot.zoom-head .mi img { transform:scale(1.3); transform-origin:50% 16%; }
 .mascot img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }

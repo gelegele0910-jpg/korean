@@ -1,27 +1,26 @@
 /* ================= 吉祥物小老虎 호야 與商店獎品 =================
- * 換裝用使用者提供、可公開的分層插畫 img/wear/*.webp（同一個 512 座標系統，縮成 320）。
- * mascot(wear, size) 回傳疊好的圖片，wear = {bg, outfit, neck, face, hat, hand, fx}。
- * 疊圖順序：背景 → 本體 → 衣服 → 脖子 → 眼鏡 → 頭上 → 手上 → 特效。 */
+ * 小老虎與配件是使用者提供、可公開的插畫。tools/wear/build.py 把每一件預先對好位置，
+ * 輸出成同樣大小（400×400）的透明圖層 img/wear/<欄位>-<代號>.webp，表情是 img/wear/tiger-<表情>.webp。
+ * mascot(wear, size, mood) 只要把圖層疊起來，順序見 WEAR_ORDER；邊框（frame）把整隻縮小放在框裡。 */
 
-// 各欄位代號 → 圖檔（img/wear/檔名.webp）。代號是存檔裡 S.wear 的值，不要改。
-const WEAR_IMG = {
-  bg:     { beach:'background_beach', sakura:'background_cherry', palace:'background_palace', river:'background_night', autumn:'background_autumn', snow:'background_snow', cafe:'background_cafe' },
-  outfit: { hanbok:'outfit_hanbok', hoodie:'outfit_hoodie', uniform:'outfit_uniform', coat:'outfit_coat', cape:'outfit_cape' },
-  neck:   { bow:'neck_bow', scarf:'neck_scarf', check:'neck_check', medal:'neck_medal' },
-  face:   { round:'glasses_round', sun:'glasses_sun', heart:'glasses_heart', star:'glasses_star' },
-  hat:    { beret:'hat_beret', ribbon:'hat_bow', bunny:'hat_bunny', chef:'hat_chef', gat:'hat_gat', crown:'hat_crown', beanie:'hat_beanie', cap:'hat_cap', wizard:'hat_wizard' },
-  hand:   { coffee:'prop_coffee', mic:'prop_mic', flag:'prop_flag', book:'prop_book', camera:'prop_camera', icecream:'prop_icecream' },
-  fx:     { hearts:'effect_hearts', stars:'effect_stars' },
-};
-const WEAR_ORDER = ['outfit', 'neck', 'face', 'hat', 'hand', 'fx'];
+// 9 種表情（tools/wear/expr.js 畫的）；mood 是程式裡用的心情名稱
+const EXPRS = ['happy', 'laugh', 'smile', 'surprise', 'love', 'cry', 'wink', 'sleepy', 'shy'];
+const MOOD = { normal: 'happy', happy: 'laugh', think: 'surprise' };
+// 疊圖順序：背景 → 身後的特效（彩虹）→ 小老虎 → 服裝 → 頸部 → 臉部貼紙 → 眼鏡 → 髮飾 → 帽子 → 手上 → 特效
+const WEAR_ORDER = ['outfit', 'neck', 'stk', 'face', 'hair', 'hat', 'hand'];
+const FX_BACK = ['rainbow'];
 
-function mascot(wear, size) {
+/** cls：額外的 class（商店預覽用 zoom-face、zoom-head 放大局部） */
+function mascot(wear, size, mood, cls) {
   wear = wear || {}; size = size || 120;
+  const ok = c => wear[c] && SHOP.some(it => it.cat === c && !it.off && itemKey(it) === wear[c]);
   const img = f => `<img src="img/wear/${f}.webp" alt="" draggable="false">`;
-  const bg = WEAR_IMG.bg[wear.bg];
-  return `<span class="mascot ${bg ? 'has-bg' : ''}" role="img" aria-label="小老虎호야" style="width:${size}px;height:${size}px">`
-    + (bg ? img(bg) : '') + img('tiger_base')
-    + WEAR_ORDER.map(c => WEAR_IMG[c][wear[c]] ? img(WEAR_IMG[c][wear[c]]) : '').join('') + '</span>';
+  const e = EXPRS.includes(mood) ? mood : MOOD[mood] || 'happy';
+  const fxBack = ok('fx') && FX_BACK.includes(wear.fx), fxFront = ok('fx') && !fxBack;
+  const inner = (ok('bg') ? img('bg-' + wear.bg) : '') + (fxBack ? img('fx-' + wear.fx) : '') + img('tiger-' + e)
+    + WEAR_ORDER.map(c => ok(c) ? img(c + '-' + wear[c]) : '').join('') + (fxFront ? img('fx-' + wear.fx) : '');
+  return `<span class="mascot ${ok('frame') ? 'framed' : ''} ${cls || ''}" role="img" aria-label="小老虎호야" style="width:${size}px;height:${size}px">`
+    + `<span class="mi">${inner}</span>${ok('frame') ? img('frame-' + wear.frame) : ''}</span>`;
 }
 
 /* 網站圖示用的平面小老虎（tools/make-icons.js 產生 icon.svg、PNG 圖示；App 畫面不用） */
@@ -43,8 +42,9 @@ function mascotSvg(size) {
   <path d="M93 111 h14 q-7 9 -14 0z" fill="${C.stripe}"/><path d="M90 124 Q100 138 110 124 Z" fill="#7A2E3A"/></svg>`;
 }
 
-/* 商店：cat 分類（＝S.wear 的欄位）、price 價格（₩）。0 元＝一開始就有。id 是存檔 key，不要改。
- * 換成插畫時：neck:hanbok 改放「衣服」欄位（id 不變）；off＝已下架（沒有插畫），買過的人 migrate() 會退還點數。 */
+/* 商店：cat 分類（＝S.wear 的欄位）、price 價格（₩）。0 元＝一開始就有。id 是存檔 key，不要改、不要刪。
+ * 欄位用 cat、代號用 itemKey(it)，不要用 id 的前綴判斷欄位（例如 hat:ribbon 在髮飾、neck:hanbok 在服裝）。
+ * off＝目前沒有插畫而下架，買過的人 migrate() 退還點數（S.rf 記錄，只退一次）。 */
 const SHOP = [
   { id:'skin:fresh',    cat:'skin', nm:'清新',     price:0 },
   { id:'skin:night',    cat:'skin', nm:'夜間',     price:0, dark:true },
@@ -53,49 +53,96 @@ const SHOP = [
   { id:'skin:notebook', cat:'skin', nm:'筆記本',   price:1500 },
   { id:'skin:neon',     cat:'skin', nm:'首爾夜景', price:2500, dark:true },
   { id:'hat:beret',  cat:'hat',  nm:'貝雷帽',   price:800 },
-  { id:'hat:ribbon', cat:'hat',  nm:'蝴蝶結',   price:600 },
-  { id:'hat:bunny',  cat:'hat',  nm:'兔耳髮箍', price:1000 },
+  { id:'hat:ribbon', cat:'hair', nm:'蝴蝶結',   price:600 },
+  { id:'hat:bunny',  cat:'hair', nm:'兔耳髮箍', price:1000 },
   { id:'hat:chef',   cat:'hat',  nm:'廚師帽',   price:1200 },
   { id:'hat:gat',    cat:'hat',  nm:'韓式笠帽（갓）', price:2000 },
-  { id:'hat:crown',  cat:'hat',  nm:'王冠',     price:3000 },
+  { id:'hat:crown',  cat:'hat',  nm:'王冠',     price:3000, off:true },
   { id:'face:round', cat:'face', nm:'圓框眼鏡', price:600 },
   { id:'face:sun',   cat:'face', nm:'墨鏡',     price:900 },
   { id:'face:heart', cat:'face', nm:'愛心眼鏡', price:500 },
   { id:'neck:bow',    cat:'neck', nm:'領結',     price:500 },
   { id:'neck:scarf',  cat:'neck', nm:'圍巾',     price:700 },
-  { id:'neck:hanbok', cat:'outfit', nm:'韓服',   price:2500 },
-  { id:'hand:coffee', cat:'hand', nm:'冰美式',   price:600 },
-  { id:'hand:kimbap', cat:'hand', nm:'海苔飯捲', price:700, off:true },
+  { id:'neck:hanbok', cat:'outfit', nm:'粉紅韓服', price:2500 },
+  { id:'hand:coffee', cat:'hand', nm:'珍珠奶茶', price:600 },
+  { id:'hand:kimbap', cat:'hand', nm:'海苔飯捲', price:700 },
   { id:'hand:mic',    cat:'hand', nm:'麥克風',   price:1000 },
   { id:'hand:flag',   cat:'hand', nm:'太極旗',   price:1000 },
-  { id:'hand:stick',  cat:'hand', nm:'應援棒',   price:1500, off:true },
-  { id:'bg:tower',  cat:'bg', nm:'南山塔',   price:1200, off:true },
+  { id:'hand:stick',  cat:'hand', nm:'應援棒',   price:1500 },
+  { id:'bg:tower',  cat:'bg', nm:'南山塔',   price:1200 },
   { id:'bg:beach',  cat:'bg', nm:'釜山海邊', price:1200 },
   { id:'bg:sakura', cat:'bg', nm:'櫻花季',   price:1200 },
   { id:'bg:palace', cat:'bg', nm:'景福宮',   price:1800 },
   { id:'bg:river',  cat:'bg', nm:'漢江夜景', price:2000 },
-  // 2026-11 插畫換裝新增
   { id:'hat:beanie',     cat:'hat',    nm:'毛線帽',   price:700 },
   { id:'hat:cap',        cat:'hat',    nm:'棒球帽',   price:800 },
   { id:'hat:wizard',     cat:'hat',    nm:'魔法帽',   price:1800 },
   { id:'face:star',      cat:'face',   nm:'星星眼鏡', price:800 },
-  { id:'neck:check',     cat:'neck',   nm:'格紋領巾', price:700 },
-  { id:'neck:medal',     cat:'neck',   nm:'金牌',     price:1500 },
+  { id:'neck:check',     cat:'neck',   nm:'格紋圍巾', price:700 },
+  { id:'neck:medal',     cat:'neck',   nm:'金牌',     price:1500, off:true },
   { id:'outfit:hoodie',  cat:'outfit', nm:'連帽衣',   price:1500 },
-  { id:'outfit:uniform', cat:'outfit', nm:'制服外套', price:1800 },
-  { id:'outfit:coat',    cat:'outfit', nm:'大衣',     price:1800 },
-  { id:'outfit:cape',    cat:'outfit', nm:'魔法斗篷', price:2200 },
+  { id:'outfit:uniform', cat:'outfit', nm:'背心制服', price:1800 },
+  { id:'outfit:coat',    cat:'outfit', nm:'白色大衣', price:1800 },
+  { id:'outfit:cape',    cat:'outfit', nm:'魔法斗篷', price:2200, off:true },
   { id:'hand:book',      cat:'hand',   nm:'韓文書',   price:600 },
   { id:'hand:icecream',  cat:'hand',   nm:'冰淇淋',   price:700 },
   { id:'hand:camera',    cat:'hand',   nm:'相機',     price:1200 },
-  { id:'bg:cafe',   cat:'bg', nm:'咖啡廳',   price:1000 },
-  { id:'bg:autumn', cat:'bg', nm:'秋天楓葉', price:1200 },
+  { id:'bg:cafe',   cat:'bg', nm:'咖啡廳',   price:1000, off:true },
+  { id:'bg:autumn', cat:'bg', nm:'楓葉季',   price:1200 },
   { id:'bg:snow',   cat:'bg', nm:'雪景',     price:1200 },
   { id:'fx:hearts', cat:'fx', nm:'愛心飄飄', price:1500 },
   { id:'fx:stars',  cat:'fx', nm:'閃亮星星', price:1500 },
+  // 2026-11 第二套插畫（使用者的配件總覽圖）新增
+  { id:'hat:bucket',    cat:'hat', nm:'漁夫帽',   price:900 },
+  { id:'hat:straw',     cat:'hat', nm:'草帽',     price:1000 },
+  { id:'hat:detective', cat:'hat', nm:'偵探帽',   price:1500 },
+  { id:'hat:aviator',   cat:'hat', nm:'飛行帽',   price:2000 },
+  { id:'hat:sailor',    cat:'hat', nm:'水手帽',   price:1200 },
+  { id:'hat:santa',     cat:'hat', nm:'聖誕帽',   price:1500 },
+  { id:'hair:dotbow',   cat:'hair', nm:'點點蝴蝶結', price:700 },
+  { id:'hair:cat',      cat:'hair', nm:'貓耳髮箍', price:1000 },
+  { id:'hair:antler',   cat:'hair', nm:'鹿角',     price:1200 },
+  { id:'hair:flowers',  cat:'hair', nm:'花圈',     price:1500 },
+  { id:'hair:laurel',   cat:'hair', nm:'月桂葉',   price:1200 },
+  { id:'hair:halo',     cat:'hair', nm:'天使光環', price:2000 },
+  { id:'hair:sprout',   cat:'hair', nm:'小芽芽',   price:800 },
+  { id:'hair:bear',     cat:'hair', nm:'熊耳髮箍', price:1000 },
+  { id:'hair:hibiscus', cat:'hair', nm:'扶桑花',   price:800 },
+  { id:'hair:sakura',   cat:'hair', nm:'櫻花髮夾', price:800 },
+  { id:'face:swirl',    cat:'face', nm:'漩渦眼鏡', price:900 },
+  { id:'face:pixel',    cat:'face', nm:'像素墨鏡', price:1500 },
+  { id:'face:blue',     cat:'face', nm:'藍框眼鏡', price:700 },
+  { id:'stk:blush',     cat:'stk', nm:'害羞線',   price:400 },
+  { id:'stk:hearts',    cat:'stk', nm:'愛心腮紅', price:500 },
+  { id:'stk:stars',     cat:'stk', nm:'星星腮紅', price:500 },
+  { id:'stk:whisker',   cat:'stk', nm:'鬍鬚',     price:400 },
+  { id:'stk:paw',       cat:'stk', nm:'肉球貼紙', price:500 },
+  { id:'stk:bandage',   cat:'stk', nm:'OK 繃',    price:400 },
+  { id:'stk:flag',      cat:'stk', nm:'國旗貼紙', price:600 },
+  { id:'stk:sparkle',   cat:'stk', nm:'閃亮亮',   price:600 },
+  { id:'neck:bell',     cat:'neck', nm:'鈴鐺項圈', price:900 },
+  { id:'neck:bandana',  cat:'neck', nm:'三角領巾', price:700 },
+  { id:'neck:badge',    cat:'neck', nm:'識別證',   price:800 },
+  { id:'neck:phones',   cat:'neck', nm:'耳機',     price:1500 },
+  { id:'outfit:bluehanbok', cat:'outfit', nm:'藍色韓服', price:2500 },
+  { id:'outfit:sailor',     cat:'outfit', nm:'水手服',   price:1800 },
+  { id:'outfit:varsity',    cat:'outfit', nm:'棒球外套', price:2000 },
+  { id:'outfit:redcoat',    cat:'outfit', nm:'紅色斗篷', price:2200 },
+  { id:'outfit:apron',      cat:'outfit', nm:'黃色吊帶', price:1200 },
+  { id:'outfit:explorer',   cat:'outfit', nm:'探險背心', price:1800 },
+  { id:'hand:fan',      cat:'hand', nm:'扇子',     price:900 },
+  { id:'hand:bag',      cat:'hand', nm:'購物袋',   price:800 },
+  { id:'hand:popsicle', cat:'hand', nm:'雪糕',     price:600 },
+  { id:'hand:bingsu',   cat:'hand', nm:'刨冰',     price:1200 },
+  { id:'bg:hanok',      cat:'bg', nm:'韓屋村',     price:1500 },
+  { id:'fx:rainbow',    cat:'fx', nm:'彩虹',       price:2000 },
+  { id:'fx:wow',        cat:'fx', nm:'驚喜光芒',   price:800 },
+  { id:'frame:flowers', cat:'frame', nm:'花圈邊框', price:2000 },
+  { id:'frame:stars',   cat:'frame', nm:'星星邊框', price:2000 },
+  { id:'frame:heart',   cat:'frame', nm:'愛心邊框', price:2000 },
 ];
-const SHOP_CATS = [['skin','介面風格'],['hat','頭上'],['face','眼鏡'],['neck','脖子'],['outfit','衣服'],['hand','手上'],['bg','背景'],['fx','特效']];
-/** 商品的欄位與代號（不要用 id 的前綴判斷欄位：neck:hanbok 放在衣服） */
+const SHOP_CATS = [['skin','介面風格'],['hat','帽子'],['hair','髮飾'],['face','眼鏡'],['stk','臉部貼紙'],['neck','頸部'],['outfit','服裝'],['hand','手上'],['bg','背景'],['fx','特效'],['frame','邊框']];
+/** 商品的欄位與代號 */
 const itemKey = it => it.id.split(':')[1];
 
 // 吉祥物的話

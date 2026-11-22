@@ -1,3 +1,4 @@
 tests/output/
 node_modules/
 tools/topik/out/
+tools/wear/out/

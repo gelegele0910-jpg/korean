@@ -32,7 +32,7 @@ const ALL_LETTERS = [...VOWELS, ...VOWELS2, ...CONSONANTS, ...DOUBLES];
 const KEY = 'hoya-korean-v1';
 function newProg() {
   return { v: 1, vocabV: 2, created: Date.now(), updated: 0, coins: 0, earned: 0, done: {}, srs: {}, own: {}, best: {},
-    wear: { bg: '', hat: '', face: '', neck: '', hand: '', outfit: '', fx: '' }, skin: 'fresh', rf: {},
+    wear: { bg: '', hat: '', hair: '', face: '', stk: '', neck: '', hand: '', outfit: '', fx: '', frame: '' }, skin: 'fresh', rf: {},
     set: { rr: 'show', pron: true, rate: 0.9, voice: '', auto: true },
     log: {}, streak: { last: null, count: 0, best: 0 }, ms: {},
     day: { d: '', checkin: 0, tasks: {}, games: {}, spk: {} } };
@@ -58,6 +58,8 @@ function migrate(o) {
   if (!owned('skin:' + o.skin, o)) o.skin = 'fresh';
   // 2026-11 換成插畫：韓服從脖子搬到衣服；沒有插畫而下架的商品退還點數（每樣只退一次，記在 rf）
   if (o.wear.neck === 'hanbok') { o.wear.neck = ''; if (!o.wear.outfit) o.wear.outfit = 'hanbok'; }
+  // 第二套插畫：蝴蝶結、兔耳從帽子搬到髮飾
+  if (o.wear.hat === 'ribbon' || o.wear.hat === 'bunny') { if (!o.wear.hair) o.wear.hair = o.wear.hat; o.wear.hat = ''; }
   for (const it of SHOP) if (it.off && o.own[it.id] && !o.rf[it.id]) { o.rf[it.id] = 1; delete o.own[it.id]; o.coins += it.price; }
   for (const c of Object.keys(n.wear)) {
     const it = SHOP.find(x => x.cat === c && itemKey(x) === o.wear[c]);
@@ -927,7 +929,7 @@ function itemPreview(it) {
   const cat = it.cat, key = itemKey(it);
   if (cat === 'skin') { const c = SKIN_SW[key]; return `<div class="swatch" style="background:${c[0]};border:1px solid var(--line)"><i style="background:${c[1]}"></i><i style="background:${c[2]}"></i></div>`; }
   const w = { [cat]: key }; if (cat !== 'bg') w.bg = S.wear.bg;
-  return mascot(w, 96);
+  return mascot(w, 96, 'normal', { face: 'zoom-face', stk: 'zoom-face', hair: 'zoom-head', hat: 'zoom-head' }[cat]);
 }
 function vShop() {
   const items = SHOP.filter(it => it.cat === U.shopCat && !it.off);
@@ -1197,7 +1199,7 @@ const ACT = {
     if (U.arm !== it.id) { U.arm = it.id; render(); return; }
     U.arm = ''; S.coins -= it.price; S.own[it.id] = today();
     ACT.wear({ id: it.id }, null, true);
-    U.pops.push({ ic: '🎁', t: `買到「${it.nm}」了！`, x: it.cat === 'skin' ? '已經換上新的介面風格。' : '已經幫호야換上了。', mood: 'happy' });
+    U.pops.push({ ic: '🎁', t: `買到「${it.nm}」了！`, x: it.cat === 'skin' ? '已經換上新的介面風格。' : '已經幫호야換上了。', mood: 'love' });
     save(); render();
   },
   wear: (d, el, quiet) => {

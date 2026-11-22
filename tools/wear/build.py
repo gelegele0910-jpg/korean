@@ -2,6 +2,8 @@
 # 用法（在 repo 根目錄；需要 Python 的 numpy、scipy、opencv-python-headless、Pillow 與 Playwright）：
 #   python3 tools/wear/blank.py tools/wear/src/tiger.png tools/wear/out/blank.png   # 擦掉眼睛嘴巴
 #   node tools/wear/expr.js tools/wear/out tools/wear/src/tiger.png                 # 畫 9 種表情
+#   python3 tools/wear/sil.py                                                       # 身體輪廓遮罩（給 draw.js）
+#   node tools/wear/draw.js                                                         # 依身形重畫帽子、髮飾、頸部、服裝
 #   python3 tools/wear/build.py                                                     # 輸出圖層（加 --gallery 另存檢查圖）
 # 素材：src/tiger.png＝使用者提供的小老虎本體（1254）；src/items/＝從使用者的配件總覽圖切出來的單件（cut.py）。
 # 位置一律寫在「小老虎原圖座標」（1254×1254 的像素）。新增配件：圖放 src/items/、在 LAYERS 加一行、需要時在 ADJ 微調。
@@ -95,7 +97,8 @@ if __name__ == '__main__':
         cv.alpha_composite(t, (TX, TY)); save(cv, 'tiger-' + e)
     for slot, items in LAYERS.items():
         for key, src in items.items():
-            im = bgtile(src) if slot == 'bg' else frame(src) if slot == 'frame' else layer(slot, src)
+            drawn = os.path.join(OUTD, 'drawn', f'{slot}-{key}.png')   # draw.js 依身形重畫的（帽子、髮飾、頸部、服裝）優先
+            im = Image.open(drawn).convert('RGBA') if os.path.exists(drawn) else bgtile(src) if slot == 'bg' else frame(src) if slot == 'frame' else layer(slot, src)
             save(im, f'{slot}-{key}')
     back = [k for k, s in LAYERS['fx'].items() if FX[s][0] == 'back']
     print('ok', len(os.listdir(DST)), 'files; fx back:', back)

@@ -180,6 +180,39 @@ const INIT = () => {
   ok(await ev(() => { ACT.buy({ id: 'hat:crown' }); ACT.buy({ id: 'hat:crown' }); return S.coins === 200 && !S.own['hat:crown']; }), 'E7 錢不夠買不到');
   await ev(() => { ACT.wear({ id: 'hat:crown' }); });
   ok(await ev(() => S.wear.hat) === '', 'E7 沒買的不能穿');
+  // E21 插畫換裝：每個欄位的商品都有圖、疊圖順序、下架商品不賣、舊存檔（韓服在脖子、買過下架品）轉換並只退一次
+  const wearChk = await ev(() => {
+    const bad = SHOP.filter(it => it.cat !== 'skin' && !it.off && !(WEAR_IMG[it.cat] || {})[itemKey(it)]).map(it => it.id);
+    const cats = Object.keys(newProg().wear).sort().join() === Object.keys(WEAR_IMG).sort().join();
+    return { bad, cats };
+  });
+  ok(!wearChk.bad.length && wearChk.cats, 'E21 每個販售中的配件都有插畫 ' + wearChk.bad.join());
+  const layerOrder = await ev(() => { const d = document.createElement('div'); d.innerHTML = mascot({ bg: 'river', outfit: 'cape', neck: 'medal', face: 'star', hat: 'wizard', hand: 'mic', fx: 'stars' }, 120);
+    return [...d.querySelectorAll('img')].map(i => i.getAttribute('src').replace(/^img\/wear\/|\.webp$/g, '')); });
+  ok(layerOrder.join() === 'background_night,tiger_base,outfit_cape,neck_medal,glasses_star,hat_wizard,prop_mic,effect_stars', 'E21 疊圖順序 ' + layerOrder.join());
+  for (const c of ['hat', 'face', 'neck', 'outfit', 'hand', 'bg', 'fx']) {
+    await ev(x => { S.coins = 0; U.shopCat = x; render(); }, c);
+    await p.waitForFunction(() => [...document.querySelectorAll('.shop img')].every(i => i.complete));
+    const r = await ev(x => ({ n: document.querySelectorAll('.shop .item').length, want: SHOP.filter(it => it.cat === x && !it.off).length,
+      broken: [...document.querySelectorAll('.shop img')].filter(i => !i.naturalWidth).map(i => i.getAttribute('src')) }), c);
+    ok(r.n === r.want && r.n > 0 && !r.broken.length, `E21 商店「${c}」${r.n} 件、圖片都載入` + r.broken.join());
+  }
+  ok(!(await ev(() => !!document.querySelector('[data-id="hand:kimbap"],[data-id="bg:tower"]'))) && await ev(() => { ACT.buy({ id: 'hand:stick' }); ACT.buy({ id: 'hand:stick' }); return !S.own['hand:stick']; }), 'E21 下架商品不賣也買不到');
+  const oldSave = await ev(() => {
+    const o = Object.assign(newProg(), { coins: 100, own: { 'neck:hanbok': 'x', 'hand:kimbap': 'x', 'bg:tower': 'x', 'hat:beret': 'x' }, wear: { neck: 'hanbok', hand: 'kimbap', bg: 'tower', hat: 'beret', face: '' } });
+    delete o.rf; delete o.wear.outfit; delete o.wear.fx;
+    const a = migrate(JSON.parse(JSON.stringify(o))), b = migrate(JSON.parse(JSON.stringify(a)));
+    return { a, b };
+  });
+  const A = oldSave.a;
+  ok(A.wear.outfit === 'hanbok' && A.wear.neck === '' && A.wear.hand === '' && A.wear.bg === '' && A.wear.hat === 'beret' && A.wear.fx === '', 'E21 舊存檔：韓服搬到衣服、下架的配件脫下');
+  ok(A.coins === 100 + 700 + 1200 && !A.own['hand:kimbap'] && !A.own['bg:tower'] && A.own['neck:hanbok'] && A.rf['hand:kimbap'] && A.rf['bg:tower'], 'E21 下架商品退還點數 ' + A.coins);
+  ok(oldSave.b.coins === A.coins && JSON.stringify(oldSave.b.wear) === JSON.stringify(A.wear), 'E21 轉換只做一次（不會重複退款）');
+  await ev(() => { S.own['neck:hanbok'] = today(); S.own['neck:bow'] = today(); ACT.wear({ id: 'neck:hanbok' }); ACT.wear({ id: 'neck:bow' }); });
+  ok(await ev(() => S.wear.outfit === 'hanbok' && S.wear.neck === 'bow'), 'E21 韓服和領結可以一起穿');
+  await ev(() => go('home')); ok(await ev(() => !!document.querySelector('.hero .mascot img[src$="outfit_hanbok.webp"]')), 'E21 有穿衣服時首頁小老虎換裝');
+  await ev(() => { for (const c in S.wear) S.wear[c] = ''; save(); go('home'); }); ok(await ev(() => !!document.querySelector('.hero img.hero-hoya')), 'E21 沒穿時首頁是打招呼的小老虎');
+  await ev(() => { U.meTab = 'shop'; go('me'); });
   // 隨機購買 300 次：點數不會變負
   ok(await ev(() => { for (let i = 0; i < 300; i++) { S.coins = Math.floor(Math.random() * 4000); const it = SHOP[Math.floor(Math.random() * SHOP.length)]; ACT.buy({ id: it.id }); ACT.buy({ id: it.id }); U.pops = []; if (S.coins < 0) return false; } return true; }), 'E7 點數不為負');
 

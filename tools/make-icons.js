@@ -3,8 +3,8 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.resolve(__dirname, '..');
 const ctx = {}; vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/art.js'), 'utf8') + ';this.mascot=mascot;', ctx);
-const svg = ctx.mascot({}, 180, 'happy').replace(/var\(--mascot-bg,#FFE7CF\)/g, '#FFE7CF')
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/art.js'), 'utf8') + ';this.mascotSvg=mascotSvg;', ctx);
+const svg = ctx.mascotSvg(180)
   .replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
 fs.writeFileSync(path.join(ROOT, 'icon.svg'), svg);
 (async () => {

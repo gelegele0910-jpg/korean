@@ -32,7 +32,7 @@ const ALL_LETTERS = [...VOWELS, ...VOWELS2, ...CONSONANTS, ...DOUBLES];
 const KEY = 'hoya-korean-v1';
 function newProg() {
   return { v: 1, vocabV: 2, created: Date.now(), updated: 0, coins: 0, earned: 0, done: {}, srs: {}, own: {}, best: {},
-    wear: { bg: '', hat: '', face: '', neck: '', hand: '' }, skin: 'fresh',
+    wear: { bg: '', hat: '', face: '', neck: '', hand: '', outfit: '', fx: '' }, skin: 'fresh', rf: {},
     set: { rr: 'show', pron: true, rate: 0.9, voice: '', auto: true },
     log: {}, streak: { last: null, count: 0, best: 0 }, ms: {},
     day: { d: '', checkin: 0, tasks: {}, games: {}, spk: {} } };
@@ -56,7 +56,13 @@ function migrate(o) {
   if (![0.7, 0.9, 1.05].includes(o.set.rate)) o.set.rate = 0.9;
   if (!['show', 'tap', 'hide'].includes(o.set.rr)) o.set.rr = 'show';
   if (!owned('skin:' + o.skin, o)) o.skin = 'fresh';
-  for (const c of ['hat', 'face', 'neck', 'hand', 'bg']) if (o.wear[c] && !owned(c + ':' + o.wear[c], o)) o.wear[c] = '';
+  // 2026-11 換成插畫：韓服從脖子搬到衣服；沒有插畫而下架的商品退還點數（每樣只退一次，記在 rf）
+  if (o.wear.neck === 'hanbok') { o.wear.neck = ''; if (!o.wear.outfit) o.wear.outfit = 'hanbok'; }
+  for (const it of SHOP) if (it.off && o.own[it.id] && !o.rf[it.id]) { o.rf[it.id] = 1; delete o.own[it.id]; o.coins += it.price; }
+  for (const c of Object.keys(n.wear)) {
+    const it = SHOP.find(x => x.cat === c && itemKey(x) === o.wear[c]);
+    if (typeof o.wear[c] !== 'string' || (o.wear[c] && (!it || it.off || !owned(it.id, o)))) o.wear[c] = '';
+  }
   return o;
 }
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -297,7 +303,7 @@ function vHome() {
         : `<button class="btn sm ${v >= t.n ? 'main' : ''}" data-act="task" data-id="${t.id}" ${v >= t.n ? '' : 'disabled'}>${v}/${t.n}・₩${TASK_COIN}</button>`}</div>`;
   }).join('');
   return `
-  <div class="card hero"><img class="hero-hoya" src="img/hoya.webp" alt="호야" draggable="false">
+  <div class="card hero">${Object.values(S.wear).some(Boolean) ? mascot(S.wear, 110) : '<img class="hero-hoya" src="img/hoya.webp" alt="호야" draggable="false">'}
     <div class="bub"><div class="line ko">${h(HOYA_LINES[new Date().getDate() % HOYA_LINES.length])}</div>
     <div class="sub mt" style="margin-top:6px">🔥 連續 ${streakNow()} 天　📘 完成 ${doneN}/${LESSONS.length} 課</div></div></div>
   ${nx ? `<div class="card"><div class="sub">繼續學習</div><div class="row" style="margin-top:6px">
@@ -918,16 +924,16 @@ function vWords() {
 const SKIN_SW = { fresh:['#F3F6FB','#FF7A45','#3B82F6'], night:['#10141D','#FF925E','#6EA8FF'], hanji:['#EFE6D6','#B8412C','#2F6F5E'],
   sakura:['#FFF0F4','#E8578A','#7C6CF2'], notebook:['#FBFAF3','#2B6CB0','#D9534F'], neon:['#0B0820','#FF4FD8','#33E1FF'] };
 function itemPreview(it) {
-  const [cat, key] = it.id.split(':');
+  const cat = it.cat, key = itemKey(it);
   if (cat === 'skin') { const c = SKIN_SW[key]; return `<div class="swatch" style="background:${c[0]};border:1px solid var(--line)"><i style="background:${c[1]}"></i><i style="background:${c[2]}"></i></div>`; }
   const w = { [cat]: key }; if (cat !== 'bg') w.bg = S.wear.bg;
-  return mascot(w, 84);
+  return mascot(w, 96);
 }
 function vShop() {
-  const items = SHOP.filter(it => it.cat === U.shopCat);
+  const items = SHOP.filter(it => it.cat === U.shopCat && !it.off);
   return `<div class="cats">${SHOP_CATS.map(([c, nm]) => `<button class="${U.shopCat === c ? 'on' : ''}" data-act="shop-cat" data-c="${c}">${nm}</button>`).join('')}</div>
   <div class="shop">${items.map(it => {
-    const [cat, key] = it.id.split(':'), have = owned(it.id);
+    const cat = it.cat, key = itemKey(it), have = owned(it.id);
     const using = cat === 'skin' ? S.skin === key : S.wear[cat] === key;
     let btn;
     if (have) btn = `<button class="btn sm ${using ? '' : 'main'}" data-act="wear" data-id="${it.id}">${cat === 'skin' ? (using ? '使用中' : '使用') : (using ? '脫下' : '穿上')}</button>`;
@@ -1187,7 +1193,7 @@ const ACT = {
   'shop-cat': d => { U.shopCat = d.c; U.arm = ''; render(); },
   buy: d => {
     const it = SHOP.find(x => x.id === d.id);
-    if (!it || owned(it.id) || S.coins < it.price) return;
+    if (!it || it.off || owned(it.id) || S.coins < it.price) return;
     if (U.arm !== it.id) { U.arm = it.id; render(); return; }
     U.arm = ''; S.coins -= it.price; S.own[it.id] = today();
     ACT.wear({ id: it.id }, null, true);
@@ -1195,7 +1201,8 @@ const ACT = {
     save(); render();
   },
   wear: (d, el, quiet) => {
-    const [cat, key] = d.id.split(':'); if (!owned(d.id)) return;
+    const it = SHOP.find(x => x.id === d.id); if (!it || it.off || !owned(d.id)) return;
+    const cat = it.cat, key = itemKey(it);
     if (cat === 'skin') S.skin = key; else S.wear[cat] = S.wear[cat] === key && !quiet ? '' : key;
     save(); if (!quiet) render();
   },

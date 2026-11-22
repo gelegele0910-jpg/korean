@@ -33,7 +33,7 @@ const SCENES = {
   reviewEmpty: "go('review')", review: "WORDS.forEach(w=>S.srs[w.id]={l:0,d:0,m:0}); startReview(); U.rv.show=true; render();",
   reviewDone: "startReview(); U.rv.i=U.rv.ids.length; U.rv.gain=200; render();",
   words: "WORDS.forEach((w,i)=>S.srs[w.id]={l:i%5,d:0,m:i%3===0?1:0}); go('words')",
-  shop: "S.coins=900; U.meTab='shop'; U.shopCat='skin'; U.arm='skin:hanji'; go('me')", shopHat: "S.coins=99999; U.meTab='shop'; U.shopCat='hand'; go('me')",
+  shop: "S.coins=900; U.meTab='shop'; U.shopCat='skin'; U.arm='skin:hanji'; go('me')", shopHat: "S.coins=99999; U.meTab='shop'; U.shopCat='hand'; go('me')", shopOutfit: "S.coins=99999; S.wear.bg='palace'; U.meTab='shop'; U.shopCat='outfit'; go('me')", shopFx: "S.coins=0; U.meTab='shop'; U.shopCat='fx'; go('me')",
   stats: "U.meTab='stats'; go('me')", settings: "U.meTab='set'; U.arm='reset'; go('me')",
   pop: "U.pops=[{ic:'🔥',t:'連續學習 100 天！',x:'太厲害了！送你 ₩10,000。',mood:'happy'}]; render();",
 };

@@ -219,11 +219,12 @@ W[5] = [
  ('끝나다','動詞',None,'結束','수업이 세 시에 끝나요.','課三點結束。'),
 ]
 sys.path.insert(0, HERE)
-import batch2, batch3, batch4
+import batch2, batch3, batch4, batch5
 W[6], W[7], W[8], W[9], W[10] = batch2.W6, batch2.W7, batch2.W8, batch2.W9, batch2.W10
 W[11], W[12], W[13], W[14], W[15] = batch3.W11, batch3.W12, batch3.W13, batch3.W14, batch3.W15
 W[16], W[17], W[18], W[19], W[20] = batch4.W16, batch4.W17, batch4.W18, batch4.W19, batch4.W20
-START = {10: 4, 11: 7, 12: 13, 13: 7}  # 這些主題的區段開頭已有先前的飲食單字
+W[21], W[22], W[23], W[24], W[25] = batch5.W21, batch5.W22, batch5.W23, batch5.W24, batch5.W25
+START = {10: 4, 11: 7, 12: 13, 13: 7, 23: 8}  # 這些主題的區段開頭已有先前的飲食單字
 # 先前「飲食與餐廳」的單字：放進它們所屬主題的區段（舊 id → 新 id，複習進度會跟著換）
 OLD = [  # 舊 id, 主題, 區段內位置, (資料)
  ('v_1011',10,1,('커피','名詞',None,'咖啡','커피 한 잔 마실까요?','要不要喝杯咖啡？')),
@@ -397,6 +398,7 @@ ARTS.append(dict(article_id='art_105', level=1, topic=TITLE[5], title_ko='교실
 ARTS.extend(batch2.articles(S, TITLE))
 ARTS.extend(batch3.articles(S, TITLE))
 ARTS.extend(batch4.articles(S, TITLE))
+ARTS.extend(batch5.articles(S, TITLE))
 # ---------- art_112：餐廳（原本的 art_101，改到主題 12） ----------
 ARTS.append(dict(article_id='art_112', level=1, topic=TITLE[12], title_ko='식당에서', title_zh='在餐廳', sentences=[
  S(1,'A','배고파요. 이 식당 음식이 맛있어요?','我餓了。這家餐廳的菜好吃嗎？',[('배고파요','배고프다'),('식당','식당'),('음식이','음식'),('맛있어요','맛있다')],['g_123']),
@@ -417,7 +419,30 @@ ARTS.append(dict(article_id='art_112', level=1, topic=TITLE[12], title_ko='식�
       extra_example_ko='배가 고파서 라면을 먹었어요.', extra_example_zh='肚子餓了，所以吃了泡麵。'),
 ]))
 
-topics_js = [dict(no=n, level=1, title=t, desc=d, ids=[vid(n, 1), vid(n, PER)], ready=n <= 20) for n, t, d in TOPICS]
+# 自動標記：文章裡和 batch5.AUTO 一模一樣的詞（去掉標點），還沒標的就補成可點的單字
+def autolink(sen):
+    ko, tws = sen['ko'], sen['target_words']
+    spans, pos = [], 0
+    for t in tws:
+        i = ko.index(t['surface'], pos); spans.append((i, i + len(t['surface']), t)); pos = i + len(t['surface'])
+    toks, j = [], 0
+    for raw in ko.split(' '):
+        w = raw.strip(".,!?'\"")
+        if w in batch5.AUTO:
+            k = ko.index(w, j); toks.append((k, k + len(w), w))
+        j += len(raw) + 1
+    for a, b, w in toks:
+        if any(a < e and s0 < b for s0, e, _ in spans): continue
+        spans.append((a, b, dict(surface=w, lemma=batch5.AUTO[w], vocab_id=ID(batch5.AUTO[w]))))
+    spans.sort(key=lambda x: x[0])
+    pos = 0
+    for a, b, t in spans:  # 前端照順序找 surface，必須剛好找在這個位置
+        assert ko.index(t['surface'], pos) == a, (ko, t['surface']); pos = b
+    sen['target_words'] = [t for _, _, t in spans]
+for a in ARTS:
+    for sen in a['sentences']: autolink(sen)
+
+topics_js = [dict(no=n, level=1, title=t, desc=d, ids=[vid(n, 1), vid(n, PER)], ready=n <= 25) for n, t, d in TOPICS]
 V.sort(key=lambda v: v['id'])
 out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入） =================\n"
  " * TOPIK_TOPICS：主題（1 級 25 個，每個主題固定 34 個字的編號區段：主題 n＝v_(1001+(n-1)×34)～+33）。ready＝已完成。\n"
@@ -433,8 +458,8 @@ out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入�
 open(os.path.join(ROOT, 'js', 'reading.js'), 'w', encoding='utf8').write(out)
 D = os.path.join(HERE, 'out') + os.sep
 os.makedirs(D, exist_ok=True)
-json.dump([v for v in V if 1511 <= int(v['id'][2:]) <= 1680], open(D + 'topik1_vocab_16-20.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
-json.dump(sorted([a for a in ARTS if 'art_116' <= a['article_id'] <= 'art_120'], key=lambda a: a['article_id']), open(D + 'topik1_articles_16-20.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump([v for v in V if 1681 <= int(v['id'][2:]) <= 1850], open(D + 'topik1_vocab_21-25.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump(sorted([a for a in ARTS if 'art_121' <= a['article_id'] <= 'art_125'], key=lambda a: a['article_id']), open(D + 'topik1_articles_21-25.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
 print('vocab', len(V), 'articles', len(ARTS))
 for a in ARTS:
     tws = [t for s in a['sentences'] for t in s['target_words']]

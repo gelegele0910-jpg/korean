@@ -4,7 +4,7 @@
  * READ_ARTICLES：文章；target_words 的 surface 必須照順序出現在句子裡，vocab_id 指向 READ_VOCAB 或該篇的 challenge_vocab（+1 生字）。
  * VOCAB_ID_MAP：舊編號 → 新編號（2026-11 重新編號，migrate() 會把複習進度換過去）。
  * 檢查：tests/hangul.js 的 R1～R5。 */
-const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": false}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": false}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": false}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": false}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": false}];
+const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": true}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": true}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": true}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": true}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": true}];
 
 const VOCAB_ID_MAP = {"v_1029": "v_1118", "v_1011": "v_1307", "v_1003": "v_1308", "v_1022": "v_1309", "v_1001": "v_1341", "v_1002": "v_1342", "v_1013": "v_1343", "v_1014": "v_1344", "v_1015": "v_1345", "v_1016": "v_1346", "v_1004": "v_1375", "v_1005": "v_1376", "v_1017": "v_1377", "v_1018": "v_1378", "v_1019": "v_1379", "v_1023": "v_1380", "v_1024": "v_1381", "v_1025": "v_1382", "v_1026": "v_1383", "v_1027": "v_1384", "v_1028": "v_1385", "v_1030": "v_1386", "v_1006": "v_1409", "v_1007": "v_1410", "v_1008": "v_1411", "v_1009": "v_1412", "v_1010": "v_1413", "v_1012": "v_1414", "v_1020": "v_1749", "v_1021": "v_1750"};
 const ARTICLE_ID_MAP = { 'art_101:new_01': 'art_112:new_01', 'art_101:new_02': 'art_112:new_02' };
@@ -7491,6 +7491,754 @@ const READ_VOCAB = [
   "example_zh": "爺爺的鬍子很長。"
  },
  {
+  "id": "v_1681",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "기분",
+  "pos": "名詞",
+  "hanja": "氣分",
+  "meaning_zh": "心情",
+  "example_ko": "오늘 기분이 어때요?",
+  "example_zh": "今天心情怎麼樣？"
+ },
+ {
+  "id": "v_1682",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "기쁘다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "高興、開心",
+  "example_ko": "합격해서 정말 기뻐요.",
+  "example_zh": "考上了，真的很高興。"
+ },
+ {
+  "id": "v_1683",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "슬프다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "悲傷、難過",
+  "example_ko": "그 영화는 너무 슬퍼요.",
+  "example_zh": "那部電影太悲傷了。"
+ },
+ {
+  "id": "v_1684",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "화나다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "生氣",
+  "example_ko": "동생이 제 케이크를 먹어서 화났어요.",
+  "example_zh": "弟弟吃了我的蛋糕，我很生氣。"
+ },
+ {
+  "id": "v_1685",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "행복하다",
+  "pos": "形容詞",
+  "hanja": "幸福",
+  "meaning_zh": "幸福",
+  "example_ko": "가족하고 있으면 행복해요.",
+  "example_zh": "和家人在一起就很幸福。"
+ },
+ {
+  "id": "v_1686",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "즐겁다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "愉快、快樂",
+  "example_ko": "여행이 정말 즐거웠어요.",
+  "example_zh": "旅行真的很愉快。"
+ },
+ {
+  "id": "v_1687",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "신나다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "興奮、開心（起勁）",
+  "example_ko": "내일 소풍을 가서 신나요.",
+  "example_zh": "明天要去郊遊，好興奮。"
+ },
+ {
+  "id": "v_1688",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "피곤하다",
+  "pos": "形容詞",
+  "hanja": "疲困",
+  "meaning_zh": "累、疲倦",
+  "example_ko": "일이 많아서 피곤해요.",
+  "example_zh": "工作很多，好累。"
+ },
+ {
+  "id": "v_1689",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "힘들다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "辛苦、吃力、累",
+  "example_ko": "운동이 너무 힘들어요.",
+  "example_zh": "運動太累了。"
+ },
+ {
+  "id": "v_1690",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "바쁘다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "忙",
+  "example_ko": "요즘 너무 바빠요.",
+  "example_zh": "最近太忙了。"
+ },
+ {
+  "id": "v_1691",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "심심하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "無聊（沒事做）",
+  "example_ko": "할 일이 없어서 심심해요.",
+  "example_zh": "沒事做好無聊。"
+ },
+ {
+  "id": "v_1692",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "지루하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "無聊、冗長乏味",
+  "example_ko": "수업이 너무 길어서 지루해요.",
+  "example_zh": "課太長了，好無聊。"
+ },
+ {
+  "id": "v_1693",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "무섭다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "可怕；害怕",
+  "example_ko": "저는 개가 무서워요.",
+  "example_zh": "我怕狗。"
+ },
+ {
+  "id": "v_1694",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "걱정하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "擔心",
+  "example_ko": "시험 때문에 걱정해요.",
+  "example_zh": "因為考試很擔心。"
+ },
+ {
+  "id": "v_1695",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "놀라다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "嚇一跳、驚訝",
+  "example_ko": "갑자기 소리가 나서 놀랐어요.",
+  "example_zh": "突然有聲音，嚇了一跳。"
+ },
+ {
+  "id": "v_1696",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "울다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "哭",
+  "example_ko": "아기가 울어요.",
+  "example_zh": "寶寶在哭。"
+ },
+ {
+  "id": "v_1697",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "웃다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "笑",
+  "example_ko": "친구가 재미있는 이야기를 해서 웃었어요.",
+  "example_zh": "朋友說了有趣的事，我笑了。"
+ },
+ {
+  "id": "v_1698",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "싫다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "討厭、不喜歡",
+  "example_ko": "저는 비 오는 날이 싫어요.",
+  "example_zh": "我討厭下雨天。"
+ },
+ {
+  "id": "v_1699",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "부끄럽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "害羞、不好意思",
+  "example_ko": "사람들 앞에서 노래하는 게 부끄러워요.",
+  "example_zh": "在大家面前唱歌很害羞。"
+ },
+ {
+  "id": "v_1700",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "긴장하다",
+  "pos": "動詞",
+  "hanja": "緊張",
+  "meaning_zh": "緊張",
+  "example_ko": "면접 때 많이 긴장했어요.",
+  "example_zh": "面試時很緊張。"
+ },
+ {
+  "id": "v_1701",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "편하다",
+  "pos": "形容詞",
+  "hanja": "便",
+  "meaning_zh": "舒服、方便",
+  "example_ko": "이 의자는 아주 편해요.",
+  "example_zh": "這張椅子很舒服。"
+ },
+ {
+  "id": "v_1702",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "불편하다",
+  "pos": "形容詞",
+  "hanja": "不便",
+  "meaning_zh": "不舒服、不方便",
+  "example_ko": "새 신발이 불편해요.",
+  "example_zh": "新鞋穿起來不舒服。"
+ },
+ {
+  "id": "v_1703",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "졸리다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "想睡、睏",
+  "example_ko": "점심을 먹으면 졸려요.",
+  "example_zh": "吃完午餐就想睡。"
+ },
+ {
+  "id": "v_1704",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "목마르다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "口渴",
+  "example_ko": "목말라요. 물 좀 주세요.",
+  "example_zh": "好渴，請給我水。"
+ },
+ {
+  "id": "v_1705",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "짜증나다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "心煩、不耐煩",
+  "example_ko": "버스가 안 와서 짜증나요.",
+  "example_zh": "公車一直不來，好煩。"
+ },
+ {
+  "id": "v_1706",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "귀찮다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "麻煩、懶得",
+  "example_ko": "청소하기 귀찮아요.",
+  "example_zh": "懶得打掃。"
+ },
+ {
+  "id": "v_1707",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "속상하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "難過、心裡不好受",
+  "example_ko": "시험을 못 봐서 속상해요.",
+  "example_zh": "考試沒考好，心裡很難過。"
+ },
+ {
+  "id": "v_1708",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "아쉽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "可惜、捨不得",
+  "example_ko": "여행이 벌써 끝나서 아쉬워요.",
+  "example_zh": "旅行已經結束了，好可惜。"
+ },
+ {
+  "id": "v_1709",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "미워하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "恨、討厭（某人）",
+  "example_ko": "저는 그 사람을 미워하지 않아요.",
+  "example_zh": "我不恨那個人。"
+ },
+ {
+  "id": "v_1710",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "혼나다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "挨罵、被教訓",
+  "example_ko": "늦게 와서 엄마한테 혼났어요.",
+  "example_zh": "回來太晚，被媽媽罵了。"
+ },
+ {
+  "id": "v_1711",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "마음",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "心、心意",
+  "example_ko": "마음이 따뜻한 사람이에요.",
+  "example_zh": "是個心地溫暖的人。"
+ },
+ {
+  "id": "v_1712",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "눈물",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "眼淚",
+  "example_ko": "슬퍼서 눈물이 났어요.",
+  "example_zh": "太難過，流下了眼淚。"
+ },
+ {
+  "id": "v_1713",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "힘",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "力氣、力量",
+  "example_ko": "힘이 없어요.",
+  "example_zh": "沒力氣。"
+ },
+ {
+  "id": "v_1714",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "word": "표정",
+  "pos": "名詞",
+  "hanja": "表情",
+  "meaning_zh": "表情",
+  "example_ko": "표정이 밝아요.",
+  "example_zh": "表情很開朗。"
+ },
+ {
+  "id": "v_1715",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "전화",
+  "pos": "名詞",
+  "hanja": "電話",
+  "meaning_zh": "電話",
+  "example_ko": "전화가 왔어요.",
+  "example_zh": "有電話打來。"
+ },
+ {
+  "id": "v_1716",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "전화하다",
+  "pos": "動詞",
+  "hanja": "電話",
+  "meaning_zh": "打電話",
+  "example_ko": "저녁에 전화할게요.",
+  "example_zh": "我晚上打給你。"
+ },
+ {
+  "id": "v_1717",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "휴대폰",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "手機",
+  "example_ko": "휴대폰을 집에 두고 왔어요.",
+  "example_zh": "我把手機忘在家裡了。"
+ },
+ {
+  "id": "v_1718",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "문자",
+  "pos": "名詞",
+  "hanja": "文字",
+  "meaning_zh": "簡訊；文字",
+  "example_ko": "문자를 보냈어요.",
+  "example_zh": "我傳了簡訊。"
+ },
+ {
+  "id": "v_1719",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "메시지",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "訊息",
+  "example_ko": "메시지 확인해 주세요.",
+  "example_zh": "請確認訊息。"
+ },
+ {
+  "id": "v_1720",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "보내다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "寄、傳送",
+  "example_ko": "친구에게 사진을 보냈어요.",
+  "example_zh": "傳了照片給朋友。"
+ },
+ {
+  "id": "v_1721",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "받다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "收、接（電話）",
+  "example_ko": "전화를 안 받아요.",
+  "example_zh": "不接電話。"
+ },
+ {
+  "id": "v_1722",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "연락하다",
+  "pos": "動詞",
+  "hanja": "連絡",
+  "meaning_zh": "聯絡",
+  "example_ko": "도착하면 연락하세요.",
+  "example_zh": "到了請聯絡我。"
+ },
+ {
+  "id": "v_1723",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "연락처",
+  "pos": "名詞",
+  "hanja": "連絡處",
+  "meaning_zh": "聯絡方式",
+  "example_ko": "연락처 좀 알려 주세요.",
+  "example_zh": "請告訴我你的聯絡方式。"
+ },
+ {
+  "id": "v_1724",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "약속",
+  "pos": "名詞",
+  "hanja": "約束",
+  "meaning_zh": "約定、約會",
+  "example_ko": "오늘 친구하고 약속이 있어요.",
+  "example_zh": "今天和朋友有約。"
+ },
+ {
+  "id": "v_1725",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "만나다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "見面",
+  "example_ko": "토요일에 만나요.",
+  "example_zh": "星期六見。"
+ },
+ {
+  "id": "v_1726",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "기다리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "等、等待",
+  "example_ko": "조금만 기다려 주세요.",
+  "example_zh": "請稍等一下。"
+ },
+ {
+  "id": "v_1727",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "잠깐",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "一下子、一會兒",
+  "example_ko": "잠깐만요!",
+  "example_zh": "等一下！"
+ },
+ {
+  "id": "v_1728",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "지각하다",
+  "pos": "動詞",
+  "hanja": "遲刻",
+  "meaning_zh": "遲到",
+  "example_ko": "늦잠을 자서 지각했어요.",
+  "example_zh": "睡過頭所以遲到了。"
+ },
+ {
+  "id": "v_1729",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "취소하다",
+  "pos": "動詞",
+  "hanja": "取消",
+  "meaning_zh": "取消",
+  "example_ko": "비가 와서 약속을 취소했어요.",
+  "example_zh": "下雨了，所以取消了約會。"
+ },
+ {
+  "id": "v_1730",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "바꾸다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "換、改",
+  "example_ko": "약속 시간을 바꿀 수 있어요?",
+  "example_zh": "可以改約的時間嗎？"
+ },
+ {
+  "id": "v_1731",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "언제",
+  "pos": "代名詞",
+  "hanja": null,
+  "meaning_zh": "什麼時候",
+  "example_ko": "언제 만날까요?",
+  "example_zh": "我們什麼時候見？"
+ },
+ {
+  "id": "v_1732",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "여보세요",
+  "pos": "感嘆詞",
+  "hanja": null,
+  "meaning_zh": "喂（接電話）",
+  "example_ko": "여보세요? 민수 씨예요?",
+  "example_zh": "喂？是民秀嗎？"
+ },
+ {
+  "id": "v_1733",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "통화",
+  "pos": "名詞",
+  "hanja": "通話",
+  "meaning_zh": "通話、講電話",
+  "example_ko": "지금 통화 괜찮아요?",
+  "example_zh": "現在方便講電話嗎？"
+ },
+ {
+  "id": "v_1734",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "번호",
+  "pos": "名詞",
+  "hanja": "番號",
+  "meaning_zh": "號碼",
+  "example_ko": "번호를 잘못 눌렀어요.",
+  "example_zh": "我按錯號碼了。"
+ },
+ {
+  "id": "v_1735",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "답장",
+  "pos": "名詞",
+  "hanja": "答狀",
+  "meaning_zh": "回覆、回信",
+  "example_ko": "답장이 없어요.",
+  "example_zh": "沒有回覆。"
+ },
+ {
+  "id": "v_1736",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "다시",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "再、重新",
+  "example_ko": "나중에 다시 전화할게요.",
+  "example_zh": "等一下再打給你。"
+ },
+ {
+  "id": "v_1737",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "끊다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "掛斷（電話）；切斷",
+  "example_ko": "전화를 끊을게요.",
+  "example_zh": "我要掛電話了。"
+ },
+ {
+  "id": "v_1738",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "걸다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "打（電話）；掛",
+  "example_ko": "엄마에게 전화를 걸었어요.",
+  "example_zh": "打了電話給媽媽。"
+ },
+ {
+  "id": "v_1739",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "이메일",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "電子郵件",
+  "example_ko": "이메일로 보내 주세요.",
+  "example_zh": "請用電子郵件寄給我。"
+ },
+ {
+  "id": "v_1740",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "목소리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "嗓音、聲音（人的）",
+  "example_ko": "목소리가 좋아요.",
+  "example_zh": "聲音很好聽。"
+ },
+ {
+  "id": "v_1741",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "소리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "聲音",
+  "example_ko": "소리가 작아서 안 들려요.",
+  "example_zh": "聲音太小聽不到。"
+ },
+ {
+  "id": "v_1742",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "정하다",
+  "pos": "動詞",
+  "hanja": "定",
+  "meaning_zh": "決定、定下",
+  "example_ko": "만날 장소를 정했어요?",
+  "example_zh": "決定見面的地點了嗎？"
+ },
+ {
+  "id": "v_1743",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "되다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "可以、行；成為",
+  "example_ko": "몇 시에 시간이 돼요?",
+  "example_zh": "你幾點有空？"
+ },
+ {
+  "id": "v_1744",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "장소",
+  "pos": "名詞",
+  "hanja": "場所",
+  "meaning_zh": "地點、場所",
+  "example_ko": "약속 장소는 학교 앞이에요.",
+  "example_zh": "約的地點在學校前面。"
+ },
+ {
+  "id": "v_1745",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "어떻게",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "怎麼、如何",
+  "example_ko": "어떻게 가요?",
+  "example_zh": "怎麼去？"
+ },
+ {
+  "id": "v_1746",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "왜",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "為什麼",
+  "example_ko": "왜 늦었어요?",
+  "example_zh": "為什麼遲到？"
+ },
+ {
+  "id": "v_1747",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "무슨",
+  "pos": "冠形詞",
+  "hanja": null,
+  "meaning_zh": "什麼（樣的）",
+  "example_ko": "무슨 일이에요?",
+  "example_zh": "什麼事？"
+ },
+ {
+  "id": "v_1748",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "word": "미리",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "事先、預先",
+  "example_ko": "미리 연락해 주세요.",
+  "example_zh": "請事先聯絡我。"
+ },
+ {
   "id": "v_1749",
   "level": 1,
   "topic": "常用高頻基礎動詞（動作篇）",
@@ -7566,6 +8314,1051 @@ const READ_VOCAB = [
   "meaning_zh": "做、從事",
   "example_ko": "주말에 뭐 해요?",
   "example_zh": "週末要做什麼？"
+ },
+ {
+  "id": "v_1756",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "쓰다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "寫",
+  "example_ko": "공책에 이름을 써요.",
+  "example_zh": "在筆記本上寫名字。"
+ },
+ {
+  "id": "v_1757",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "읽다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "讀、看（書報）",
+  "example_ko": "매일 신문을 읽어요.",
+  "example_zh": "我每天看報紙。"
+ },
+ {
+  "id": "v_1758",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "말하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "說、說話",
+  "example_ko": "천천히 말해 주세요.",
+  "example_zh": "請說慢一點。"
+ },
+ {
+  "id": "v_1759",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "이야기하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "聊天、說",
+  "example_ko": "친구하고 오랫동안 이야기했어요.",
+  "example_zh": "和朋友聊了很久。"
+ },
+ {
+  "id": "v_1760",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "만들다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "做、製作",
+  "example_ko": "주말에 케이크를 만들었어요.",
+  "example_zh": "週末做了蛋糕。"
+ },
+ {
+  "id": "v_1761",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "일하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "工作",
+  "example_ko": "아버지는 은행에서 일하세요.",
+  "example_zh": "爸爸在銀行工作。"
+ },
+ {
+  "id": "v_1762",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "씻다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "洗",
+  "example_ko": "손을 깨끗이 씻으세요.",
+  "example_zh": "請把手洗乾淨。"
+ },
+ {
+  "id": "v_1763",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "앉다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "坐",
+  "example_ko": "여기 앉으세요.",
+  "example_zh": "請坐這裡。"
+ },
+ {
+  "id": "v_1764",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "서다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "站、停",
+  "example_ko": "버스에서 계속 서 있었어요.",
+  "example_zh": "在公車上一直站著。"
+ },
+ {
+  "id": "v_1765",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "들어가다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "進去",
+  "example_ko": "교실에 들어가요.",
+  "example_zh": "進教室。"
+ },
+ {
+  "id": "v_1766",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "나가다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "出去",
+  "example_ko": "잠깐 밖에 나가요.",
+  "example_zh": "出去外面一下。"
+ },
+ {
+  "id": "v_1767",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "들어오다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "進來",
+  "example_ko": "들어오세요.",
+  "example_zh": "請進。"
+ },
+ {
+  "id": "v_1768",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "나오다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "出來",
+  "example_ko": "영화가 끝나고 극장에서 나왔어요.",
+  "example_zh": "電影結束後從電影院出來了。"
+ },
+ {
+  "id": "v_1769",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "올라가다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "上去",
+  "example_ko": "계단으로 올라가세요.",
+  "example_zh": "請走樓梯上去。"
+ },
+ {
+  "id": "v_1770",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "내려가다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "下去",
+  "example_ko": "일 층으로 내려가요.",
+  "example_zh": "下去一樓。"
+ },
+ {
+  "id": "v_1771",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "돌아가다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "回去",
+  "example_ko": "고향에 돌아가요.",
+  "example_zh": "回故鄉。"
+ },
+ {
+  "id": "v_1772",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "생각하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "想、思考",
+  "example_ko": "잘 생각해 보세요.",
+  "example_zh": "好好想一想。"
+ },
+ {
+  "id": "v_1773",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "기억하다",
+  "pos": "動詞",
+  "hanja": "記憶",
+  "meaning_zh": "記得、記住",
+  "example_ko": "제 이름을 기억해요?",
+  "example_zh": "你記得我的名字嗎？"
+ },
+ {
+  "id": "v_1774",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "가지다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "拿、帶；擁有",
+  "example_ko": "저는 자동차를 가지고 있어요.",
+  "example_zh": "我有一輛車。"
+ },
+ {
+  "id": "v_1775",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "가져오다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "帶來、拿來",
+  "example_ko": "내일 책을 가져오세요.",
+  "example_zh": "明天請把書帶來。"
+ },
+ {
+  "id": "v_1776",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "넣다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "放進、加進",
+  "example_ko": "가방에 지갑을 넣었어요.",
+  "example_zh": "把錢包放進包包了。"
+ },
+ {
+  "id": "v_1777",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "만지다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "摸、觸碰",
+  "example_ko": "작품을 만지지 마세요.",
+  "example_zh": "請不要觸摸作品。"
+ },
+ {
+  "id": "v_1778",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "사용하다",
+  "pos": "動詞",
+  "hanja": "使用",
+  "meaning_zh": "使用",
+  "example_ko": "이 컴퓨터를 사용해도 돼요?",
+  "example_zh": "可以用這台電腦嗎？"
+ },
+ {
+  "id": "v_1779",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "빌리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "借（進來）",
+  "example_ko": "도서관에서 책을 빌렸어요.",
+  "example_zh": "在圖書館借了書。"
+ },
+ {
+  "id": "v_1780",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "돕다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "幫助、幫忙",
+  "example_ko": "제가 도와 드릴게요.",
+  "example_zh": "我來幫您。"
+ },
+ {
+  "id": "v_1781",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "끝내다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "結束、做完",
+  "example_ko": "숙제를 빨리 끝냈어요.",
+  "example_zh": "很快就把作業做完了。"
+ },
+ {
+  "id": "v_1782",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "요리하다",
+  "pos": "動詞",
+  "hanja": "料理",
+  "meaning_zh": "做菜、烹調",
+  "example_ko": "주말에 가족을 위해 요리해요.",
+  "example_zh": "週末為家人做菜。"
+ },
+ {
+  "id": "v_1783",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "좋다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "好",
+  "example_ko": "오늘 날씨가 좋아요.",
+  "example_zh": "今天天氣很好。"
+ },
+ {
+  "id": "v_1784",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "나쁘다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "壞、不好",
+  "example_ko": "눈이 나빠서 안경을 써요.",
+  "example_zh": "視力不好，所以戴眼鏡。"
+ },
+ {
+  "id": "v_1785",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "많다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "多",
+  "example_ko": "서울에는 사람이 많아요.",
+  "example_zh": "首爾人很多。"
+ },
+ {
+  "id": "v_1786",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "적다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "少",
+  "example_ko": "이 식당은 손님이 적어요.",
+  "example_zh": "這家餐廳客人很少。"
+ },
+ {
+  "id": "v_1787",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "빠르다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "快",
+  "example_ko": "지하철이 버스보다 빨라요.",
+  "example_zh": "地鐵比公車快。"
+ },
+ {
+  "id": "v_1788",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "느리다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "慢",
+  "example_ko": "인터넷이 너무 느려요.",
+  "example_zh": "網路太慢了。"
+ },
+ {
+  "id": "v_1789",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "어렵다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "難",
+  "example_ko": "한국어 문법이 어려워요.",
+  "example_zh": "韓文文法很難。"
+ },
+ {
+  "id": "v_1790",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "쉽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "容易、簡單",
+  "example_ko": "한글은 배우기 쉬워요.",
+  "example_zh": "韓文字很好學。"
+ },
+ {
+  "id": "v_1791",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "간단하다",
+  "pos": "形容詞",
+  "hanja": "簡單",
+  "meaning_zh": "簡單、簡便",
+  "example_ko": "사용 방법이 간단해요.",
+  "example_zh": "使用方法很簡單。"
+ },
+ {
+  "id": "v_1792",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "같다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "一樣、相同",
+  "example_ko": "우리는 같은 반이에요.",
+  "example_zh": "我們是同一班。"
+ },
+ {
+  "id": "v_1793",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "똑같다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "一模一樣",
+  "example_ko": "두 사람 얼굴이 똑같아요.",
+  "example_zh": "兩個人的臉一模一樣。"
+ },
+ {
+  "id": "v_1794",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "다르다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "不一樣、不同",
+  "example_ko": "한국어와 중국어는 달라요.",
+  "example_zh": "韓文和中文不一樣。"
+ },
+ {
+  "id": "v_1795",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "비슷하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "相似、差不多",
+  "example_ko": "제 가방하고 비슷해요.",
+  "example_zh": "和我的包包很像。"
+ },
+ {
+  "id": "v_1796",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "맞다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "對、正確；合適",
+  "example_ko": "네, 맞아요.",
+  "example_zh": "對，沒錯。"
+ },
+ {
+  "id": "v_1797",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "틀리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "錯、不對",
+  "example_ko": "답이 틀렸어요.",
+  "example_zh": "答案錯了。"
+ },
+ {
+  "id": "v_1798",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "중요하다",
+  "pos": "形容詞",
+  "hanja": "重要",
+  "meaning_zh": "重要",
+  "example_ko": "건강이 제일 중요해요.",
+  "example_zh": "健康最重要。"
+ },
+ {
+  "id": "v_1799",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "조용하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "安靜",
+  "example_ko": "이 동네는 조용해요.",
+  "example_zh": "這個社區很安靜。"
+ },
+ {
+  "id": "v_1800",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "시끄럽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "吵、吵鬧",
+  "example_ko": "밖이 너무 시끄러워요.",
+  "example_zh": "外面太吵了。"
+ },
+ {
+  "id": "v_1801",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "더럽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "髒",
+  "example_ko": "방이 더러워요. 청소하세요.",
+  "example_zh": "房間很髒，快打掃。"
+ },
+ {
+  "id": "v_1802",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "좁다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "窄、狹小",
+  "example_ko": "제 방은 좁아요.",
+  "example_zh": "我的房間很窄。"
+ },
+ {
+  "id": "v_1803",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "착하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "善良、乖",
+  "example_ko": "제 동생은 착해요.",
+  "example_zh": "我弟弟很乖。"
+ },
+ {
+  "id": "v_1804",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "친하다",
+  "pos": "形容詞",
+  "hanja": "親",
+  "meaning_zh": "親近、要好",
+  "example_ko": "민수하고 친해요.",
+  "example_zh": "我和民秀很要好。"
+ },
+ {
+  "id": "v_1805",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "어리다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "年幼、小",
+  "example_ko": "동생은 아직 어려요.",
+  "example_zh": "弟弟還小。"
+ },
+ {
+  "id": "v_1806",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "위험하다",
+  "pos": "形容詞",
+  "hanja": "危險",
+  "meaning_zh": "危險",
+  "example_ko": "밤에 혼자 다니면 위험해요.",
+  "example_zh": "晚上一個人走很危險。"
+ },
+ {
+  "id": "v_1807",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "안전하다",
+  "pos": "形容詞",
+  "hanja": "安全",
+  "meaning_zh": "安全",
+  "example_ko": "이 동네는 안전해요.",
+  "example_zh": "這個社區很安全。"
+ },
+ {
+  "id": "v_1808",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "깊다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "深",
+  "example_ko": "이 강은 아주 깊어요.",
+  "example_zh": "這條河很深。"
+ },
+ {
+  "id": "v_1809",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "편리하다",
+  "pos": "形容詞",
+  "hanja": "便利",
+  "meaning_zh": "方便、便利",
+  "example_ko": "지하철은 편리해요.",
+  "example_zh": "地鐵很方便。"
+ },
+ {
+  "id": "v_1810",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "이상하다",
+  "pos": "形容詞",
+  "hanja": "異常",
+  "meaning_zh": "奇怪",
+  "example_ko": "이 우유 맛이 좀 이상해요.",
+  "example_zh": "這牛奶的味道有點怪。"
+ },
+ {
+  "id": "v_1811",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "딱딱하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "硬",
+  "example_ko": "빵이 딱딱해요.",
+  "example_zh": "麵包好硬。"
+ },
+ {
+  "id": "v_1812",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "부드럽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "軟、柔軟",
+  "example_ko": "이 케이크는 아주 부드러워요.",
+  "example_zh": "這個蛋糕很軟綿。"
+ },
+ {
+  "id": "v_1813",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "진하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "濃",
+  "example_ko": "커피가 너무 진해요.",
+  "example_zh": "咖啡太濃了。"
+ },
+ {
+  "id": "v_1814",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "연하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "淡、淺",
+  "example_ko": "커피를 연하게 주세요.",
+  "example_zh": "咖啡請做淡一點。"
+ },
+ {
+  "id": "v_1815",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "심하다",
+  "pos": "形容詞",
+  "hanja": "甚",
+  "meaning_zh": "嚴重、過分",
+  "example_ko": "감기가 심해요.",
+  "example_zh": "感冒很嚴重。"
+ },
+ {
+  "id": "v_1816",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "word": "대단하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "了不起、厲害",
+  "example_ko": "와, 정말 대단해요!",
+  "example_zh": "哇，真厲害！"
+ },
+ {
+  "id": "v_1817",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "오늘",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "今天",
+  "example_ko": "오늘은 일요일이에요.",
+  "example_zh": "今天是星期天。"
+ },
+ {
+  "id": "v_1818",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "내일",
+  "pos": "名詞",
+  "hanja": "來日",
+  "meaning_zh": "明天",
+  "example_ko": "내일 만나요.",
+  "example_zh": "明天見。"
+ },
+ {
+  "id": "v_1819",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "어제",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "昨天",
+  "example_ko": "어제 영화를 봤어요.",
+  "example_zh": "昨天看了電影。"
+ },
+ {
+  "id": "v_1820",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "모레",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "後天",
+  "example_ko": "모레 시험이 있어요.",
+  "example_zh": "後天有考試。"
+ },
+ {
+  "id": "v_1821",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "그저께",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "前天",
+  "example_ko": "그저께 서울에 도착했어요.",
+  "example_zh": "前天抵達首爾。"
+ },
+ {
+  "id": "v_1822",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "지금",
+  "pos": "名詞",
+  "hanja": "只今",
+  "meaning_zh": "現在",
+  "example_ko": "지금 뭐 해요?",
+  "example_zh": "你現在在做什麼？"
+ },
+ {
+  "id": "v_1823",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "아까",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "剛才",
+  "example_ko": "아까 전화했어요?",
+  "example_zh": "你剛才打電話給我嗎？"
+ },
+ {
+  "id": "v_1824",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "나중에",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "以後、待會兒",
+  "example_ko": "나중에 다시 연락할게요.",
+  "example_zh": "之後再聯絡你。"
+ },
+ {
+  "id": "v_1825",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "곧",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "馬上、快要",
+  "example_ko": "버스가 곧 와요.",
+  "example_zh": "公車馬上就來。"
+ },
+ {
+  "id": "v_1826",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "먼저",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "先",
+  "example_ko": "먼저 손을 씻으세요.",
+  "example_zh": "請先洗手。"
+ },
+ {
+  "id": "v_1827",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "다음",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "下（一個）、下次",
+  "example_ko": "다음 주에 만나요.",
+  "example_zh": "下週見。"
+ },
+ {
+  "id": "v_1828",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "지난",
+  "pos": "冠形詞",
+  "hanja": null,
+  "meaning_zh": "上（一個）、過去的",
+  "example_ko": "지난 주말에 부산에 갔어요.",
+  "example_zh": "上個週末去了釜山。"
+ },
+ {
+  "id": "v_1829",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "이번",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "這次、這（一個）",
+  "example_ko": "이번 방학에 뭐 해요?",
+  "example_zh": "這次放假要做什麼？"
+ },
+ {
+  "id": "v_1830",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "작년",
+  "pos": "名詞",
+  "hanja": "昨年",
+  "meaning_zh": "去年",
+  "example_ko": "작년에 한국에 처음 왔어요.",
+  "example_zh": "去年第一次來韓國。"
+ },
+ {
+  "id": "v_1831",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "올해",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "今年",
+  "example_ko": "올해 대학교에 들어갔어요.",
+  "example_zh": "今年上了大學。"
+ },
+ {
+  "id": "v_1832",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "내년",
+  "pos": "名詞",
+  "hanja": "來年",
+  "meaning_zh": "明年",
+  "example_ko": "내년에 졸업해요.",
+  "example_zh": "明年畢業。"
+ },
+ {
+  "id": "v_1833",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "요즘",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "最近、這陣子",
+  "example_ko": "요즘 날씨가 추워요.",
+  "example_zh": "最近天氣很冷。"
+ },
+ {
+  "id": "v_1834",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "항상",
+  "pos": "副詞",
+  "hanja": "恒常",
+  "meaning_zh": "總是、經常",
+  "example_ko": "그 친구는 항상 웃어요.",
+  "example_zh": "那個朋友總是笑咪咪的。"
+ },
+ {
+  "id": "v_1835",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "아직",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "還、仍然",
+  "example_ko": "아직 점심을 안 먹었어요.",
+  "example_zh": "還沒吃午餐。"
+ },
+ {
+  "id": "v_1836",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "벌써",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "已經",
+  "example_ko": "벌써 열두 시예요.",
+  "example_zh": "已經十二點了。"
+ },
+ {
+  "id": "v_1837",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "처음",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "第一次、開始",
+  "example_ko": "처음 뵙겠습니다.",
+  "example_zh": "初次見面。"
+ },
+ {
+  "id": "v_1838",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "마지막",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "最後",
+  "example_ko": "오늘이 마지막 수업이에요.",
+  "example_zh": "今天是最後一堂課。"
+ },
+ {
+  "id": "v_1839",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "그리고",
+  "pos": "連接詞",
+  "hanja": null,
+  "meaning_zh": "還有、而且、然後",
+  "example_ko": "빵을 샀어요. 그리고 우유도 샀어요.",
+  "example_zh": "買了麵包，還買了牛奶。"
+ },
+ {
+  "id": "v_1840",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "그래서",
+  "pos": "連接詞",
+  "hanja": null,
+  "meaning_zh": "所以",
+  "example_ko": "비가 왔어요. 그래서 집에 있었어요.",
+  "example_zh": "下雨了，所以待在家。"
+ },
+ {
+  "id": "v_1841",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "그런데",
+  "pos": "連接詞",
+  "hanja": null,
+  "meaning_zh": "可是、不過；對了",
+  "example_ko": "날씨가 좋아요. 그런데 좀 추워요.",
+  "example_zh": "天氣很好，不過有點冷。"
+ },
+ {
+  "id": "v_1842",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "하지만",
+  "pos": "連接詞",
+  "hanja": null,
+  "meaning_zh": "但是",
+  "example_ko": "한국어는 어려워요. 하지만 재미있어요.",
+  "example_zh": "韓文很難，但是很有趣。"
+ },
+ {
+  "id": "v_1843",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "그럼",
+  "pos": "連接詞",
+  "hanja": null,
+  "meaning_zh": "那麼、那",
+  "example_ko": "그럼 내일 만나요.",
+  "example_zh": "那明天見。"
+ },
+ {
+  "id": "v_1844",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "또",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "又、再",
+  "example_ko": "또 만나요!",
+  "example_zh": "下次再見！"
+ },
+ {
+  "id": "v_1845",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "동안",
+  "pos": "名詞（依存）",
+  "hanja": null,
+  "meaning_zh": "期間、…的時候",
+  "example_ko": "방학 동안 아르바이트를 했어요.",
+  "example_zh": "放假期間打了工。"
+ },
+ {
+  "id": "v_1846",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "전",
+  "pos": "名詞",
+  "hanja": "前",
+  "meaning_zh": "之前、…前",
+  "example_ko": "자기 전에 이를 닦아요.",
+  "example_zh": "睡覺前刷牙。"
+ },
+ {
+  "id": "v_1847",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "후",
+  "pos": "名詞",
+  "hanja": "後",
+  "meaning_zh": "之後、…後",
+  "example_ko": "수업 후에 도서관에 가요.",
+  "example_zh": "下課後去圖書館。"
+ },
+ {
+  "id": "v_1848",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "오래",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "很久",
+  "example_ko": "오래 기다렸어요?",
+  "example_zh": "等很久了嗎？"
+ },
+ {
+  "id": "v_1849",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "계속",
+  "pos": "副詞",
+  "hanja": "繼續",
+  "meaning_zh": "一直、持續",
+  "example_ko": "비가 계속 와요.",
+  "example_zh": "雨一直下。"
+ },
+ {
+  "id": "v_1850",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "word": "매주",
+  "pos": "名詞",
+  "hanja": "每週",
+  "meaning_zh": "每週",
+  "example_ko": "매주 토요일에 등산해요.",
+  "example_zh": "每週六去爬山。"
  }
 ];
 
@@ -7659,6 +9452,11 @@ const READ_ARTICLES = [
     "ko": "그래서 한국어를 배워요.",
     "zh": "所以我在學韓文。",
     "target_words": [
+     {
+      "surface": "그래서",
+      "lemma": "그래서",
+      "vocab_id": "v_1840"
+     },
      {
       "surface": "한국어를",
       "lemma": "한국어",
@@ -7927,6 +9725,11 @@ const READ_ARTICLES = [
       "surface": "외로워요",
       "lemma": "외롭다",
       "vocab_id": "new_03"
+     },
+     {
+      "surface": "하지만",
+      "lemma": "하지만",
+      "vocab_id": "v_1842"
      },
      {
       "surface": "할머니하고",
@@ -8525,6 +10328,11 @@ const READ_ARTICLES = [
       "vocab_id": "v_1130"
      },
      {
+      "surface": "그런데",
+      "lemma": "그런데",
+      "vocab_id": "v_1841"
+     },
+     {
       "surface": "금요일에는",
       "lemma": "금요일",
       "vocab_id": "v_1092"
@@ -8709,6 +10517,11 @@ const READ_ARTICLES = [
       "vocab_id": "v_1154"
      },
      {
+      "surface": "무슨",
+      "lemma": "무슨",
+      "vocab_id": "v_1747"
+     },
+     {
       "surface": "뜻이에요",
       "lemma": "뜻",
       "vocab_id": "new_01"
@@ -8796,6 +10609,11 @@ const READ_ARTICLES = [
       "surface": "네",
       "lemma": "네",
       "vocab_id": "v_1007"
+     },
+     {
+      "surface": "다음",
+      "lemma": "다음",
+      "vocab_id": "v_1827"
      },
      {
       "surface": "수업",
@@ -9057,9 +10875,24 @@ const READ_ARTICLES = [
     "zh": "不過我們快要搬家了，所以我在整理行李。",
     "target_words": [
      {
+      "surface": "그런데",
+      "lemma": "그런데",
+      "vocab_id": "v_1841"
+     },
+     {
+      "surface": "곧",
+      "lemma": "곧",
+      "vocab_id": "v_1825"
+     },
+     {
       "surface": "이사해요",
       "lemma": "이사하다",
       "vocab_id": "new_01"
+     },
+     {
+      "surface": "그래서",
+      "lemma": "그래서",
+      "vocab_id": "v_1840"
      },
      {
       "surface": "짐을",
@@ -9280,6 +11113,11 @@ const READ_ARTICLES = [
       "surface": "찾았어요",
       "lemma": "찾다",
       "vocab_id": "v_1296"
+     },
+     {
+      "surface": "그런데",
+      "lemma": "그런데",
+      "vocab_id": "v_1841"
      },
      {
       "surface": "열쇠는",
@@ -9557,6 +11395,16 @@ const READ_ARTICLES = [
     "zh": "所以我有時候搭公車。公車站就在我家正前面。",
     "target_words": [
      {
+      "surface": "그래서",
+      "lemma": "그래서",
+      "vocab_id": "v_1840"
+     },
+     {
+      "surface": "가끔",
+      "lemma": "가끔",
+      "vocab_id": "v_1610"
+     },
+     {
       "surface": "버스를",
       "lemma": "버스",
       "vocab_id": "v_1240"
@@ -9772,6 +11620,11 @@ const READ_ARTICLES = [
     "ko": "그리고 사거리에서 왼쪽으로 도세요. 약 오 분 걸려요.",
     "zh": "然後在十字路口往左轉，大約五分鐘。",
     "target_words": [
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
      {
       "surface": "사거리에서",
       "lemma": "사거리",
@@ -10032,6 +11885,11 @@ const READ_ARTICLES = [
       "vocab_id": "v_1331"
      },
      {
+      "surface": "어떻게",
+      "lemma": "어떻게",
+      "vocab_id": "v_1745"
+     },
+     {
       "surface": "드릴까요",
       "lemma": "드리다",
       "vocab_id": "new_01"
@@ -10059,6 +11917,11 @@ const READ_ARTICLES = [
       "surface": "주세요",
       "lemma": "주다",
       "vocab_id": "v_1447"
+     },
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
      },
      {
       "surface": "설탕은",
@@ -10109,6 +11972,11 @@ const READ_ARTICLES = [
       "surface": "포장",
       "lemma": "포장",
       "vocab_id": "v_1332"
+     },
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
      },
      {
       "surface": "영수증도",
@@ -10291,6 +12159,11 @@ const READ_ARTICLES = [
     "zh": "那嫩豆腐鍋呢？也有不辣的口味。",
     "target_words": [
      {
+      "surface": "그럼",
+      "lemma": "그럼",
+      "vocab_id": "v_1843"
+     },
+     {
       "surface": "순두부찌개는요",
       "lemma": "순두부찌개",
       "vocab_id": "v_1357"
@@ -10319,6 +12192,11 @@ const READ_ARTICLES = [
     "ko": "좋아요. 반찬도 많이 줘요?",
     "zh": "好啊。小菜也給很多嗎？",
     "target_words": [
+     {
+      "surface": "좋아요",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
      {
       "surface": "반찬도",
       "lemma": "반찬",
@@ -10362,6 +12240,11 @@ const READ_ARTICLES = [
       "surface": "김이에요",
       "lemma": "김",
       "vocab_id": "v_1363"
+     },
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
      },
      {
       "surface": "무료로",
@@ -10525,6 +12408,11 @@ const READ_ARTICLES = [
     "ko": "그리고 돼지고기하고 두부, 양파도 샀어요.",
     "zh": "還買了豬肉、豆腐和洋蔥。",
     "target_words": [
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
      {
       "surface": "돼지고기하고",
       "lemma": "돼지고기",
@@ -10783,6 +12671,11 @@ const READ_ARTICLES = [
     "zh": "那五顆算你九千韓元。",
     "target_words": [
      {
+      "surface": "그럼",
+      "lemma": "그럼",
+      "vocab_id": "v_1843"
+     },
+     {
       "surface": "다섯",
       "lemma": "다섯",
       "vocab_id": "v_1107"
@@ -10824,6 +12717,16 @@ const READ_ARTICLES = [
     "ko": "좋아요. 그리고 계란 한 상자도 주세요. 전부 얼마예요?",
     "zh": "好。另外也請給我一盒雞蛋。全部多少錢？",
     "target_words": [
+     {
+      "surface": "좋아요",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
      {
       "surface": "계란",
       "lemma": "계란",
@@ -11327,6 +13230,11 @@ const READ_ARTICLES = [
     "zh": "可是白色很快就會髒。",
     "target_words": [
      {
+      "surface": "그런데",
+      "lemma": "그런데",
+      "vocab_id": "v_1841"
+     },
+     {
       "surface": "흰색은",
       "lemma": "흰색",
       "vocab_id": "v_1517"
@@ -11350,6 +13258,11 @@ const READ_ARTICLES = [
     "ko": "그럼 이 갈색 가방은요? 모양도 둥글고 예뻐요.",
     "zh": "那這個咖啡色的包包呢？形狀圓圓的也很漂亮。",
     "target_words": [
+     {
+      "surface": "그럼",
+      "lemma": "그럼",
+      "vocab_id": "v_1843"
+     },
      {
       "surface": "이",
       "lemma": "이",
@@ -11389,6 +13302,11 @@ const READ_ARTICLES = [
     "ko": "좋아요! 그 가방이 제일 잘 어울려요.",
     "zh": "好！那個包包最適合你。",
     "target_words": [
+     {
+      "surface": "좋아요",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
      {
       "surface": "그",
       "lemma": "그",
@@ -11572,6 +13490,11 @@ const READ_ARTICLES = [
       "vocab_id": "v_1563"
      },
      {
+      "surface": "그래서",
+      "lemma": "그래서",
+      "vocab_id": "v_1840"
+     },
+     {
       "surface": "선풍기하고",
       "lemma": "선풍기",
       "vocab_id": "v_1576"
@@ -11640,6 +13563,11 @@ const READ_ARTICLES = [
       "surface": "추워요",
       "lemma": "춥다",
       "vocab_id": "v_1562"
+     },
+     {
+      "surface": "그래서",
+      "lemma": "그래서",
+      "vocab_id": "v_1840"
      },
      {
       "surface": "코트하고",
@@ -11942,6 +13870,11 @@ const READ_ARTICLES = [
       "vocab_id": "v_1006"
      },
      {
+      "surface": "다음",
+      "lemma": "다음",
+      "vocab_id": "v_1827"
+     },
+     {
       "surface": "주",
       "lemma": "주",
       "vocab_id": "v_1096"
@@ -12136,6 +14069,11 @@ const READ_ARTICLES = [
       "surface": "잘해요",
       "lemma": "잘하다",
       "vocab_id": "v_1645"
+     },
+     {
+      "surface": "지난",
+      "lemma": "지난",
+      "vocab_id": "v_1828"
      },
      {
       "surface": "경기에서",
@@ -12396,6 +14334,11 @@ const READ_ARTICLES = [
       "vocab_id": "v_1062"
      },
      {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
+     {
       "surface": "어깨하고",
       "lemma": "어깨",
       "vocab_id": "v_1656"
@@ -12535,6 +14478,1311 @@ const READ_ARTICLES = [
   ]
  },
  {
+  "article_id": "art_121",
+  "level": 1,
+  "topic": "基礎情緒與心理狀態",
+  "title_ko": "요즘 기분이 어때요?",
+  "title_zh": "最近心情怎麼樣？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "요즘 기분이 어때요?",
+    "zh": "最近心情怎麼樣？",
+    "target_words": [
+     {
+      "surface": "요즘",
+      "lemma": "요즘",
+      "vocab_id": "v_1833"
+     },
+     {
+      "surface": "기분이",
+      "lemma": "기분",
+      "vocab_id": "v_1681"
+     }
+    ],
+    "grammar_ids": [
+     "g_142"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "회사가 바빠서 너무 피곤해요.",
+    "zh": "公司很忙，所以好累。",
+    "target_words": [
+     {
+      "surface": "회사가",
+      "lemma": "회사",
+      "vocab_id": "v_1033"
+     },
+     {
+      "surface": "바빠서",
+      "lemma": "바쁘다",
+      "vocab_id": "v_1690"
+     },
+     {
+      "surface": "너무",
+      "lemma": "너무",
+      "vocab_id": "v_1403"
+     },
+     {
+      "surface": "피곤해요",
+      "lemma": "피곤하다",
+      "vocab_id": "v_1688"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "힘들겠어요. 주말에는 뭐 해요?",
+    "zh": "一定很辛苦吧。週末都做什麼？",
+    "target_words": [
+     {
+      "surface": "힘들겠어요",
+      "lemma": "힘들다",
+      "vocab_id": "v_1689"
+     },
+     {
+      "surface": "주말에는",
+      "lemma": "주말",
+      "vocab_id": "v_1095"
+     },
+     {
+      "surface": "뭐",
+      "lemma": "무엇",
+      "vocab_id": "v_1013"
+     },
+     {
+      "surface": "해요",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     }
+    ],
+    "grammar_ids": [
+     "g_141"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "집에서 혼자 쉬어요. 그런데 좀 심심해요.",
+    "zh": "一個人在家休息，不過有點無聊。",
+    "target_words": [
+     {
+      "surface": "집에서",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "혼자",
+      "lemma": "혼자",
+      "vocab_id": "v_1608"
+     },
+     {
+      "surface": "쉬어요",
+      "lemma": "쉬다",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "그런데",
+      "lemma": "그런데",
+      "vocab_id": "v_1841"
+     },
+     {
+      "surface": "심심해요",
+      "lemma": "심심하다",
+      "vocab_id": "v_1691"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "그럼 같이 영화 봐요! 재미있는 코미디 영화가 있어요.",
+    "zh": "那一起看電影吧！有一部很好笑的喜劇片。",
+    "target_words": [
+     {
+      "surface": "그럼",
+      "lemma": "그럼",
+      "vocab_id": "v_1843"
+     },
+     {
+      "surface": "같이",
+      "lemma": "같이",
+      "vocab_id": "v_1064"
+     },
+     {
+      "surface": "영화",
+      "lemma": "영화",
+      "vocab_id": "v_1580"
+     },
+     {
+      "surface": "봐요",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     },
+     {
+      "surface": "재미있는",
+      "lemma": "재미있다",
+      "vocab_id": "v_1600"
+     },
+     {
+      "surface": "코미디",
+      "lemma": "코미디",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "영화가",
+      "lemma": "영화",
+      "vocab_id": "v_1580"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "좋아요! 많이 웃으면 기분이 좋아져요.",
+    "zh": "好啊！多笑一笑心情就會變好。",
+    "target_words": [
+     {
+      "surface": "좋아요",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "웃으면",
+      "lemma": "웃다",
+      "vocab_id": "v_1697"
+     },
+     {
+      "surface": "기분이",
+      "lemma": "기분",
+      "vocab_id": "v_1681"
+     },
+     {
+      "surface": "좋아져요",
+      "lemma": "좋아지다",
+      "vocab_id": "new_03"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "쉬다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "休息"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "코미디",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "喜劇"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "좋아지다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "變好、好轉"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_141",
+    "pattern": "動詞／形容詞語幹 + -겠어요",
+    "meaning": "（推測）應該…吧、一定…吧",
+    "explanation": "聽到對方的情況後表示推測或同理：힘들겠어요（一定很辛苦吧）、맛있겠어요（看起來很好吃）。不管有沒有收音都接 -겠어요。回應朋友的抱怨或分享時很常用，聽起來很體貼。",
+    "extra_example_ko": "와, 그 케이크 정말 맛있겠어요!",
+    "extra_example_zh": "哇，那個蛋糕看起來一定很好吃！"
+   },
+   {
+    "grammar_id": "g_142",
+    "pattern": "名詞 + 이/가 어때요?",
+    "meaning": "…怎麼樣？",
+    "explanation": "詢問狀態或意見：기분이 어때요?（心情怎麼樣？）、날씨가 어때요?（天氣怎麼樣？）。也可以用來提議：영화 어때요?（看電影怎麼樣？）。어때요 是 어떻다（怎麼樣）的 -아요/어요 形。",
+    "extra_example_ko": "이 옷 색깔이 어때요?",
+    "extra_example_zh": "這件衣服的顏色怎麼樣？"
+   }
+  ]
+ },
+ {
+  "article_id": "art_122",
+  "level": 1,
+  "topic": "電話聯絡與約定時間",
+  "title_ko": "약속 시간 바꾸기",
+  "title_zh": "改約會時間",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "여보세요? 지민 씨, 지금 통화 괜찮아요?",
+    "zh": "喂？智敏，現在方便講電話嗎？",
+    "target_words": [
+     {
+      "surface": "여보세요",
+      "lemma": "여보세요",
+      "vocab_id": "v_1732"
+     },
+     {
+      "surface": "지금",
+      "lemma": "지금",
+      "vocab_id": "v_1822"
+     },
+     {
+      "surface": "통화",
+      "lemma": "통화",
+      "vocab_id": "v_1733"
+     },
+     {
+      "surface": "괜찮아요",
+      "lemma": "괜찮다",
+      "vocab_id": "v_1006"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "네, 괜찮아요. 무슨 일이에요?",
+    "zh": "嗯，方便。什麼事？",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "괜찮아요",
+      "lemma": "괜찮다",
+      "vocab_id": "v_1006"
+     },
+     {
+      "surface": "무슨",
+      "lemma": "무슨",
+      "vocab_id": "v_1747"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "내일 약속 시간을 바꿀 수 있어요? 회의가 생겼어요.",
+    "zh": "明天約的時間可以改嗎？我臨時要開會。",
+    "target_words": [
+     {
+      "surface": "내일",
+      "lemma": "내일",
+      "vocab_id": "v_1818"
+     },
+     {
+      "surface": "약속",
+      "lemma": "약속",
+      "vocab_id": "v_1724"
+     },
+     {
+      "surface": "시간을",
+      "lemma": "시간",
+      "vocab_id": "v_1116"
+     },
+     {
+      "surface": "바꿀",
+      "lemma": "바꾸다",
+      "vocab_id": "v_1730"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     },
+     {
+      "surface": "회의가",
+      "lemma": "회의",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "생겼어요",
+      "lemma": "생기다",
+      "vocab_id": "new_02"
+     }
+    ],
+    "grammar_ids": [
+     "g_143"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "그럼 몇 시에 만날까요?",
+    "zh": "那我們幾點見面？",
+    "target_words": [
+     {
+      "surface": "그럼",
+      "lemma": "그럼",
+      "vocab_id": "v_1843"
+     },
+     {
+      "surface": "몇",
+      "lemma": "몇",
+      "vocab_id": "v_1101"
+     },
+     {
+      "surface": "시에",
+      "lemma": "시",
+      "vocab_id": "v_1114"
+     },
+     {
+      "surface": "만날까요",
+      "lemma": "만나다",
+      "vocab_id": "v_1725"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "저녁 일곱 시 어때요? 회사 앞에서 기다릴게요.",
+    "zh": "晚上七點怎麼樣？我在公司前面等你。",
+    "target_words": [
+     {
+      "surface": "저녁",
+      "lemma": "저녁",
+      "vocab_id": "v_1120"
+     },
+     {
+      "surface": "일곱",
+      "lemma": "일곱",
+      "vocab_id": "v_1109"
+     },
+     {
+      "surface": "시",
+      "lemma": "시",
+      "vocab_id": "v_1114"
+     },
+     {
+      "surface": "회사",
+      "lemma": "회사",
+      "vocab_id": "v_1033"
+     },
+     {
+      "surface": "앞에서",
+      "lemma": "앞",
+      "vocab_id": "v_1211"
+     },
+     {
+      "surface": "기다릴게요",
+      "lemma": "기다리다",
+      "vocab_id": "v_1726"
+     }
+    ],
+    "grammar_ids": [
+     "g_144"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "좋아요. 아마 조금 늦을 거예요. 늦으면 문자 보낼게요.",
+    "zh": "好。我可能會晚一點到，晚到的話會傳簡訊給你。",
+    "target_words": [
+     {
+      "surface": "좋아요",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
+     {
+      "surface": "아마",
+      "lemma": "아마",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "조금",
+      "lemma": "조금",
+      "vocab_id": "v_1404"
+     },
+     {
+      "surface": "늦을",
+      "lemma": "늦다",
+      "vocab_id": "v_1133"
+     },
+     {
+      "surface": "늦으면",
+      "lemma": "늦다",
+      "vocab_id": "v_1133"
+     },
+     {
+      "surface": "문자",
+      "lemma": "문자",
+      "vocab_id": "v_1718"
+     },
+     {
+      "surface": "보낼게요",
+      "lemma": "보내다",
+      "vocab_id": "v_1720"
+     }
+    ],
+    "grammar_ids": [
+     "g_144"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "회의",
+    "pos": "名詞",
+    "hanja": "會議",
+    "meaning_zh": "會議、開會"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "생기다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "發生、出現；有了"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "아마",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "大概、可能"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_143",
+    "pattern": "動詞語幹 + -(으)ㄹ 수 있다／없다",
+    "meaning": "能…、可以…／不能…",
+    "explanation": "表示能力或可能性。語幹沒有收音接 -ㄹ 수 있다（바꾸다 → 바꿀 수 있어요），有收音接 -을 수 있다（먹다 → 먹을 수 있어요）。問「可以…嗎？」就說 -(으)ㄹ 수 있어요?；不行說 -(으)ㄹ 수 없어요。",
+    "extra_example_ko": "저는 한국어로 이메일을 쓸 수 있어요.",
+    "extra_example_zh": "我可以用韓文寫電子郵件。"
+   },
+   {
+    "grammar_id": "g_144",
+    "pattern": "動詞語幹 + -(으)ㄹ게요",
+    "meaning": "我會…（向對方保證、說自己要做的事）",
+    "explanation": "說話者告訴對方「我會做…」，帶有考慮對方、承諾的感覺：기다릴게요（我會等你）、문자 보낼게요（我會傳簡訊）。只能用在「我」身上。沒有收音接 -ㄹ게요，有收音接 -을게요（먹다 → 먹을게요）。",
+    "extra_example_ko": "도착하면 전화할게요.",
+    "extra_example_zh": "我到了會打電話給你。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_123",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "title_ko": "나의 일요일",
+  "title_zh": "我的星期天",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "일요일 아침에 일찍 일어나서 손을 씻었어요.",
+    "zh": "星期天早上我很早就起床，洗了手。",
+    "target_words": [
+     {
+      "surface": "일요일",
+      "lemma": "일요일",
+      "vocab_id": "v_1094"
+     },
+     {
+      "surface": "아침에",
+      "lemma": "아침",
+      "vocab_id": "v_1118"
+     },
+     {
+      "surface": "일찍",
+      "lemma": "일찍",
+      "vocab_id": "v_1134"
+     },
+     {
+      "surface": "일어나서",
+      "lemma": "일어나다",
+      "vocab_id": "v_1125"
+     },
+     {
+      "surface": "손을",
+      "lemma": "손",
+      "vocab_id": "v_1658"
+     },
+     {
+      "surface": "씻었어요",
+      "lemma": "씻다",
+      "vocab_id": "v_1762"
+     }
+    ],
+    "grammar_ids": [
+     "g_145"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "그리고 공원에 가서 친구하고 오랫동안 이야기했어요.",
+    "zh": "然後去公園，和朋友聊了很久。",
+    "target_words": [
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
+     {
+      "surface": "공원에",
+      "lemma": "공원",
+      "vocab_id": "v_1279"
+     },
+     {
+      "surface": "가서",
+      "lemma": "가다",
+      "vocab_id": "v_1751"
+     },
+     {
+      "surface": "친구하고",
+      "lemma": "친구",
+      "vocab_id": "v_1056"
+     },
+     {
+      "surface": "오랫동안",
+      "lemma": "오랫동안",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "이야기했어요",
+      "lemma": "이야기하다",
+      "vocab_id": "v_1759"
+     }
+    ],
+    "grammar_ids": [
+     "g_145"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "점심에는 집에 돌아가서 비빔밥을 만들어 먹었어요.",
+    "zh": "中午回家做了拌飯來吃。",
+    "target_words": [
+     {
+      "surface": "점심에는",
+      "lemma": "점심",
+      "vocab_id": "v_1119"
+     },
+     {
+      "surface": "집에",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "돌아가서",
+      "lemma": "돌아가다",
+      "vocab_id": "v_1771"
+     },
+     {
+      "surface": "비빔밥을",
+      "lemma": "비빔밥",
+      "vocab_id": "v_1345"
+     },
+     {
+      "surface": "만들어",
+      "lemma": "만들다",
+      "vocab_id": "v_1760"
+     },
+     {
+      "surface": "먹었어요",
+      "lemma": "먹다",
+      "vocab_id": "v_1749"
+     }
+    ],
+    "grammar_ids": [
+     "g_145"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "오후에는 도서관에서 책을 두 권 빌려서 읽었어요.",
+    "zh": "下午在圖書館借了兩本書來看。",
+    "target_words": [
+     {
+      "surface": "오후에는",
+      "lemma": "오후",
+      "vocab_id": "v_1123"
+     },
+     {
+      "surface": "도서관에서",
+      "lemma": "도서관",
+      "vocab_id": "v_1278"
+     },
+     {
+      "surface": "책을",
+      "lemma": "책",
+      "vocab_id": "v_1140"
+     },
+     {
+      "surface": "두",
+      "lemma": "둘",
+      "vocab_id": "v_1104"
+     },
+     {
+      "surface": "권",
+      "lemma": "권",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "빌려서",
+      "lemma": "빌리다",
+      "vocab_id": "v_1779"
+     },
+     {
+      "surface": "읽었어요",
+      "lemma": "읽다",
+      "vocab_id": "v_1757"
+     }
+    ],
+    "grammar_ids": [
+     "g_145"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "저녁에는 일기를 쓰고 음악을 들었어요.",
+    "zh": "晚上寫了日記，聽了音樂。",
+    "target_words": [
+     {
+      "surface": "저녁에는",
+      "lemma": "저녁",
+      "vocab_id": "v_1120"
+     },
+     {
+      "surface": "일기를",
+      "lemma": "일기",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "쓰고",
+      "lemma": "쓰다",
+      "vocab_id": "v_1756"
+     },
+     {
+      "surface": "음악을",
+      "lemma": "음악",
+      "vocab_id": "v_1581"
+     },
+     {
+      "surface": "들었어요",
+      "lemma": "듣다",
+      "vocab_id": "v_1754"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "바빴지만 아주 즐거운 하루였어요.",
+    "zh": "雖然很忙，但是很愉快的一天。",
+    "target_words": [
+     {
+      "surface": "바빴지만",
+      "lemma": "바쁘다",
+      "vocab_id": "v_1690"
+     },
+     {
+      "surface": "즐거운",
+      "lemma": "즐겁다",
+      "vocab_id": "v_1686"
+     },
+     {
+      "surface": "하루였어요",
+      "lemma": "하루",
+      "vocab_id": "v_1136"
+     }
+    ],
+    "grammar_ids": [
+     "g_146"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "일기",
+    "pos": "名詞",
+    "hanja": "日記",
+    "meaning_zh": "日記"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "오랫동안",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "很長一段時間、很久"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "권",
+    "pos": "名詞（量詞）",
+    "hanja": "卷",
+    "meaning_zh": "本（算書）"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_145",
+    "pattern": "動詞語幹 + -아서/어서（先後順序）",
+    "meaning": "…之後（再）…、…然後…",
+    "explanation": "和「因為」的 -아서/어서 長得一樣，但這裡表示先做前一個動作，再接著做後一個，而且兩個動作有關聯（同一個地點或同一個東西）：공원에 가서 이야기했어요（去公園，在那裡聊天）、책을 빌려서 읽었어요（借書來看）。只是單純的先後，用 -고 就好。",
+    "extra_example_ko": "친구를 만나서 같이 점심을 먹었어요.",
+    "extra_example_zh": "見了朋友，一起吃了午餐。"
+   },
+   {
+    "grammar_id": "g_146",
+    "pattern": "動詞／形容詞語幹 + -지만",
+    "meaning": "雖然…但是…",
+    "explanation": "連接兩個相反或對比的內容。不管有沒有收音都接 -지만；過去式寫成 -았/었지만（바빴지만）。和連接詞 하지만 意思一樣，-지만 用在句子中間，하지만 用在兩個句子之間。",
+    "extra_example_ko": "한국어는 어렵지만 재미있어요.",
+    "extra_example_zh": "韓文雖然難，但是很有趣。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_124",
+  "level": 1,
+  "topic": "常用高頻基礎形容詞（狀態篇）",
+  "title_ko": "한국어 공부",
+  "title_zh": "學韓文",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "한국어가 어려워요?",
+    "zh": "韓文難嗎？",
+    "target_words": [
+     {
+      "surface": "한국어가",
+      "lemma": "한국어",
+      "vocab_id": "v_1165"
+     },
+     {
+      "surface": "어려워요",
+      "lemma": "어렵다",
+      "vocab_id": "v_1789"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "문법은 어렵지만 발음은 쉬워요.",
+    "zh": "文法很難，但是發音很簡單。",
+    "target_words": [
+     {
+      "surface": "문법은",
+      "lemma": "문법",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "어렵지만",
+      "lemma": "어렵다",
+      "vocab_id": "v_1789"
+     },
+     {
+      "surface": "발음은",
+      "lemma": "발음",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "쉬워요",
+      "lemma": "쉽다",
+      "vocab_id": "v_1790"
+     }
+    ],
+    "grammar_ids": [
+     "g_147"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "맞아요. 그런데 단어가 너무 많아요.",
+    "zh": "對啊，不過單字太多了。",
+    "target_words": [
+     {
+      "surface": "맞아요",
+      "lemma": "맞다",
+      "vocab_id": "v_1796"
+     },
+     {
+      "surface": "그런데",
+      "lemma": "그런데",
+      "vocab_id": "v_1841"
+     },
+     {
+      "surface": "단어가",
+      "lemma": "단어",
+      "vocab_id": "v_1167"
+     },
+     {
+      "surface": "너무",
+      "lemma": "너무",
+      "vocab_id": "v_1403"
+     },
+     {
+      "surface": "많아요",
+      "lemma": "많다",
+      "vocab_id": "v_1785"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "매일 조금씩 외우면 괜찮아요.",
+    "zh": "每天背一點就沒問題了。",
+    "target_words": [
+     {
+      "surface": "매일",
+      "lemma": "매일",
+      "vocab_id": "v_1131"
+     },
+     {
+      "surface": "조금",
+      "lemma": "조금",
+      "vocab_id": "v_1404"
+     },
+     {
+      "surface": "외우면",
+      "lemma": "외우다",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "괜찮아요",
+      "lemma": "괜찮다",
+      "vocab_id": "v_1006"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "드라마를 보면 너무 빨라요.",
+    "zh": "可是看韓劇的時候，大家說話太快了。",
+    "target_words": [
+     {
+      "surface": "드라마를",
+      "lemma": "드라마",
+      "vocab_id": "v_1594"
+     },
+     {
+      "surface": "보면",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     },
+     {
+      "surface": "너무",
+      "lemma": "너무",
+      "vocab_id": "v_1403"
+     },
+     {
+      "surface": "빨라요",
+      "lemma": "빠르다",
+      "vocab_id": "v_1787"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "처음에는 다 똑같아요. 천천히 많이 들으세요.",
+    "zh": "一開始大家都一樣，慢慢多聽就好。",
+    "target_words": [
+     {
+      "surface": "처음에는",
+      "lemma": "처음",
+      "vocab_id": "v_1837"
+     },
+     {
+      "surface": "다",
+      "lemma": "다",
+      "vocab_id": "v_1472"
+     },
+     {
+      "surface": "똑같아요",
+      "lemma": "똑같다",
+      "vocab_id": "v_1793"
+     },
+     {
+      "surface": "천천히",
+      "lemma": "천천히",
+      "vocab_id": "v_1272"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "들으세요",
+      "lemma": "듣다",
+      "vocab_id": "v_1754"
+     }
+    ],
+    "grammar_ids": [
+     "g_148"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "문법",
+    "pos": "名詞",
+    "hanja": "文法",
+    "meaning_zh": "文法"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "발음",
+    "pos": "名詞",
+    "hanja": "發音",
+    "meaning_zh": "發音"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "외우다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "背、背誦、記住"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_147",
+    "pattern": "名詞 + 은/는 …, 名詞 + 은/는 …",
+    "meaning": "（對比）…的話…，…的話…",
+    "explanation": "主題助詞 -은/는 也能用來對比兩件事：문법은 어렵지만 발음은 쉬워요（文法難，發音倒是簡單）。兩邊都用 -은/는，中間常接 -지만（雖然…但是）。",
+    "extra_example_ko": "여름은 덥고 겨울은 추워요.",
+    "extra_example_zh": "夏天熱，冬天冷。"
+   },
+   {
+    "grammar_id": "g_148",
+    "pattern": "ㄷ 不規則：듣다 → 들어요、들으세요",
+    "meaning": "語幹最後的 ㄷ 遇到母音變成 ㄹ",
+    "explanation": "듣다（聽）、걷다（走）、묻다（問）這幾個常用動詞，後面接母音開頭的語尾時 ㄷ 會變成 ㄹ：듣다 → 들어요、들으세요；걷다 → 걸어요；묻다 → 물어요。接子音開頭時不變：듣고、듣지만。不過 닫다（關）、받다（收）是規則變化（닫아요、받아요）。",
+    "extra_example_ko": "매일 삼십 분 걸어요.",
+    "extra_example_zh": "我每天走路三十分鐘。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_125",
+  "level": 1,
+  "topic": "基礎時間副詞與連接詞",
+  "title_ko": "나의 한국어 이야기",
+  "title_zh": "我學韓文的故事",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "저는 작년에 처음 한국어를 배웠어요.",
+    "zh": "我去年第一次學韓文。",
+    "target_words": [
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "작년에",
+      "lemma": "작년",
+      "vocab_id": "v_1830"
+     },
+     {
+      "surface": "처음",
+      "lemma": "처음",
+      "vocab_id": "v_1837"
+     },
+     {
+      "surface": "한국어를",
+      "lemma": "한국어",
+      "vocab_id": "v_1165"
+     },
+     {
+      "surface": "배웠어요",
+      "lemma": "배우다",
+      "vocab_id": "v_1157"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "그때는 아무것도 몰랐어요.",
+    "zh": "那時候什麼都不懂。",
+    "target_words": [
+     {
+      "surface": "그때는",
+      "lemma": "그때",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "아무것도",
+      "lemma": "아무것도",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "몰랐어요",
+      "lemma": "모르다",
+      "vocab_id": "v_1162"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "하지만 매주 열심히 공부했어요.",
+    "zh": "但是我每週都認真讀書。",
+    "target_words": [
+     {
+      "surface": "하지만",
+      "lemma": "하지만",
+      "vocab_id": "v_1842"
+     },
+     {
+      "surface": "매주",
+      "lemma": "매주",
+      "vocab_id": "v_1850"
+     },
+     {
+      "surface": "열심히",
+      "lemma": "열심히",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "공부했어요",
+      "lemma": "공부하다",
+      "vocab_id": "v_1156"
+     }
+    ],
+    "grammar_ids": [
+     "g_149"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "그래서 지금은 간단한 한국어로 말할 수 있어요.",
+    "zh": "所以現在可以用簡單的韓文說話了。",
+    "target_words": [
+     {
+      "surface": "그래서",
+      "lemma": "그래서",
+      "vocab_id": "v_1840"
+     },
+     {
+      "surface": "지금은",
+      "lemma": "지금",
+      "vocab_id": "v_1822"
+     },
+     {
+      "surface": "간단한",
+      "lemma": "간단하다",
+      "vocab_id": "v_1791"
+     },
+     {
+      "surface": "한국어로",
+      "lemma": "한국어",
+      "vocab_id": "v_1165"
+     },
+     {
+      "surface": "말할",
+      "lemma": "말하다",
+      "vocab_id": "v_1758"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_149"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "요즘은 아침마다 단어를 공부하고, 저녁에는 드라마를 봐요.",
+    "zh": "最近每天早上背單字，晚上看韓劇。",
+    "target_words": [
+     {
+      "surface": "요즘은",
+      "lemma": "요즘",
+      "vocab_id": "v_1833"
+     },
+     {
+      "surface": "아침마다",
+      "lemma": "아침",
+      "vocab_id": "v_1118"
+     },
+     {
+      "surface": "단어를",
+      "lemma": "단어",
+      "vocab_id": "v_1167"
+     },
+     {
+      "surface": "공부하고",
+      "lemma": "공부하다",
+      "vocab_id": "v_1156"
+     },
+     {
+      "surface": "저녁에는",
+      "lemma": "저녁",
+      "vocab_id": "v_1120"
+     },
+     {
+      "surface": "드라마를",
+      "lemma": "드라마",
+      "vocab_id": "v_1594"
+     },
+     {
+      "surface": "봐요",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "내년에는 한국에 가서 한국 친구들을 만나고 싶어요.",
+    "zh": "明年我想去韓國，見見韓國朋友。",
+    "target_words": [
+     {
+      "surface": "내년에는",
+      "lemma": "내년",
+      "vocab_id": "v_1832"
+     },
+     {
+      "surface": "한국에",
+      "lemma": "한국",
+      "vocab_id": "v_1018"
+     },
+     {
+      "surface": "가서",
+      "lemma": "가다",
+      "vocab_id": "v_1751"
+     },
+     {
+      "surface": "한국",
+      "lemma": "한국",
+      "vocab_id": "v_1018"
+     },
+     {
+      "surface": "친구들을",
+      "lemma": "친구",
+      "vocab_id": "v_1056"
+     },
+     {
+      "surface": "만나고",
+      "lemma": "만나다",
+      "vocab_id": "v_1725"
+     }
+    ],
+    "grammar_ids": [
+     "g_150"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "그때",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "那時候"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "아무것도",
+    "pos": "代名詞",
+    "hanja": null,
+    "meaning_zh": "（後接否定）什麼都（沒有／不）"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "열심히",
+    "pos": "副詞",
+    "hanja": "熱心",
+    "meaning_zh": "認真地、努力地"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_149",
+    "pattern": "連接詞：그리고／그래서／하지만／그런데",
+    "meaning": "還有／所以／但是／不過",
+    "explanation": "放在兩個句子之間：그리고（還有、然後）、그래서（所以，前因後果）、하지만（但是，前後相反）、그런데（不過；也可用來換話題「對了」）。그럼（那麼）用來接對方的話。",
+    "extra_example_ko": "비가 와요. 그래서 우산을 가지고 가요.",
+    "extra_example_zh": "下雨了，所以帶傘出門。"
+   },
+   {
+    "grammar_id": "g_150",
+    "pattern": "動詞語幹 + -고 싶다",
+    "meaning": "想…",
+    "explanation": "表達自己的願望：만나고 싶어요（想見面）、가고 싶어요（想去）。不管有沒有收音都接 -고 싶다。說第三人稱「他想…」要用 -고 싶어하다（친구가 가고 싶어해요）。",
+    "extra_example_ko": "한국 음식을 만들어 보고 싶어요.",
+    "extra_example_zh": "我想試著做韓國料理。"
+   }
+  ]
+ },
+ {
   "article_id": "art_112",
   "level": 1,
   "topic": "餐廳點餐與口味形容",
@@ -12605,6 +15853,11 @@ const READ_ARTICLES = [
     "zh": "可是我不能吃辣的食物。",
     "target_words": [
      {
+      "surface": "그런데",
+      "lemma": "그런데",
+      "vocab_id": "v_1841"
+     },
+     {
       "surface": "저는",
       "lemma": "저",
       "vocab_id": "v_1010"
@@ -12635,6 +15888,11 @@ const READ_ARTICLES = [
     "ko": "그럼 불고기를 시켜요. 불고기는 안 맵고 달아요.",
     "zh": "那我們點烤肉吧。烤肉不辣，而且甜甜的。",
     "target_words": [
+     {
+      "surface": "그럼",
+      "lemma": "그럼",
+      "vocab_id": "v_1843"
+     },
      {
       "surface": "불고기를",
       "lemma": "불고기",

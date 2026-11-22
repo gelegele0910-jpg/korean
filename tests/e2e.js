@@ -397,7 +397,7 @@ const INIT = () => {
   ok(await ev(() => S.srs['art_112:new_01'].l === 1), 'E17 閱讀單字照間隔複習');
   // E18 TOPIK 主題頁：34 個字、看例句、單一加入、全部加入、文章入口與返回
   await ev(() => go('learn'));
-  ok((await p.$$('.tp-tile[data-act=tp-open]')).length >= 5 && (await p.$$('.tp-tile.off')).length > 0, 'E18 主題列表（完成的可以點、其他準備中）');
+  ok((await p.$$('.tp-tile[data-act=tp-open]')).length === await ev(() => TOPIK_TOPICS.filter(t => t.ready).length) && (await p.$$('.tp-tile.off')).length === await ev(() => TOPIK_TOPICS.filter(t => !t.ready).length), 'E18 主題列表（完成的可以點、其他準備中）');
   await p.click('[data-act=tp-open][data-n="1"]');
   ok((await p.$$('.tp-w')).length === 34, 'E18 主題 1 有 34 個字');
   await ev(() => { window.__spoken = []; }); await p.click('[data-act=tp-ex][data-id=v_1009]');

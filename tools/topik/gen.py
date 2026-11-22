@@ -219,9 +219,10 @@ W[5] = [
  ('끝나다','動詞',None,'結束','수업이 세 시에 끝나요.','課三點結束。'),
 ]
 sys.path.insert(0, HERE)
-import batch2
+import batch2, batch3
 W[6], W[7], W[8], W[9], W[10] = batch2.W6, batch2.W7, batch2.W8, batch2.W9, batch2.W10
-START = {10: 4}  # 主題 10 的 1～3 已有舊單字
+W[11], W[12], W[13], W[14], W[15] = batch3.W11, batch3.W12, batch3.W13, batch3.W14, batch3.W15
+START = {10: 4, 11: 7, 12: 13, 13: 7}  # 這些主題的區段開頭已有先前的飲食單字
 # 先前「飲食與餐廳」的單字：放進它們所屬主題的區段（舊 id → 新 id，複習進度會跟著換）
 OLD = [  # 舊 id, 主題, 區段內位置, (資料)
  ('v_1011',10,1,('커피','名詞',None,'咖啡','커피 한 잔 마실까요?','要不要喝杯咖啡？')),
@@ -315,7 +316,7 @@ ARTS.append(dict(article_id='art_102', level=1, topic=TITLE[2], title_ko='우리
  S(2, 'B', '다섯 명이에요. 부모님하고 언니, 남동생이 있어요.', '五個人。有爸媽、姊姊和弟弟。', [('다섯','다섯'),('명이에요','명'),('부모님하고','부모님'),('언니','언니'),('남동생이','남동생'),('있어요','있다')], ['g_103','g_104']),
  S(3, 'A', '언니는 직업이 뭐예요?', '你姊姊做什麼工作？', [('언니는','언니'),('직업이','직업'),('뭐예요','무엇')], []),
  S(4, 'B', '언니는 간호사예요. 남동생은 대학생이에요.', '姊姊是護理師。弟弟是大學生。', [('언니는','언니'),('간호사예요','간호사'),('남동생은','남동생'),('대학생이에요','대학생')], []),
- S(5, 'A', '저는 형제가 없어서 조금 외로워요. 하지만 할머니하고 같이 살아요.', '我沒有兄弟姊妹，所以有點寂寞。不過我和奶奶一起住。', [('저는','저',1),('형제가','형제'),('없어서','없다'),('외로워요','new_03','외롭다'),('할머니하고','할머니'),('같이','같이'),('살아요','살다')], ['g_103','g_104']),
+ S(5, 'A', '저는 형제가 없어서 조금 외로워요. 하지만 할머니하고 같이 살아요.', '我沒有兄弟姊妹，所以有點寂寞。不過我和奶奶一起住。', [('저는','저',1),('형제가','형제'),('없어서','없다'),('조금','조금'),('외로워요','new_03','외롭다'),('할머니하고','할머니'),('같이','같이'),('살아요','살다')], ['g_103','g_104']),
  S(6, 'B', '할머니가 건강하세요? 가족 사진이 궁금해요!', '奶奶身體好嗎？好想看你們的全家福！', [('할머니가','할머니'),('건강하세요','new_01','건강하다'),('가족','가족'),('사진이','사진'),('궁금해요','new_02','궁금하다')], []),
 ], challenge_vocab=[
  dict(id='new_01', level=2, word='건강하다', pos='形容詞', hanja='健康', meaning_zh='健康'),
@@ -390,14 +391,15 @@ ARTS.append(dict(article_id='art_105', level=1, topic=TITLE[5], title_ko='교실
       extra_example_ko='저기 책을 읽는 사람이 제 친구예요.', extra_example_zh='在那邊看書的人是我朋友。'),
 ]))
 ARTS.extend(batch2.articles(S, TITLE))
+ARTS.extend(batch3.articles(S, TITLE))
 # ---------- art_112：餐廳（原本的 art_101，改到主題 12） ----------
 ARTS.append(dict(article_id='art_112', level=1, topic=TITLE[12], title_ko='식당에서', title_zh='在餐廳', sentences=[
  S(1,'A','배고파요. 이 식당 음식이 맛있어요?','我餓了。這家餐廳的菜好吃嗎？',[('배고파요','배고프다'),('식당','식당'),('음식이','음식'),('맛있어요','맛있다')],['g_123']),
  S(2,'B','네, 불고기하고 비빔밥이 맛있어요.','嗯，烤肉和拌飯很好吃。',[('불고기하고','불고기'),('비빔밥이','비빔밥'),('맛있어요','맛있다')],['g_123']),
  S(3,'A','그런데 저는 매운 음식을 못 먹어요.','可是我不能吃辣的食物。',[('저는','저',1),('매운','맵다'),('음식을','음식'),('먹어요','먹다')],['g_123']),
  S(4,'B','그럼 불고기를 시켜요. 불고기는 안 맵고 달아요.','那我們點烤肉吧。烤肉不辣，而且甜甜的。',[('불고기를','불고기'),('시켜요','new_01','시키다'),('불고기는','불고기'),('맵고','맵다'),('달아요','달다')],['g_123']),
- S(5,'A','저기요! 불고기 하나하고 물 주세요.','不好意思！請給我一份烤肉和水。',[('불고기','불고기'),('하나하고','하나'),('물','물')],[]),
- S(6,'B','아, 많이 먹어서 배불러요. 제가 계산해요.','啊，吃了好多，好飽。我來結帳。',[('많이','많이'),('먹어서','먹다'),('배불러요','배부르다'),('계산해요','new_02','계산하다')],['g_124','g_123']),
+ S(5,'A','저기요! 불고기 하나하고 물 주세요.','不好意思！請給我一份烤肉和水。',[('저기요','저기요'),('불고기','불고기'),('하나하고','하나'),('물','물'),('주세요','주다')],[]),
+ S(6,'B','아, 많이 먹어서 배불러요. 제가 계산해요.','啊，吃了好多，好飽。我來結帳。',[('많이','많이'),('먹어서','먹다'),('배불러요','배부르다'),('제가','저',1),('계산해요','new_02','계산하다')],['g_124','g_123']),
 ], challenge_vocab=[
  dict(id='new_01', level=2, word='시키다', pos='動詞', hanja=None, meaning_zh='點（餐）、叫（外送）'),
  dict(id='new_02', level=2, word='계산하다', pos='動詞', hanja='計算', meaning_zh='結帳、付錢；計算'),
@@ -410,7 +412,7 @@ ARTS.append(dict(article_id='art_112', level=1, topic=TITLE[12], title_ko='식�
       extra_example_ko='배가 고파서 라면을 먹었어요.', extra_example_zh='肚子餓了，所以吃了泡麵。'),
 ]))
 
-topics_js = [dict(no=n, level=1, title=t, desc=d, ids=[vid(n, 1), vid(n, PER)], ready=n <= 10) for n, t, d in TOPICS]
+topics_js = [dict(no=n, level=1, title=t, desc=d, ids=[vid(n, 1), vid(n, PER)], ready=n <= 15) for n, t, d in TOPICS]
 V.sort(key=lambda v: v['id'])
 out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入） =================\n"
  " * TOPIK_TOPICS：主題（1 級 25 個，每個主題固定 34 個字的編號區段：主題 n＝v_(1001+(n-1)×34)～+33）。ready＝已完成。\n"
@@ -426,8 +428,8 @@ out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入�
 open(os.path.join(ROOT, 'js', 'reading.js'), 'w', encoding='utf8').write(out)
 D = os.path.join(HERE, 'out') + os.sep
 os.makedirs(D, exist_ok=True)
-json.dump([v for v in V if 1171 <= int(v['id'][2:]) <= 1340], open(D + 'topik1_vocab_06-10.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
-json.dump([a for a in ARTS if 'art_106' <= a['article_id'] <= 'art_110'], open(D + 'topik1_articles_06-10.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump([v for v in V if 1341 <= int(v['id'][2:]) <= 1510], open(D + 'topik1_vocab_11-15.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump(sorted([a for a in ARTS if 'art_111' <= a['article_id'] <= 'art_115'], key=lambda a: a['article_id']), open(D + 'topik1_articles_11-15.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
 print('vocab', len(V), 'articles', len(ARTS))
 for a in ARTS:
     tws = [t for s in a['sentences'] for t in s['target_words']]

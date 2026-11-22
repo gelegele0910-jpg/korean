@@ -4,7 +4,7 @@
  * READ_ARTICLES：文章；target_words 的 surface 必須照順序出現在句子裡，vocab_id 指向 READ_VOCAB 或該篇的 challenge_vocab（+1 生字）。
  * VOCAB_ID_MAP：舊編號 → 新編號（2026-11 重新編號，migrate() 會把複習進度換過去）。
  * 檢查：tests/hangul.js 的 R1～R5。 */
-const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": false}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": false}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": false}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": false}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": false}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": false}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": false}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": false}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": false}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": false}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": false}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": false}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": false}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": false}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": false}];
+const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": false}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": false}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": false}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": false}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": false}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": false}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": false}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": false}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": false}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": false}];
 
 const VOCAB_ID_MAP = {"v_1029": "v_1118", "v_1011": "v_1307", "v_1003": "v_1308", "v_1022": "v_1309", "v_1001": "v_1341", "v_1002": "v_1342", "v_1013": "v_1343", "v_1014": "v_1344", "v_1015": "v_1345", "v_1016": "v_1346", "v_1004": "v_1375", "v_1005": "v_1376", "v_1017": "v_1377", "v_1018": "v_1378", "v_1019": "v_1379", "v_1023": "v_1380", "v_1024": "v_1381", "v_1025": "v_1382", "v_1026": "v_1383", "v_1027": "v_1384", "v_1028": "v_1385", "v_1030": "v_1386", "v_1006": "v_1409", "v_1007": "v_1410", "v_1008": "v_1411", "v_1009": "v_1412", "v_1010": "v_1413", "v_1012": "v_1414", "v_1020": "v_1749", "v_1021": "v_1750"};
 const ARTICLE_ID_MAP = { 'art_101:new_01': 'art_112:new_01', 'art_101:new_02': 'art_112:new_02' };
@@ -3817,6 +3817,314 @@ const READ_VOCAB = [
   "example_zh": "韓式烤肉真的很好吃。"
  },
  {
+  "id": "v_1347",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "떡볶이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "辣炒年糕",
+  "example_ko": "학교 앞에서 떡볶이를 사 먹었어요.",
+  "example_zh": "在學校前面買了辣炒年糕來吃。"
+ },
+ {
+  "id": "v_1348",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "김밥",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "紫菜包飯",
+  "example_ko": "소풍 때 김밥을 싸요.",
+  "example_zh": "郊遊時會包紫菜包飯。"
+ },
+ {
+  "id": "v_1349",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "냉면",
+  "pos": "名詞",
+  "hanja": "冷麵",
+  "meaning_zh": "冷麵",
+  "example_ko": "여름에는 시원한 냉면이 맛있어요.",
+  "example_zh": "夏天冰涼的冷麵很好吃。"
+ },
+ {
+  "id": "v_1350",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "삼겹살",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "五花肉",
+  "example_ko": "친구들하고 삼겹살을 구워 먹었어요.",
+  "example_zh": "和朋友們烤五花肉來吃。"
+ },
+ {
+  "id": "v_1351",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "갈비",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "排骨（韓式烤排骨）",
+  "example_ko": "갈비는 조금 비싸요.",
+  "example_zh": "排骨有點貴。"
+ },
+ {
+  "id": "v_1352",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "치킨",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "炸雞",
+  "example_ko": "치킨하고 맥주를 시켰어요.",
+  "example_zh": "點了炸雞和啤酒。"
+ },
+ {
+  "id": "v_1353",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "짜장면",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "炸醬麵",
+  "example_ko": "이사하는 날에 짜장면을 먹어요.",
+  "example_zh": "搬家那天吃炸醬麵。"
+ },
+ {
+  "id": "v_1354",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "짬뽕",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "炒碼麵（辣海鮮湯麵）",
+  "example_ko": "짬뽕은 국물이 매워요.",
+  "example_zh": "炒碼麵的湯很辣。"
+ },
+ {
+  "id": "v_1355",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "김치찌개",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "泡菜鍋",
+  "example_ko": "어머니가 김치찌개를 끓였어요.",
+  "example_zh": "媽媽煮了泡菜鍋。"
+ },
+ {
+  "id": "v_1356",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "된장찌개",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "大醬湯",
+  "example_ko": "된장찌개는 한국의 집밥이에요.",
+  "example_zh": "大醬湯是韓國的家常菜。"
+ },
+ {
+  "id": "v_1357",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "순두부찌개",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "嫩豆腐鍋",
+  "example_ko": "순두부찌개에 계란을 넣어요.",
+  "example_zh": "在嫩豆腐鍋裡加雞蛋。"
+ },
+ {
+  "id": "v_1358",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "찌개",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鍋、燉湯（湯少料多）",
+  "example_ko": "찌개를 같이 먹어요.",
+  "example_zh": "一起吃鍋。"
+ },
+ {
+  "id": "v_1359",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "국",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "湯",
+  "example_ko": "아침에 국하고 밥을 먹어요.",
+  "example_zh": "早上吃湯和飯。"
+ },
+ {
+  "id": "v_1360",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "국수",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "麵、麵條",
+  "example_ko": "점심에 국수를 먹었어요.",
+  "example_zh": "中午吃了麵。"
+ },
+ {
+  "id": "v_1361",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "떡",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "年糕",
+  "example_ko": "떡을 좋아해요?",
+  "example_zh": "你喜歡年糕嗎？"
+ },
+ {
+  "id": "v_1362",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "만두",
+  "pos": "名詞",
+  "hanja": "饅頭",
+  "meaning_zh": "餃子",
+  "example_ko": "만두를 쪄서 먹어요.",
+  "example_zh": "把餃子蒸來吃。"
+ },
+ {
+  "id": "v_1363",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "김",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "海苔",
+  "example_ko": "김에 밥을 싸서 먹어요.",
+  "example_zh": "用海苔包飯吃。"
+ },
+ {
+  "id": "v_1364",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "반찬",
+  "pos": "名詞",
+  "hanja": "飯饌",
+  "meaning_zh": "小菜、配菜",
+  "example_ko": "한국 식당은 반찬이 많아요.",
+  "example_zh": "韓國餐廳的小菜很多。"
+ },
+ {
+  "id": "v_1365",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "삼계탕",
+  "pos": "名詞",
+  "hanja": "蔘雞湯",
+  "meaning_zh": "人蔘雞湯",
+  "example_ko": "여름에 삼계탕을 먹어요.",
+  "example_zh": "夏天吃人蔘雞湯。"
+ },
+ {
+  "id": "v_1366",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "잡채",
+  "pos": "名詞",
+  "hanja": "雜菜",
+  "meaning_zh": "雜菜（韓式炒冬粉）",
+  "example_ko": "잡채는 생일에 자주 먹어요.",
+  "example_zh": "生日時常吃雜菜。"
+ },
+ {
+  "id": "v_1367",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "파전",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "蔥煎餅",
+  "example_ko": "비가 오는 날에는 파전이 생각나요.",
+  "example_zh": "下雨天會想吃蔥煎餅。"
+ },
+ {
+  "id": "v_1368",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "순대",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "血腸（韓式米腸）",
+  "example_ko": "시장에서 순대를 샀어요.",
+  "example_zh": "在市場買了血腸。"
+ },
+ {
+  "id": "v_1369",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "어묵",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "魚板",
+  "example_ko": "겨울에는 따뜻한 어묵이 좋아요.",
+  "example_zh": "冬天熱熱的魚板最棒了。"
+ },
+ {
+  "id": "v_1370",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "튀김",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "炸物、天婦羅",
+  "example_ko": "떡볶이하고 튀김을 같이 먹어요.",
+  "example_zh": "辣炒年糕配炸物一起吃。"
+ },
+ {
+  "id": "v_1371",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "호떡",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "糖餅（韓式黑糖餅）",
+  "example_ko": "호떡은 달고 맛있어요.",
+  "example_zh": "糖餅甜甜的很好吃。"
+ },
+ {
+  "id": "v_1372",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "한식",
+  "pos": "名詞",
+  "hanja": "韓食",
+  "meaning_zh": "韓式料理",
+  "example_ko": "외국인 친구가 한식을 좋아해요.",
+  "example_zh": "外國朋友喜歡韓式料理。"
+ },
+ {
+  "id": "v_1373",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "분식",
+  "pos": "名詞",
+  "hanja": "粉食",
+  "meaning_zh": "小吃（麵食、炸物等平價小吃）",
+  "example_ko": "분식집에서 김밥을 먹었어요.",
+  "example_zh": "在小吃店吃了紫菜包飯。"
+ },
+ {
+  "id": "v_1374",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "word": "요리",
+  "pos": "名詞",
+  "hanja": "料理",
+  "meaning_zh": "料理、做菜",
+  "example_ko": "저는 요리를 잘 못해요.",
+  "example_zh": "我不太會做菜。"
+ },
+ {
   "id": "v_1375",
   "level": 1,
   "topic": "餐廳點餐與口味形容",
@@ -3949,6 +4257,248 @@ const READ_VOCAB = [
   "example_zh": "請多吃一點。"
  },
  {
+  "id": "v_1387",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "맛없다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "不好吃、難吃",
+  "example_ko": "이 국은 맛없어요.",
+  "example_zh": "這碗湯不好吃。"
+ },
+ {
+  "id": "v_1388",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "싱겁다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "（味道）淡",
+  "example_ko": "국이 좀 싱거워요. 소금 주세요.",
+  "example_zh": "湯有點淡，請給我鹽。"
+ },
+ {
+  "id": "v_1389",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "시다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "酸",
+  "example_ko": "레몬이 너무 셔요.",
+  "example_zh": "檸檬太酸了。"
+ },
+ {
+  "id": "v_1390",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "고소하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "香、香醇（芝麻、堅果類的香味）",
+  "example_ko": "참기름 냄새가 고소해요.",
+  "example_zh": "香油的味道好香。"
+ },
+ {
+  "id": "v_1391",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "맛보다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "嚐、品嚐",
+  "example_ko": "이 김치 좀 맛보세요.",
+  "example_zh": "嚐嚐看這個泡菜。"
+ },
+ {
+  "id": "v_1392",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "느끼하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "油膩",
+  "example_ko": "피자가 좀 느끼해요.",
+  "example_zh": "披薩有點油膩。"
+ },
+ {
+  "id": "v_1393",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "그릇",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "碗、器皿",
+  "example_ko": "그릇이 뜨거워요.",
+  "example_zh": "碗很燙。"
+ },
+ {
+  "id": "v_1394",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "접시",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "盤子",
+  "example_ko": "접시 하나 더 주세요.",
+  "example_zh": "請再給我一個盤子。"
+ },
+ {
+  "id": "v_1395",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "수저",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "餐具（湯匙和筷子）",
+  "example_ko": "수저는 테이블 서랍에 있어요.",
+  "example_zh": "餐具在桌子的抽屜裡。"
+ },
+ {
+  "id": "v_1396",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "계산서",
+  "pos": "名詞",
+  "hanja": "計算書",
+  "meaning_zh": "帳單",
+  "example_ko": "계산서 주세요.",
+  "example_zh": "請給我帳單。"
+ },
+ {
+  "id": "v_1397",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "음료수",
+  "pos": "名詞",
+  "hanja": "飲料水",
+  "meaning_zh": "飲料",
+  "example_ko": "음료수는 뭐 드릴까요?",
+  "example_zh": "飲料要喝什麼呢？"
+ },
+ {
+  "id": "v_1398",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "맥주",
+  "pos": "名詞",
+  "hanja": "麥酒",
+  "meaning_zh": "啤酒",
+  "example_ko": "치킨에는 맥주가 잘 어울려요.",
+  "example_zh": "炸雞配啤酒很搭。"
+ },
+ {
+  "id": "v_1399",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "소주",
+  "pos": "名詞",
+  "hanja": "燒酒",
+  "meaning_zh": "燒酒",
+  "example_ko": "한국 사람들은 소주를 자주 마셔요.",
+  "example_zh": "韓國人常喝燒酒。"
+ },
+ {
+  "id": "v_1400",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "술",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "酒",
+  "example_ko": "저는 술을 못 마셔요.",
+  "example_zh": "我不能喝酒。"
+ },
+ {
+  "id": "v_1401",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "인분",
+  "pos": "名詞（量詞）",
+  "hanja": "人分",
+  "meaning_zh": "人份",
+  "example_ko": "삼겹살 이 인분 주세요.",
+  "example_zh": "請給我兩人份五花肉。"
+ },
+ {
+  "id": "v_1402",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "더",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "再、更",
+  "example_ko": "밥 좀 더 주세요.",
+  "example_zh": "請再給我一點飯。"
+ },
+ {
+  "id": "v_1403",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "너무",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "太、非常",
+  "example_ko": "너무 맛있어요!",
+  "example_zh": "太好吃了！"
+ },
+ {
+  "id": "v_1404",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "조금",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "一點、稍微",
+  "example_ko": "조금만 맵게 해 주세요.",
+  "example_zh": "請做得稍微辣一點就好。"
+ },
+ {
+  "id": "v_1405",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "저기요",
+  "pos": "感嘆詞",
+  "hanja": null,
+  "meaning_zh": "不好意思（叫人、引起注意）",
+  "example_ko": "저기요, 물 좀 주세요.",
+  "example_zh": "不好意思，請給我水。"
+ },
+ {
+  "id": "v_1406",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "여기요",
+  "pos": "感嘆詞",
+  "hanja": null,
+  "meaning_zh": "這邊（叫服務生）",
+  "example_ko": "여기요! 주문할게요.",
+  "example_zh": "這邊！我要點餐。"
+ },
+ {
+  "id": "v_1407",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "식사",
+  "pos": "名詞",
+  "hanja": "食事",
+  "meaning_zh": "用餐、飯",
+  "example_ko": "식사하셨어요?",
+  "example_zh": "您吃飯了嗎？"
+ },
+ {
+  "id": "v_1408",
+  "level": 1,
+  "topic": "餐廳點餐與口味形容",
+  "word": "냄새",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "氣味、味道（聞到的）",
+  "example_ko": "음식 냄새가 좋아요.",
+  "example_zh": "食物的味道很香。"
+ },
+ {
   "id": "v_1409",
   "level": 1,
   "topic": "水果與生鮮食材",
@@ -4013,6 +4563,1062 @@ const READ_VOCAB = [
   "meaning_zh": "牛奶",
   "example_ko": "저는 매일 우유를 마셔요.",
   "example_zh": "我每天都喝牛奶。"
+ },
+ {
+  "id": "v_1415",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "사과",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "蘋果",
+  "example_ko": "사과 하나에 천 원이에요.",
+  "example_zh": "蘋果一顆一千韓元。"
+ },
+ {
+  "id": "v_1416",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "배",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "梨子",
+  "example_ko": "한국 배는 크고 달아요.",
+  "example_zh": "韓國的梨子又大又甜。"
+ },
+ {
+  "id": "v_1417",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "바나나",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "香蕉",
+  "example_ko": "아침에 바나나를 먹어요.",
+  "example_zh": "早上吃香蕉。"
+ },
+ {
+  "id": "v_1418",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "포도",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "葡萄",
+  "example_ko": "포도 주스를 좋아해요.",
+  "example_zh": "我喜歡葡萄汁。"
+ },
+ {
+  "id": "v_1419",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "딸기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "草莓",
+  "example_ko": "겨울에 딸기가 맛있어요.",
+  "example_zh": "冬天的草莓很好吃。"
+ },
+ {
+  "id": "v_1420",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "수박",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "西瓜",
+  "example_ko": "여름에는 수박을 많이 먹어요.",
+  "example_zh": "夏天常吃西瓜。"
+ },
+ {
+  "id": "v_1421",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "귤",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "橘子",
+  "example_ko": "제주도 귤이 유명해요.",
+  "example_zh": "濟州島的橘子很有名。"
+ },
+ {
+  "id": "v_1422",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "복숭아",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "桃子",
+  "example_ko": "복숭아가 아주 부드러워요.",
+  "example_zh": "桃子很軟嫩。"
+ },
+ {
+  "id": "v_1423",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "레몬",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "檸檬",
+  "example_ko": "레몬차를 마셨어요.",
+  "example_zh": "喝了檸檬茶。"
+ },
+ {
+  "id": "v_1424",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "돼지고기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "豬肉",
+  "example_ko": "저는 돼지고기를 안 먹어요.",
+  "example_zh": "我不吃豬肉。"
+ },
+ {
+  "id": "v_1425",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "소고기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "牛肉",
+  "example_ko": "소고기는 비싸요.",
+  "example_zh": "牛肉很貴。"
+ },
+ {
+  "id": "v_1426",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "닭고기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "雞肉",
+  "example_ko": "닭고기로 삼계탕을 만들어요.",
+  "example_zh": "用雞肉做人蔘雞湯。"
+ },
+ {
+  "id": "v_1427",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "계란",
+  "pos": "名詞",
+  "hanja": "雞卵",
+  "meaning_zh": "雞蛋",
+  "example_ko": "아침에 계란 두 개를 먹었어요.",
+  "example_zh": "早上吃了兩顆雞蛋。"
+ },
+ {
+  "id": "v_1428",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "두부",
+  "pos": "名詞",
+  "hanja": "豆腐",
+  "meaning_zh": "豆腐",
+  "example_ko": "두부는 건강에 좋아요.",
+  "example_zh": "豆腐對健康很好。"
+ },
+ {
+  "id": "v_1429",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "쌀",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "米",
+  "example_ko": "쌀로 밥을 지어요.",
+  "example_zh": "用米煮飯。"
+ },
+ {
+  "id": "v_1430",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "양파",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "洋蔥",
+  "example_ko": "양파를 썰면 눈물이 나요.",
+  "example_zh": "切洋蔥會流眼淚。"
+ },
+ {
+  "id": "v_1431",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "마늘",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "大蒜",
+  "example_ko": "한국 요리에는 마늘을 많이 넣어요.",
+  "example_zh": "韓國料理會放很多大蒜。"
+ },
+ {
+  "id": "v_1432",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "감자",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "馬鈴薯",
+  "example_ko": "감자를 삶아서 먹어요.",
+  "example_zh": "把馬鈴薯煮來吃。"
+ },
+ {
+  "id": "v_1433",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "고구마",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "地瓜",
+  "example_ko": "겨울에는 군고구마가 맛있어요.",
+  "example_zh": "冬天的烤地瓜很好吃。"
+ },
+ {
+  "id": "v_1434",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "당근",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "紅蘿蔔",
+  "example_ko": "당근은 눈에 좋아요.",
+  "example_zh": "紅蘿蔔對眼睛很好。"
+ },
+ {
+  "id": "v_1435",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "배추",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "大白菜",
+  "example_ko": "배추로 김치를 만들어요.",
+  "example_zh": "用大白菜做泡菜。"
+ },
+ {
+  "id": "v_1436",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "오이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "小黃瓜",
+  "example_ko": "오이는 시원하고 맛있어요.",
+  "example_zh": "小黃瓜清脆爽口。"
+ },
+ {
+  "id": "v_1437",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "토마토",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "番茄",
+  "example_ko": "토마토는 과일이에요? 야채예요?",
+  "example_zh": "番茄是水果還是蔬菜？"
+ },
+ {
+  "id": "v_1438",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "버섯",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "菇、香菇",
+  "example_ko": "찌개에 버섯을 넣었어요.",
+  "example_zh": "在鍋裡加了菇。"
+ },
+ {
+  "id": "v_1439",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "새우",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "蝦子",
+  "example_ko": "새우 튀김이 맛있어요.",
+  "example_zh": "炸蝦很好吃。"
+ },
+ {
+  "id": "v_1440",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "해산물",
+  "pos": "名詞",
+  "hanja": "海產物",
+  "meaning_zh": "海鮮",
+  "example_ko": "부산은 해산물이 유명해요.",
+  "example_zh": "釜山的海鮮很有名。"
+ },
+ {
+  "id": "v_1441",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "치즈",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "起司",
+  "example_ko": "치즈 떡볶이를 먹어 봤어요?",
+  "example_zh": "你吃過起司辣炒年糕嗎？"
+ },
+ {
+  "id": "v_1442",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "word": "소금",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鹽",
+  "example_ko": "소금을 조금 넣으세요.",
+  "example_zh": "請加一點鹽。"
+ },
+ {
+  "id": "v_1443",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "마트",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "超市、大賣場",
+  "example_ko": "마트에서 우유를 샀어요.",
+  "example_zh": "在超市買了牛奶。"
+ },
+ {
+  "id": "v_1444",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "물건",
+  "pos": "名詞",
+  "hanja": "物件",
+  "meaning_zh": "東西、物品",
+  "example_ko": "이 가게는 물건이 많아요.",
+  "example_zh": "這家店東西很多。"
+ },
+ {
+  "id": "v_1445",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "사다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "買",
+  "example_ko": "시장에서 사과를 사요.",
+  "example_zh": "在市場買蘋果。"
+ },
+ {
+  "id": "v_1446",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "팔다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "賣",
+  "example_ko": "이 가게에서 과일을 팔아요.",
+  "example_zh": "這家店有賣水果。"
+ },
+ {
+  "id": "v_1447",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "주다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "給",
+  "example_ko": "사과 세 개 주세요.",
+  "example_zh": "請給我三顆蘋果。"
+ },
+ {
+  "id": "v_1448",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "얼마",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "多少（錢）",
+  "example_ko": "이거 얼마예요?",
+  "example_zh": "這個多少錢？"
+ },
+ {
+  "id": "v_1449",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "원",
+  "pos": "名詞（量詞）",
+  "hanja": null,
+  "meaning_zh": "韓元（韓國貨幣單位）",
+  "example_ko": "이 볼펜은 천 원이에요.",
+  "example_zh": "這支原子筆一千韓元。"
+ },
+ {
+  "id": "v_1450",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "돈",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "錢",
+  "example_ko": "돈이 없어요.",
+  "example_zh": "我沒有錢。"
+ },
+ {
+  "id": "v_1451",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "가격",
+  "pos": "名詞",
+  "hanja": "價格",
+  "meaning_zh": "價格",
+  "example_ko": "가격이 좀 비싸요.",
+  "example_zh": "價格有點貴。"
+ },
+ {
+  "id": "v_1452",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "값",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "價錢、價格",
+  "example_ko": "과일 값이 올랐어요.",
+  "example_zh": "水果的價錢漲了。"
+ },
+ {
+  "id": "v_1453",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "싸다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "便宜",
+  "example_ko": "시장은 마트보다 싸요.",
+  "example_zh": "市場比超市便宜。"
+ },
+ {
+  "id": "v_1454",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "비싸다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "貴",
+  "example_ko": "이 가방은 너무 비싸요.",
+  "example_zh": "這個包包太貴了。"
+ },
+ {
+  "id": "v_1455",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "개",
+  "pos": "名詞（量詞）",
+  "hanja": "個",
+  "meaning_zh": "個（算東西）",
+  "example_ko": "계란 열 개 주세요.",
+  "example_zh": "請給我十顆雞蛋。"
+ },
+ {
+  "id": "v_1456",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "병",
+  "pos": "名詞（量詞）",
+  "hanja": "瓶",
+  "meaning_zh": "瓶",
+  "example_ko": "물 두 병 샀어요.",
+  "example_zh": "買了兩瓶水。"
+ },
+ {
+  "id": "v_1457",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "봉지",
+  "pos": "名詞（量詞）",
+  "hanja": "封紙",
+  "meaning_zh": "包、袋",
+  "example_ko": "과자 한 봉지에 이천 원이에요.",
+  "example_zh": "餅乾一包兩千韓元。"
+ },
+ {
+  "id": "v_1458",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "상자",
+  "pos": "名詞",
+  "hanja": "箱子",
+  "meaning_zh": "箱子、盒子",
+  "example_ko": "귤 한 상자를 샀어요.",
+  "example_zh": "買了一箱橘子。"
+ },
+ {
+  "id": "v_1459",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "장바구니",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "購物籃、購物袋",
+  "example_ko": "장바구니를 가지고 가요.",
+  "example_zh": "帶著購物袋去。"
+ },
+ {
+  "id": "v_1460",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "계산대",
+  "pos": "名詞",
+  "hanja": "計算臺",
+  "meaning_zh": "收銀台",
+  "example_ko": "계산대는 저쪽에 있어요.",
+  "example_zh": "收銀台在那邊。"
+ },
+ {
+  "id": "v_1461",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "카드",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "信用卡、卡片",
+  "example_ko": "카드로 계산할게요.",
+  "example_zh": "我用卡結帳。"
+ },
+ {
+  "id": "v_1462",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "현금",
+  "pos": "名詞",
+  "hanja": "現金",
+  "meaning_zh": "現金",
+  "example_ko": "현금으로 내도 돼요?",
+  "example_zh": "可以付現金嗎？"
+ },
+ {
+  "id": "v_1463",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "거스름돈",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "找零、找的錢",
+  "example_ko": "여기 거스름돈이요.",
+  "example_zh": "這是找您的錢。"
+ },
+ {
+  "id": "v_1464",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "동전",
+  "pos": "名詞",
+  "hanja": "銅錢",
+  "meaning_zh": "硬幣、零錢",
+  "example_ko": "동전이 많아서 지갑이 무거워요.",
+  "example_zh": "零錢太多，錢包好重。"
+ },
+ {
+  "id": "v_1465",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "지폐",
+  "pos": "名詞",
+  "hanja": "紙幣",
+  "meaning_zh": "紙鈔",
+  "example_ko": "만 원짜리 지폐가 있어요.",
+  "example_zh": "我有一萬元的紙鈔。"
+ },
+ {
+  "id": "v_1466",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "할인",
+  "pos": "名詞",
+  "hanja": "割引",
+  "meaning_zh": "折扣",
+  "example_ko": "오늘은 이십 퍼센트 할인해요.",
+  "example_zh": "今天打八折。"
+ },
+ {
+  "id": "v_1467",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "세일",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "特價、拍賣",
+  "example_ko": "백화점이 세일 중이에요.",
+  "example_zh": "百貨公司正在特價。"
+ },
+ {
+  "id": "v_1468",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "봉투",
+  "pos": "名詞",
+  "hanja": "封套",
+  "meaning_zh": "袋子、信封",
+  "example_ko": "봉투 필요하세요?",
+  "example_zh": "需要袋子嗎？"
+ },
+ {
+  "id": "v_1469",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "고르다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "挑選、選",
+  "example_ko": "마음에 드는 걸로 고르세요.",
+  "example_zh": "請挑你喜歡的。"
+ },
+ {
+  "id": "v_1470",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "필요하다",
+  "pos": "形容詞",
+  "hanja": "必要",
+  "meaning_zh": "需要",
+  "example_ko": "우유가 필요해요.",
+  "example_zh": "我需要牛奶。"
+ },
+ {
+  "id": "v_1471",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "전부",
+  "pos": "名詞",
+  "hanja": "全部",
+  "meaning_zh": "全部、總共",
+  "example_ko": "전부 얼마예요?",
+  "example_zh": "全部多少錢？"
+ },
+ {
+  "id": "v_1472",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "다",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "都、全部",
+  "example_ko": "우유가 다 팔렸어요.",
+  "example_zh": "牛奶全賣完了。"
+ },
+ {
+  "id": "v_1473",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "쇼핑하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "購物、逛街",
+  "example_ko": "주말에 백화점에서 쇼핑해요.",
+  "example_zh": "週末在百貨公司購物。"
+ },
+ {
+  "id": "v_1474",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "무겁다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "重",
+  "example_ko": "장바구니가 무거워요.",
+  "example_zh": "購物籃好重。"
+ },
+ {
+  "id": "v_1475",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "가볍다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "輕",
+  "example_ko": "이 가방은 가벼워요.",
+  "example_zh": "這個包包很輕。"
+ },
+ {
+  "id": "v_1476",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "word": "달러",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "美元",
+  "example_ko": "달러를 원으로 바꿨어요.",
+  "example_zh": "把美元換成了韓元。"
+ },
+ {
+  "id": "v_1477",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "옷",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "衣服",
+  "example_ko": "새 옷을 샀어요.",
+  "example_zh": "我買了新衣服。"
+ },
+ {
+  "id": "v_1478",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "바지",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "褲子",
+  "example_ko": "이 바지는 좀 길어요.",
+  "example_zh": "這條褲子有點長。"
+ },
+ {
+  "id": "v_1479",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "치마",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "裙子",
+  "example_ko": "언니는 치마를 자주 입어요.",
+  "example_zh": "姊姊常穿裙子。"
+ },
+ {
+  "id": "v_1480",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "셔츠",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "襯衫",
+  "example_ko": "아버지는 흰 셔츠를 입으세요.",
+  "example_zh": "爸爸穿白襯衫。"
+ },
+ {
+  "id": "v_1481",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "티셔츠",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "T 恤",
+  "example_ko": "여름에는 티셔츠를 입어요.",
+  "example_zh": "夏天穿 T 恤。"
+ },
+ {
+  "id": "v_1482",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "원피스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "連身裙",
+  "example_ko": "파티에 원피스를 입고 갔어요.",
+  "example_zh": "穿連身裙去了派對。"
+ },
+ {
+  "id": "v_1483",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "코트",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "大衣",
+  "example_ko": "겨울에는 코트가 필요해요.",
+  "example_zh": "冬天需要大衣。"
+ },
+ {
+  "id": "v_1484",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "재킷",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "夾克、外套",
+  "example_ko": "날씨가 쌀쌀해서 재킷을 입었어요.",
+  "example_zh": "天氣涼涼的，所以穿了夾克。"
+ },
+ {
+  "id": "v_1485",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "스웨터",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "毛衣",
+  "example_ko": "할머니가 스웨터를 만들어 주셨어요.",
+  "example_zh": "奶奶幫我織了毛衣。"
+ },
+ {
+  "id": "v_1486",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "청바지",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "牛仔褲",
+  "example_ko": "저는 청바지를 좋아해요.",
+  "example_zh": "我喜歡牛仔褲。"
+ },
+ {
+  "id": "v_1487",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "양복",
+  "pos": "名詞",
+  "hanja": "洋服",
+  "meaning_zh": "西裝",
+  "example_ko": "회사에 양복을 입고 가요.",
+  "example_zh": "穿西裝去公司。"
+ },
+ {
+  "id": "v_1488",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "속옷",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "內衣",
+  "example_ko": "속옷은 서랍에 있어요.",
+  "example_zh": "內衣在抽屜裡。"
+ },
+ {
+  "id": "v_1489",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "양말",
+  "pos": "名詞",
+  "hanja": "洋襪",
+  "meaning_zh": "襪子",
+  "example_ko": "양말을 신으세요.",
+  "example_zh": "請穿上襪子。"
+ },
+ {
+  "id": "v_1490",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "신발",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鞋子",
+  "example_ko": "신발을 벗고 들어오세요.",
+  "example_zh": "請脫鞋進來。"
+ },
+ {
+  "id": "v_1491",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "운동화",
+  "pos": "名詞",
+  "hanja": "運動靴",
+  "meaning_zh": "運動鞋",
+  "example_ko": "운동화를 신고 산에 가요.",
+  "example_zh": "穿運動鞋去爬山。"
+ },
+ {
+  "id": "v_1492",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "구두",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "皮鞋",
+  "example_ko": "새 구두가 좀 불편해요.",
+  "example_zh": "新皮鞋有點不舒服。"
+ },
+ {
+  "id": "v_1493",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "모자",
+  "pos": "名詞",
+  "hanja": "帽子",
+  "meaning_zh": "帽子",
+  "example_ko": "햇빛이 강해서 모자를 썼어요.",
+  "example_zh": "陽光很強，所以戴了帽子。"
+ },
+ {
+  "id": "v_1494",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "안경",
+  "pos": "名詞",
+  "hanja": "眼鏡",
+  "meaning_zh": "眼鏡",
+  "example_ko": "저는 안경을 써요.",
+  "example_zh": "我戴眼鏡。"
+ },
+ {
+  "id": "v_1495",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "선글라스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "太陽眼鏡",
+  "example_ko": "바다에 갈 때 선글라스를 써요.",
+  "example_zh": "去海邊時戴太陽眼鏡。"
+ },
+ {
+  "id": "v_1496",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "목도리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "圍巾",
+  "example_ko": "목도리를 하면 따뜻해요.",
+  "example_zh": "圍上圍巾很暖和。"
+ },
+ {
+  "id": "v_1497",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "장갑",
+  "pos": "名詞",
+  "hanja": "掌匣",
+  "meaning_zh": "手套",
+  "example_ko": "추워서 장갑을 꼈어요.",
+  "example_zh": "好冷，所以戴了手套。"
+ },
+ {
+  "id": "v_1498",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "지갑",
+  "pos": "名詞",
+  "hanja": "紙匣",
+  "meaning_zh": "錢包、皮夾",
+  "example_ko": "지갑을 잃어버렸어요.",
+  "example_zh": "我把錢包弄丟了。"
+ },
+ {
+  "id": "v_1499",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "반지",
+  "pos": "名詞",
+  "hanja": "半指",
+  "meaning_zh": "戒指",
+  "example_ko": "결혼 반지가 예뻐요.",
+  "example_zh": "結婚戒指很漂亮。"
+ },
+ {
+  "id": "v_1500",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "목걸이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "項鍊",
+  "example_ko": "엄마 생일에 목걸이를 선물했어요.",
+  "example_zh": "媽媽生日時送了項鍊。"
+ },
+ {
+  "id": "v_1501",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "귀걸이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "耳環",
+  "example_ko": "귀걸이가 잘 어울려요.",
+  "example_zh": "耳環很適合你。"
+ },
+ {
+  "id": "v_1502",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "넥타이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "領帶",
+  "example_ko": "넥타이를 매고 회사에 가요.",
+  "example_zh": "打領帶去公司。"
+ },
+ {
+  "id": "v_1503",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "블라우스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "女用襯衫",
+  "example_ko": "흰 블라우스에 검은 치마를 입었어요.",
+  "example_zh": "穿了白色女襯衫配黑裙子。"
+ },
+ {
+  "id": "v_1504",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "패딩",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "羽絨外套",
+  "example_ko": "패딩이 정말 따뜻해요.",
+  "example_zh": "羽絨外套真的很暖。"
+ },
+ {
+  "id": "v_1505",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "입다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "穿（衣服、褲子）",
+  "example_ko": "오늘 무슨 옷을 입어요?",
+  "example_zh": "今天要穿什麼衣服？"
+ },
+ {
+  "id": "v_1506",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "신다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "穿（鞋子、襪子）",
+  "example_ko": "구두를 신어요.",
+  "example_zh": "穿皮鞋。"
+ },
+ {
+  "id": "v_1507",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "쓰다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "戴（帽子、眼鏡）",
+  "example_ko": "모자를 쓰세요.",
+  "example_zh": "請戴帽子。"
+ },
+ {
+  "id": "v_1508",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "끼다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "戴（戒指、手套）",
+  "example_ko": "반지를 꼈어요.",
+  "example_zh": "戴上了戒指。"
+ },
+ {
+  "id": "v_1509",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "벗다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "脫（衣服、鞋子）",
+  "example_ko": "코트를 벗으세요.",
+  "example_zh": "請脫下大衣。"
+ },
+ {
+  "id": "v_1510",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "word": "차다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "戴（手錶）、佩戴",
+  "example_ko": "시계를 차고 있어요.",
+  "example_zh": "我戴著手錶。"
  },
  {
   "id": "v_1749",
@@ -4386,6 +5992,11 @@ const READ_ARTICLES = [
       "surface": "없어서",
       "lemma": "없다",
       "vocab_id": "v_1063"
+     },
+     {
+      "surface": "조금",
+      "lemma": "조금",
+      "vocab_id": "v_1404"
      },
      {
       "surface": "외로워요",
@@ -6468,6 +8079,11 @@ const READ_ARTICLES = [
       "surface": "잔",
       "lemma": "잔",
       "vocab_id": "v_1326"
+     },
+     {
+      "surface": "주세요",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
      }
     ],
     "grammar_ids": [
@@ -6508,6 +8124,11 @@ const READ_ARTICLES = [
       "surface": "사이즈로",
       "lemma": "사이즈",
       "vocab_id": "v_1331"
+     },
+     {
+      "surface": "주세요",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
      },
      {
       "surface": "설탕은",
@@ -6563,6 +8184,11 @@ const READ_ARTICLES = [
       "surface": "영수증도",
       "lemma": "영수증",
       "vocab_id": "v_1338"
+     },
+     {
+      "surface": "주세요",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
      }
     ],
     "grammar_ids": [
@@ -6612,6 +8238,1038 @@ const READ_ARTICLES = [
     "explanation": "請對方為自己做某件事。接法和 -아요/어요 一樣：빼다 → 빼 주세요、넣다 → 넣어 주세요、포장하다 → 포장해 주세요。比單獨的 -(으)세요 更有「麻煩您幫我」的感覺，點餐、問路都很常用。",
     "extra_example_ko": "얼음을 많이 넣어 주세요.",
     "extra_example_zh": "請幫我多加一點冰塊。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_111",
+  "level": 1,
+  "topic": "韓國常見平民美食",
+  "title_ko": "점심 뭐 먹을까요?",
+  "title_zh": "午餐吃什麼？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "배고파요. 점심에 뭐 먹을까요?",
+    "zh": "我餓了。中午要吃什麼？",
+    "target_words": [
+     {
+      "surface": "배고파요",
+      "lemma": "배고프다",
+      "vocab_id": "v_1384"
+     },
+     {
+      "surface": "점심에",
+      "lemma": "점심",
+      "vocab_id": "v_1119"
+     },
+     {
+      "surface": "뭐",
+      "lemma": "무엇",
+      "vocab_id": "v_1013"
+     },
+     {
+      "surface": "먹을까요",
+      "lemma": "먹다",
+      "vocab_id": "v_1749"
+     }
+    ],
+    "grammar_ids": [
+     "g_121"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "분식 어때요? 떡볶이하고 김밥을 먹어요.",
+    "zh": "吃小吃怎麼樣？我們吃辣炒年糕和紫菜包飯吧。",
+    "target_words": [
+     {
+      "surface": "분식",
+      "lemma": "분식",
+      "vocab_id": "v_1373"
+     },
+     {
+      "surface": "떡볶이하고",
+      "lemma": "떡볶이",
+      "vocab_id": "v_1347"
+     },
+     {
+      "surface": "김밥을",
+      "lemma": "김밥",
+      "vocab_id": "v_1348"
+     },
+     {
+      "surface": "먹어요",
+      "lemma": "먹다",
+      "vocab_id": "v_1749"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "떡볶이는 너무 매워요. 저는 매운 음식을 잘 못 먹어요.",
+    "zh": "辣炒年糕太辣了。我不太能吃辣。",
+    "target_words": [
+     {
+      "surface": "떡볶이는",
+      "lemma": "떡볶이",
+      "vocab_id": "v_1347"
+     },
+     {
+      "surface": "너무",
+      "lemma": "너무",
+      "vocab_id": "v_1403"
+     },
+     {
+      "surface": "매워요",
+      "lemma": "맵다",
+      "vocab_id": "v_1381"
+     },
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "매운",
+      "lemma": "맵다",
+      "vocab_id": "v_1381"
+     },
+     {
+      "surface": "음식을",
+      "lemma": "음식",
+      "vocab_id": "v_1341"
+     },
+     {
+      "surface": "먹어요",
+      "lemma": "먹다",
+      "vocab_id": "v_1749"
+     }
+    ],
+    "grammar_ids": [
+     "g_122"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "그럼 순두부찌개는요? 순한 맛도 있어요.",
+    "zh": "那嫩豆腐鍋呢？也有不辣的口味。",
+    "target_words": [
+     {
+      "surface": "순두부찌개는요",
+      "lemma": "순두부찌개",
+      "vocab_id": "v_1357"
+     },
+     {
+      "surface": "순한",
+      "lemma": "순하다",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "맛도",
+      "lemma": "맛",
+      "vocab_id": "v_1379"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "좋아요. 반찬도 많이 줘요?",
+    "zh": "好啊。小菜也給很多嗎？",
+    "target_words": [
+     {
+      "surface": "반찬도",
+      "lemma": "반찬",
+      "vocab_id": "v_1364"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "줘요",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "네, 반찬은 김치하고 김이에요. 그리고 무료로 더 줘요.",
+    "zh": "對，小菜有泡菜和海苔，而且可以免費續。",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "반찬은",
+      "lemma": "반찬",
+      "vocab_id": "v_1364"
+     },
+     {
+      "surface": "김치하고",
+      "lemma": "김치",
+      "vocab_id": "v_1343"
+     },
+     {
+      "surface": "김이에요",
+      "lemma": "김",
+      "vocab_id": "v_1363"
+     },
+     {
+      "surface": "무료로",
+      "lemma": "무료",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "더",
+      "lemma": "더",
+      "vocab_id": "v_1402"
+     },
+     {
+      "surface": "줘요",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "순하다",
+    "pos": "形容詞",
+    "hanja": null,
+    "meaning_zh": "（味道）溫和、不辣"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "무료",
+    "pos": "名詞",
+    "hanja": "無料",
+    "meaning_zh": "免費"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_121",
+    "pattern": "動詞語幹 + -(으)ㄹ까요?",
+    "meaning": "我們…好嗎？／要…嗎？（提議、商量）",
+    "explanation": "跟對方商量要不要一起做某事：뭐 먹을까요?（要吃什麼呢？）、같이 갈까요?（一起去好嗎？）。語幹沒有收音接 -ㄹ까요（가다 → 갈까요），有收音接 -을까요（먹다 → 먹을까요）。回答常用 -아요/어요（좋아요、먹어요）。",
+    "extra_example_ko": "주말에 같이 냉면 먹을까요?",
+    "extra_example_zh": "週末一起吃冷麵好嗎？"
+   },
+   {
+    "grammar_id": "g_122",
+    "pattern": "못 + 動詞",
+    "meaning": "不能…、沒辦法…（能力或情況不允許）",
+    "explanation": "-못 放在動詞前面，表示想做卻做不到：매운 음식을 못 먹어요（不能吃辣）。和 안（不，主觀不想）不同：안 먹어요＝不吃（不想吃），못 먹어요＝不能吃（吃不了）。加 잘 變成「잘 못 먹어요」，語氣比較委婉：不太能吃。",
+    "extra_example_ko": "저는 술을 못 마셔요.",
+    "extra_example_zh": "我不能喝酒。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_113",
+  "level": 1,
+  "topic": "水果與生鮮食材",
+  "title_ko": "시장에서 장 보기",
+  "title_zh": "去市場買菜",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "주말에 엄마하고 시장에서 장을 봤어요.",
+    "zh": "週末我和媽媽去市場買菜。",
+    "target_words": [
+     {
+      "surface": "주말에",
+      "lemma": "주말",
+      "vocab_id": "v_1095"
+     },
+     {
+      "surface": "엄마하고",
+      "lemma": "엄마",
+      "vocab_id": "v_1039"
+     },
+     {
+      "surface": "시장에서",
+      "lemma": "시장",
+      "vocab_id": "v_1280"
+     },
+     {
+      "surface": "장을 봤어요",
+      "lemma": "장을 보다",
+      "vocab_id": "new_01"
+     }
+    ],
+    "grammar_ids": [
+     "g_125"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "과일 가게에서 사과하고 딸기를 샀어요.",
+    "zh": "在水果店買了蘋果和草莓。",
+    "target_words": [
+     {
+      "surface": "과일",
+      "lemma": "과일",
+      "vocab_id": "v_1411"
+     },
+     {
+      "surface": "가게에서",
+      "lemma": "가게",
+      "vocab_id": "v_1302"
+     },
+     {
+      "surface": "사과하고",
+      "lemma": "사과",
+      "vocab_id": "v_1415"
+     },
+     {
+      "surface": "딸기를",
+      "lemma": "딸기",
+      "vocab_id": "v_1419"
+     },
+     {
+      "surface": "샀어요",
+      "lemma": "사다",
+      "vocab_id": "v_1445"
+     }
+    ],
+    "grammar_ids": [
+     "g_125"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "딸기가 아주 싱싱하고 달았어요.",
+    "zh": "草莓很新鮮又很甜。",
+    "target_words": [
+     {
+      "surface": "딸기가",
+      "lemma": "딸기",
+      "vocab_id": "v_1419"
+     },
+     {
+      "surface": "싱싱하고",
+      "lemma": "싱싱하다",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "달았어요",
+      "lemma": "달다",
+      "vocab_id": "v_1382"
+     }
+    ],
+    "grammar_ids": [
+     "g_125"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "그리고 돼지고기하고 두부, 양파도 샀어요.",
+    "zh": "還買了豬肉、豆腐和洋蔥。",
+    "target_words": [
+     {
+      "surface": "돼지고기하고",
+      "lemma": "돼지고기",
+      "vocab_id": "v_1424"
+     },
+     {
+      "surface": "두부",
+      "lemma": "두부",
+      "vocab_id": "v_1428"
+     },
+     {
+      "surface": "양파도",
+      "lemma": "양파",
+      "vocab_id": "v_1430"
+     },
+     {
+      "surface": "샀어요",
+      "lemma": "사다",
+      "vocab_id": "v_1445"
+     }
+    ],
+    "grammar_ids": [
+     "g_125"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "저녁에 엄마가 맛있는 김치찌개를 끓였어요.",
+    "zh": "晚上媽媽煮了好吃的泡菜鍋。",
+    "target_words": [
+     {
+      "surface": "저녁에",
+      "lemma": "저녁",
+      "vocab_id": "v_1120"
+     },
+     {
+      "surface": "엄마가",
+      "lemma": "엄마",
+      "vocab_id": "v_1039"
+     },
+     {
+      "surface": "맛있는",
+      "lemma": "맛있다",
+      "vocab_id": "v_1380"
+     },
+     {
+      "surface": "김치찌개를",
+      "lemma": "김치찌개",
+      "vocab_id": "v_1355"
+     },
+     {
+      "surface": "끓였어요",
+      "lemma": "끓이다",
+      "vocab_id": "new_03"
+     }
+    ],
+    "grammar_ids": [
+     "g_126",
+     "g_125"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "김치찌개에 두부하고 돼지고기가 많이 있어서 정말 맛있었어요.",
+    "zh": "泡菜鍋裡有很多豆腐和豬肉，真的很好吃。",
+    "target_words": [
+     {
+      "surface": "김치찌개에",
+      "lemma": "김치찌개",
+      "vocab_id": "v_1355"
+     },
+     {
+      "surface": "두부하고",
+      "lemma": "두부",
+      "vocab_id": "v_1428"
+     },
+     {
+      "surface": "돼지고기가",
+      "lemma": "돼지고기",
+      "vocab_id": "v_1424"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "있어서",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     },
+     {
+      "surface": "맛있었어요",
+      "lemma": "맛있다",
+      "vocab_id": "v_1380"
+     }
+    ],
+    "grammar_ids": [
+     "g_125"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "장을 보다",
+    "pos": "慣用語",
+    "hanja": null,
+    "meaning_zh": "（去市場、超市）買菜、採買"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "싱싱하다",
+    "pos": "形容詞",
+    "hanja": null,
+    "meaning_zh": "新鮮"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "끓이다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "煮、燒開"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_125",
+    "pattern": "動詞／形容詞語幹 + -았/었어요",
+    "meaning": "過去式（…了、過去是…）",
+    "explanation": "說已經發生的事。語幹最後的母音是 ㅏ 或 ㅗ 接 -았어요（사다 → 샀어요、달다 → 달았어요），其他接 -었어요（있다 → 있었어요），하다 變成 했어요。母音相同時會合在一起（사+았 → 샀），ㅣ 會變成 ㅕ（끓이다 → 끓였어요）。",
+    "extra_example_ko": "어제 마트에서 계란을 샀어요.",
+    "extra_example_zh": "昨天在超市買了雞蛋。"
+   },
+   {
+    "grammar_id": "g_126",
+    "pattern": "形容詞語幹 + -(으)ㄴ + 名詞（있다／없다 用 -는）",
+    "meaning": "…的＋名詞（用形容詞修飾名詞）",
+    "explanation": "把形容詞放在名詞前面修飾它。沒有收音接 -ㄴ（싸다 → 싼 과일），有收音接 -은（작다 → 작은 가방）。以 있다／없다 結尾的字要用 -는：맛있다 → 맛있는 김치찌개、재미없다 → 재미없는 영화。",
+    "extra_example_ko": "싱싱한 과일을 사고 싶어요.",
+    "extra_example_zh": "我想買新鮮的水果。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_114",
+  "level": 1,
+  "topic": "超市購物與貨幣單位",
+  "title_ko": "이거 얼마예요?",
+  "title_zh": "這個多少錢？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "사과 얼마예요?",
+    "zh": "蘋果多少錢？",
+    "target_words": [
+     {
+      "surface": "사과",
+      "lemma": "사과",
+      "vocab_id": "v_1415"
+     },
+     {
+      "surface": "얼마예요",
+      "lemma": "얼마",
+      "vocab_id": "v_1448"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "한 개에 이천 원이에요. 다섯 개에 만 원이에요.",
+    "zh": "一顆兩千韓元，五顆一萬韓元。",
+    "target_words": [
+     {
+      "surface": "한",
+      "lemma": "하나",
+      "vocab_id": "v_1103"
+     },
+     {
+      "surface": "개에",
+      "lemma": "개",
+      "vocab_id": "v_1455"
+     },
+     {
+      "surface": "이",
+      "lemma": "이",
+      "vocab_id": "v_1071"
+     },
+     {
+      "surface": "천",
+      "lemma": "천",
+      "vocab_id": "v_1081"
+     },
+     {
+      "surface": "원이에요",
+      "lemma": "원",
+      "vocab_id": "v_1449"
+     },
+     {
+      "surface": "다섯",
+      "lemma": "다섯",
+      "vocab_id": "v_1107"
+     },
+     {
+      "surface": "개에",
+      "lemma": "개",
+      "vocab_id": "v_1455"
+     },
+     {
+      "surface": "만",
+      "lemma": "만",
+      "vocab_id": "v_1082"
+     },
+     {
+      "surface": "원이에요",
+      "lemma": "원",
+      "vocab_id": "v_1449"
+     }
+    ],
+    "grammar_ids": [
+     "g_128",
+     "g_127"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "좀 비싸요. 깎아 주세요.",
+    "zh": "有點貴，算便宜一點吧。",
+    "target_words": [
+     {
+      "surface": "비싸요",
+      "lemma": "비싸다",
+      "vocab_id": "v_1454"
+     },
+     {
+      "surface": "깎아",
+      "lemma": "깎다",
+      "vocab_id": "new_01"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "그럼 다섯 개에 구천 원에 드릴게요.",
+    "zh": "那五顆算你九千韓元。",
+    "target_words": [
+     {
+      "surface": "다섯",
+      "lemma": "다섯",
+      "vocab_id": "v_1107"
+     },
+     {
+      "surface": "개에",
+      "lemma": "개",
+      "vocab_id": "v_1455"
+     },
+     {
+      "surface": "구",
+      "lemma": "구",
+      "vocab_id": "v_1078"
+     },
+     {
+      "surface": "천",
+      "lemma": "천",
+      "vocab_id": "v_1081"
+     },
+     {
+      "surface": "원에",
+      "lemma": "원",
+      "vocab_id": "v_1449"
+     },
+     {
+      "surface": "드릴게요",
+      "lemma": "드리다",
+      "vocab_id": "new_02"
+     }
+    ],
+    "grammar_ids": [
+     "g_128",
+     "g_127"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "좋아요. 그리고 계란 한 상자도 주세요. 전부 얼마예요?",
+    "zh": "好。另外也請給我一盒雞蛋。全部多少錢？",
+    "target_words": [
+     {
+      "surface": "계란",
+      "lemma": "계란",
+      "vocab_id": "v_1427"
+     },
+     {
+      "surface": "한",
+      "lemma": "하나",
+      "vocab_id": "v_1103"
+     },
+     {
+      "surface": "상자도",
+      "lemma": "상자",
+      "vocab_id": "v_1458"
+     },
+     {
+      "surface": "주세요",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
+     },
+     {
+      "surface": "전부",
+      "lemma": "전부",
+      "vocab_id": "v_1471"
+     },
+     {
+      "surface": "얼마예요",
+      "lemma": "얼마",
+      "vocab_id": "v_1448"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "전부 만 오천 원이에요. 봉투는 유료예요. 필요하세요?",
+    "zh": "總共一萬五千韓元。袋子要另外付費，需要嗎？",
+    "target_words": [
+     {
+      "surface": "전부",
+      "lemma": "전부",
+      "vocab_id": "v_1471"
+     },
+     {
+      "surface": "만",
+      "lemma": "만",
+      "vocab_id": "v_1082"
+     },
+     {
+      "surface": "오",
+      "lemma": "오",
+      "vocab_id": "v_1074"
+     },
+     {
+      "surface": "천",
+      "lemma": "천",
+      "vocab_id": "v_1081"
+     },
+     {
+      "surface": "원이에요",
+      "lemma": "원",
+      "vocab_id": "v_1449"
+     },
+     {
+      "surface": "봉투는",
+      "lemma": "봉투",
+      "vocab_id": "v_1468"
+     },
+     {
+      "surface": "유료예요",
+      "lemma": "유료",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "필요하세요",
+      "lemma": "필요하다",
+      "vocab_id": "v_1470"
+     }
+    ],
+    "grammar_ids": [
+     "g_127"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "깎다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "殺價、打折；削、剪"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "드리다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "給（주다 的敬語，給長輩或客人）"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "유료",
+    "pos": "名詞",
+    "hanja": "有料",
+    "meaning_zh": "需付費、收費"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_127",
+    "pattern": "漢字詞數字 + 원",
+    "meaning": "價錢的說法（…韓元）",
+    "explanation": "價錢一律用漢字詞數字：천 원（一千）、만 원（一萬）、만 오천 원（一萬五千）。韓文以「萬」為單位，一萬不說「일만」，直接說「만」；同樣一百、一千也直接說「백」「천」。問價錢說「얼마예요?」。",
+    "extra_example_ko": "이 우유는 삼천오백 원이에요.",
+    "extra_example_zh": "這瓶牛奶三千五百韓元。"
+   },
+   {
+    "grammar_id": "g_128",
+    "pattern": "數量 + 에 + 價錢",
+    "meaning": "每…（多少錢）",
+    "explanation": "-에 接在數量後面表示「以這個數量計算」：한 개에 이천 원（一個兩千）、다섯 개에 만 원（五個一萬）。量詞前的固有詞數字會變短：한 개、두 개、세 개、네 개。",
+    "extra_example_ko": "귤은 한 상자에 만 원이에요.",
+    "extra_example_zh": "橘子一箱一萬韓元。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_115",
+  "level": 1,
+  "topic": "基礎服飾與配件",
+  "title_ko": "파티에 뭐 입어요?",
+  "title_zh": "派對要穿什麼？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "주말 파티에 뭐 입어요?",
+    "zh": "週末的派對你要穿什麼？",
+    "target_words": [
+     {
+      "surface": "주말",
+      "lemma": "주말",
+      "vocab_id": "v_1095"
+     },
+     {
+      "surface": "파티에",
+      "lemma": "파티",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "뭐",
+      "lemma": "무엇",
+      "vocab_id": "v_1013"
+     },
+     {
+      "surface": "입어요",
+      "lemma": "입다",
+      "vocab_id": "v_1505"
+     }
+    ],
+    "grammar_ids": [
+     "g_129"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "원피스를 입고 구두를 신어요.",
+    "zh": "我要穿連身裙和皮鞋。",
+    "target_words": [
+     {
+      "surface": "원피스를",
+      "lemma": "원피스",
+      "vocab_id": "v_1482"
+     },
+     {
+      "surface": "입고",
+      "lemma": "입다",
+      "vocab_id": "v_1505"
+     },
+     {
+      "surface": "구두를",
+      "lemma": "구두",
+      "vocab_id": "v_1492"
+     },
+     {
+      "surface": "신어요",
+      "lemma": "신다",
+      "vocab_id": "v_1506"
+     }
+    ],
+    "grammar_ids": [
+     "g_129"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "와, 멋있어요! 저는 청바지하고 티셔츠를 입어요.",
+    "zh": "哇，好好看！我要穿牛仔褲和 T 恤。",
+    "target_words": [
+     {
+      "surface": "멋있어요",
+      "lemma": "멋있다",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "청바지하고",
+      "lemma": "청바지",
+      "vocab_id": "v_1486"
+     },
+     {
+      "surface": "티셔츠를",
+      "lemma": "티셔츠",
+      "vocab_id": "v_1481"
+     },
+     {
+      "surface": "입어요",
+      "lemma": "입다",
+      "vocab_id": "v_1505"
+     }
+    ],
+    "grammar_ids": [
+     "g_129"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "밤에 늦게 끝나요. 코트도 입으세요.",
+    "zh": "派對很晚才結束，你也穿件大衣吧。",
+    "target_words": [
+     {
+      "surface": "밤에",
+      "lemma": "밤",
+      "vocab_id": "v_1121"
+     },
+     {
+      "surface": "늦게",
+      "lemma": "늦다",
+      "vocab_id": "v_1133"
+     },
+     {
+      "surface": "끝나요",
+      "lemma": "끝나다",
+      "vocab_id": "v_1170"
+     },
+     {
+      "surface": "코트도",
+      "lemma": "코트",
+      "vocab_id": "v_1483"
+     },
+     {
+      "surface": "입으세요",
+      "lemma": "입다",
+      "vocab_id": "v_1505"
+     }
+    ],
+    "grammar_ids": [
+     "g_129"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "네. 모자도 쓰고 장갑도 낄게요.",
+    "zh": "好，我也會戴帽子和手套。",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "모자도",
+      "lemma": "모자",
+      "vocab_id": "v_1493"
+     },
+     {
+      "surface": "쓰고",
+      "lemma": "쓰다",
+      "vocab_id": "v_1507"
+     },
+     {
+      "surface": "장갑도",
+      "lemma": "장갑",
+      "vocab_id": "v_1497"
+     },
+     {
+      "surface": "낄게요",
+      "lemma": "끼다",
+      "vocab_id": "v_1508"
+     }
+    ],
+    "grammar_ids": [
+     "g_129"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "아, 지갑하고 안경도 잊지 마세요!",
+    "zh": "啊，別忘了錢包和眼鏡喔！",
+    "target_words": [
+     {
+      "surface": "지갑하고",
+      "lemma": "지갑",
+      "vocab_id": "v_1498"
+     },
+     {
+      "surface": "안경도",
+      "lemma": "안경",
+      "vocab_id": "v_1494"
+     },
+     {
+      "surface": "잊지",
+      "lemma": "잊다",
+      "vocab_id": "new_03"
+     }
+    ],
+    "grammar_ids": [
+     "g_130"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "파티",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "派對"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "멋있다",
+    "pos": "形容詞",
+    "hanja": null,
+    "meaning_zh": "好看、帥氣、很棒"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "잊다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "忘記"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_129",
+    "pattern": "穿戴動詞：입다／신다／쓰다／끼다／차다",
+    "meaning": "韓文的「穿、戴」依部位用不同動詞",
+    "explanation": "中文都說「穿」「戴」，韓文要分清楚：衣服褲子用 입다（옷을 입다），鞋襪用 신다（구두를 신다），帽子眼鏡用 쓰다（모자를 쓰다），戒指手套用 끼다（반지를 끼다），手錶用 차다（시계를 차다）。脫下來大多用 벗다，眼鏡、戒指則用 빼다。",
+    "extra_example_ko": "추워요. 패딩을 입고 장갑을 끼세요.",
+    "extra_example_zh": "好冷，穿上羽絨外套、戴上手套吧。"
+   },
+   {
+    "grammar_id": "g_130",
+    "pattern": "動詞語幹 + -지 마세요",
+    "meaning": "請不要…",
+    "explanation": "禮貌地請對方不要做某事。不管有沒有收音都接 -지 마세요：잊다 → 잊지 마세요（別忘了）、가다 → 가지 마세요（不要去）。和 -(으)세요（請做…）正好相反。",
+    "extra_example_ko": "여기에서 신발을 신지 마세요.",
+    "extra_example_zh": "請不要在這裡穿鞋。"
    }
   ]
  },
@@ -6753,6 +9411,11 @@ const READ_ARTICLES = [
     "zh": "不好意思！請給我一份烤肉和水。",
     "target_words": [
      {
+      "surface": "저기요",
+      "lemma": "저기요",
+      "vocab_id": "v_1405"
+     },
+     {
       "surface": "불고기",
       "lemma": "불고기",
       "vocab_id": "v_1346"
@@ -6766,6 +9429,11 @@ const READ_ARTICLES = [
       "surface": "물",
       "lemma": "물",
       "vocab_id": "v_1308"
+     },
+     {
+      "surface": "주세요",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
      }
     ],
     "grammar_ids": []
@@ -6790,6 +9458,11 @@ const READ_ARTICLES = [
       "surface": "배불러요",
       "lemma": "배부르다",
       "vocab_id": "v_1385"
+     },
+     {
+      "surface": "제가",
+      "lemma": "저",
+      "vocab_id": "v_1010"
      },
      {
       "surface": "계산해요",

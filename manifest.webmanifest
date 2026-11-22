@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "호야 韓語",
+  "short_name": "호야 韓語",
+  "description": "從 40 音開始學韓文",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "minimal-ui",
+  "background_color": "#FFE7CF",
+  "theme_color": "#F3F6FB",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

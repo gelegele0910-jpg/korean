@@ -15,7 +15,8 @@
   - `js/app.js`：主程式
   - `css/style.css`：樣式與 6 種介面風格
   - `tools/topik/gen.py`：產生 `js/reading.js`（TOPIK 單字與文章都寫在這裡和 `batchN.py`，**不要手改 reading.js**）。新的一批寫成 `tools/topik/batchN.py`（單字清單＋`articles(S, TITLE)`），在 gen.py 匯入並把 `ready` 範圍往後改；`ID()` 會擋下同形異義字（例如 저＝我／那）沒指定主題的情況。本批 JSON 另存到 `tools/topik/out/`（不進 git）給使用者下載
-  - `tools/make-icons.js`：由吉祥物產生 `icon.svg`、`apple-touch-icon.png`
+  - `tools/make-icons.js`：由吉祥物產生 `icon.svg`、`apple-touch-icon.png`、`icon-192.png`、`icon-512.png`
+  - 安裝成 App：`manifest.webmanifest`（`display: minimal-ui`；不要改成 `standalone`：iPhone 的獨立 App 模式和 Safari 不共用 localStorage，已加到主畫面的人會像資料不見）＋`sw.js`（只轉送網頁開啟、不做快取，只在 https 註冊）。Android Chrome 需要這兩個才能「安裝」（桌面圖示沒有 Chrome 小標誌）
 
 ## 部署
 

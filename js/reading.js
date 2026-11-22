@@ -4,7 +4,7 @@
  * READ_ARTICLES：文章；target_words 的 surface 必須照順序出現在句子裡，vocab_id 指向 READ_VOCAB 或該篇的 challenge_vocab（+1 生字）。
  * VOCAB_ID_MAP：舊編號 → 新編號（2026-11 重新編號，migrate() 會把複習進度換過去）。
  * 檢查：tests/hangul.js 的 R1～R5。 */
-const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "art": "art_101", "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "art": "art_102", "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "art": "art_103", "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "art": "art_104", "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "art": "art_105", "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "art": "art_106", "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "art": "art_107", "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "art": "art_108", "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "art": "art_109", "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "art": "art_110", "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "art": "art_111", "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "art": "art_112", "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "art": "art_113", "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "art": "art_114", "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "art": "art_115", "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "art": "art_116", "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "art": "art_117", "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "art": "art_118", "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "art": "art_119", "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "art": "art_120", "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "art": "art_121", "ready": true}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "art": "art_122", "ready": true}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "art": "art_123", "ready": true}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "art": "art_124", "ready": true}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "art": "art_125", "ready": true}, {"no": 26, "level": 2, "title": "醫院看診與常見症狀", "desc": "內科/牙科、感冒、發燒、頭痛、肚子痛", "ids": ["v_2001", "v_2038"], "art": "art_201", "ready": true}, {"no": 27, "level": 2, "title": "藥局買藥與保健習慣", "desc": "吃藥、處方箋、休息、打針、維他命", "ids": ["v_2039", "v_2076"], "art": "art_202", "ready": true}, {"no": 28, "level": 2, "title": "銀行開戶與換匯業務", "desc": "存摺、提款卡、換錢、匯款、密碼", "ids": ["v_2077", "v_2114"], "art": "art_203", "ready": true}, {"no": 29, "level": 2, "title": "郵局寄信與宅配物流", "desc": "包裹、明信片、寄送、地址、郵票", "ids": ["v_2115", "v_2152"], "art": "art_204", "ready": true}, {"no": 30, "level": 2, "title": "美容院剪髮與造型需求", "desc": "剪頭髮、燙髮、染髮、短一點、劉海", "ids": ["v_2153", "v_2190"], "art": "art_205", "ready": true}, {"no": 31, "level": 2, "title": "服飾店試穿與退換貨", "desc": "試衣間、尺寸、太緊/太鬆、換貨、刷卡/付現", "ids": ["v_2191", "v_2228"], "art": "art_206", "ready": true}, {"no": 32, "level": 2, "title": "住宿訂房與飯店設施", "desc": "單人房/雙人房、預約、辦理入住、早餐、鑰匙", "ids": ["v_2229", "v_2266"], "art": "art_207", "ready": true}, {"no": 33, "level": 2, "title": "機場出入境與搭機流程", "desc": "護照、機票、行李託運、海關、免稅店", "ids": ["v_2267", "v_2304"], "art": "art_208", "ready": true}, {"no": 34, "level": 2, "title": "搭乘大眾運輸與轉乘", "desc": "交通卡、加值、首班車/末班車、塞車、迷路", "ids": ["v_2305", "v_2342"], "art": "art_209", "ready": true}, {"no": 35, "level": 2, "title": "租屋看房與生活水電費", "desc": "保證金、月租、管理費、水電費、搬家", "ids": ["v_2343", "v_2380"], "art": "art_210", "ready": true}, {"no": 36, "level": 2, "title": "家務分工與打掃清潔", "desc": "洗衣服、洗碗、掃地、丟垃圾、整理", "ids": ["v_2381", "v_2418"], "art": "art_211", "ready": false}, {"no": 37, "level": 2, "title": "料理步驟與廚房用具", "desc": "切菜、煮、炒、煎、鍋子、刀子", "ids": ["v_2419", "v_2456"], "art": "art_212", "ready": false}, {"no": 38, "level": 2, "title": "節日慶祝與送禮文化", "desc": "生日、過年、中秋節、禮物、卡片、祝福", "ids": ["v_2457", "v_2494"], "art": "art_213", "ready": false}, {"no": 39, "level": 2, "title": "邀請作客與餐桌禮儀", "desc": "邀請、拜訪、準備食物、乾杯、道謝", "ids": ["v_2495", "v_2532"], "art": "art_214", "ready": false}, {"no": 40, "level": 2, "title": "性格特質與人物評價", "desc": "親切、活潑、安靜、誠實、懶惰、聰明", "ids": ["v_2533", "v_2570"], "art": "art_215", "ready": false}, {"no": 41, "level": 2, "title": "人際關係與社交互動", "desc": "朋友、前輩/後輩、鄰居、吵架、和好", "ids": ["v_2571", "v_2608"], "art": "art_216", "ready": false}, {"no": 42, "level": 2, "title": "戀愛約會與情感表達", "desc": "告白、約會、喜歡、想念、分手、結婚", "ids": ["v_2609", "v_2646"], "art": "art_217", "ready": false}, {"no": 43, "level": 2, "title": "學校生活與考試準備", "desc": "學期、作業、考試、及格、成績、圖書館", "ids": ["v_2647", "v_2684"], "art": "art_218", "ready": false}, {"no": 44, "level": 2, "title": "社團活動與才藝學習", "desc": "吉他、鋼琴、畫畫、拍照、參加比賽", "ids": ["v_2685", "v_2722"], "art": "art_219", "ready": false}, {"no": 45, "level": 2, "title": "旅遊規劃與觀光景點", "desc": "地圖、導遊、博物館、遊樂園、紀念品", "ids": ["v_2723", "v_2760"], "art": "art_220", "ready": false}, {"no": 46, "level": 2, "title": "地理環境與自然景觀", "desc": "山、海、江、島嶼、公園、風景", "ids": ["v_2761", "v_2798"], "art": "art_221", "ready": false}, {"no": 47, "level": 2, "title": "動植物與寵物飼養", "desc": "小狗、小貓、養寵物、餵食、花、樹", "ids": ["v_2799", "v_2836"], "art": "art_222", "ready": false}, {"no": 48, "level": 2, "title": "電影院與表演藝術觀賞", "desc": "買票、座位、演員、主角、劇情、感動", "ids": ["v_2837", "v_2874"], "art": "art_223", "ready": false}, {"no": 49, "level": 2, "title": "手機通訊與網路使用", "desc": "智慧型手機、網路、下載、搜尋、充電", "ids": ["v_2875", "v_2912"], "art": "art_224", "ready": false}, {"no": 50, "level": 2, "title": "社群媒體與拍照分享", "desc": "上傳、留言、按讚、自拍、影片", "ids": ["v_2913", "v_2950"], "art": "art_225", "ready": false}, {"no": 51, "level": 2, "title": "氣候變化與季節災害", "desc": "颱風、梅雨、霧霾、溫度、乾燥/潮濕", "ids": ["v_2951", "v_2988"], "art": "art_226", "ready": false}, {"no": 52, "level": 2, "title": "交通安全與突發狀況", "desc": "紅綠燈、斑馬線、交通事故、警察局、遺失物品", "ids": ["v_2989", "v_3026"], "art": "art_227", "ready": false}, {"no": 53, "level": 2, "title": "個人習慣與生活改變", "desc": "早起、熬夜、減肥、戒菸、養成習慣", "ids": ["v_3027", "v_3064"], "art": "art_228", "ready": false}, {"no": 54, "level": 2, "title": "計畫安排與未來夢想", "desc": "決定、準備、希望、成功、失敗、努力", "ids": ["v_3065", "v_3102"], "art": "art_229", "ready": false}, {"no": 55, "level": 2, "title": "程度副詞與語氣轉折詞", "desc": "非常、稍微、完全、突然、所以、因此", "ids": ["v_3103", "v_3140"], "art": "art_230", "ready": false}];
+const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "art": "art_101", "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "art": "art_102", "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "art": "art_103", "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "art": "art_104", "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "art": "art_105", "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "art": "art_106", "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "art": "art_107", "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "art": "art_108", "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "art": "art_109", "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "art": "art_110", "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "art": "art_111", "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "art": "art_112", "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "art": "art_113", "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "art": "art_114", "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "art": "art_115", "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "art": "art_116", "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "art": "art_117", "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "art": "art_118", "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "art": "art_119", "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "art": "art_120", "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "art": "art_121", "ready": true}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "art": "art_122", "ready": true}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "art": "art_123", "ready": true}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "art": "art_124", "ready": true}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "art": "art_125", "ready": true}, {"no": 26, "level": 2, "title": "醫院看診與常見症狀", "desc": "內科/牙科、感冒、發燒、頭痛、肚子痛", "ids": ["v_2001", "v_2038"], "art": "art_201", "ready": true}, {"no": 27, "level": 2, "title": "藥局買藥與保健習慣", "desc": "吃藥、處方箋、休息、打針、維他命", "ids": ["v_2039", "v_2076"], "art": "art_202", "ready": true}, {"no": 28, "level": 2, "title": "銀行開戶與換匯業務", "desc": "存摺、提款卡、換錢、匯款、密碼", "ids": ["v_2077", "v_2114"], "art": "art_203", "ready": true}, {"no": 29, "level": 2, "title": "郵局寄信與宅配物流", "desc": "包裹、明信片、寄送、地址、郵票", "ids": ["v_2115", "v_2152"], "art": "art_204", "ready": true}, {"no": 30, "level": 2, "title": "美容院剪髮與造型需求", "desc": "剪頭髮、燙髮、染髮、短一點、劉海", "ids": ["v_2153", "v_2190"], "art": "art_205", "ready": true}, {"no": 31, "level": 2, "title": "服飾店試穿與退換貨", "desc": "試衣間、尺寸、太緊/太鬆、換貨、刷卡/付現", "ids": ["v_2191", "v_2228"], "art": "art_206", "ready": true}, {"no": 32, "level": 2, "title": "住宿訂房與飯店設施", "desc": "單人房/雙人房、預約、辦理入住、早餐、鑰匙", "ids": ["v_2229", "v_2266"], "art": "art_207", "ready": true}, {"no": 33, "level": 2, "title": "機場出入境與搭機流程", "desc": "護照、機票、行李託運、海關、免稅店", "ids": ["v_2267", "v_2304"], "art": "art_208", "ready": true}, {"no": 34, "level": 2, "title": "搭乘大眾運輸與轉乘", "desc": "交通卡、加值、首班車/末班車、塞車、迷路", "ids": ["v_2305", "v_2342"], "art": "art_209", "ready": true}, {"no": 35, "level": 2, "title": "租屋看房與生活水電費", "desc": "保證金、月租、管理費、水電費、搬家", "ids": ["v_2343", "v_2380"], "art": "art_210", "ready": true}, {"no": 36, "level": 2, "title": "家務分工與打掃清潔", "desc": "洗衣服、洗碗、掃地、丟垃圾、整理", "ids": ["v_2381", "v_2418"], "art": "art_211", "ready": true}, {"no": 37, "level": 2, "title": "料理步驟與廚房用具", "desc": "切菜、煮、炒、煎、鍋子、刀子", "ids": ["v_2419", "v_2456"], "art": "art_212", "ready": true}, {"no": 38, "level": 2, "title": "節日慶祝與送禮文化", "desc": "生日、過年、中秋節、禮物、卡片、祝福", "ids": ["v_2457", "v_2494"], "art": "art_213", "ready": true}, {"no": 39, "level": 2, "title": "邀請作客與餐桌禮儀", "desc": "邀請、拜訪、準備食物、乾杯、道謝", "ids": ["v_2495", "v_2532"], "art": "art_214", "ready": true}, {"no": 40, "level": 2, "title": "性格特質與人物評價", "desc": "親切、活潑、安靜、誠實、懶惰、聰明", "ids": ["v_2533", "v_2570"], "art": "art_215", "ready": true}, {"no": 41, "level": 2, "title": "人際關係與社交互動", "desc": "朋友、前輩/後輩、鄰居、吵架、和好", "ids": ["v_2571", "v_2608"], "art": "art_216", "ready": false}, {"no": 42, "level": 2, "title": "戀愛約會與情感表達", "desc": "告白、約會、喜歡、想念、分手、結婚", "ids": ["v_2609", "v_2646"], "art": "art_217", "ready": false}, {"no": 43, "level": 2, "title": "學校生活與考試準備", "desc": "學期、作業、考試、及格、成績、圖書館", "ids": ["v_2647", "v_2684"], "art": "art_218", "ready": false}, {"no": 44, "level": 2, "title": "社團活動與才藝學習", "desc": "吉他、鋼琴、畫畫、拍照、參加比賽", "ids": ["v_2685", "v_2722"], "art": "art_219", "ready": false}, {"no": 45, "level": 2, "title": "旅遊規劃與觀光景點", "desc": "地圖、導遊、博物館、遊樂園、紀念品", "ids": ["v_2723", "v_2760"], "art": "art_220", "ready": false}, {"no": 46, "level": 2, "title": "地理環境與自然景觀", "desc": "山、海、江、島嶼、公園、風景", "ids": ["v_2761", "v_2798"], "art": "art_221", "ready": false}, {"no": 47, "level": 2, "title": "動植物與寵物飼養", "desc": "小狗、小貓、養寵物、餵食、花、樹", "ids": ["v_2799", "v_2836"], "art": "art_222", "ready": false}, {"no": 48, "level": 2, "title": "電影院與表演藝術觀賞", "desc": "買票、座位、演員、主角、劇情、感動", "ids": ["v_2837", "v_2874"], "art": "art_223", "ready": false}, {"no": 49, "level": 2, "title": "手機通訊與網路使用", "desc": "智慧型手機、網路、下載、搜尋、充電", "ids": ["v_2875", "v_2912"], "art": "art_224", "ready": false}, {"no": 50, "level": 2, "title": "社群媒體與拍照分享", "desc": "上傳、留言、按讚、自拍、影片", "ids": ["v_2913", "v_2950"], "art": "art_225", "ready": false}, {"no": 51, "level": 2, "title": "氣候變化與季節災害", "desc": "颱風、梅雨、霧霾、溫度、乾燥/潮濕", "ids": ["v_2951", "v_2988"], "art": "art_226", "ready": false}, {"no": 52, "level": 2, "title": "交通安全與突發狀況", "desc": "紅綠燈、斑馬線、交通事故、警察局、遺失物品", "ids": ["v_2989", "v_3026"], "art": "art_227", "ready": false}, {"no": 53, "level": 2, "title": "個人習慣與生活改變", "desc": "早起、熬夜、減肥、戒菸、養成習慣", "ids": ["v_3027", "v_3064"], "art": "art_228", "ready": false}, {"no": 54, "level": 2, "title": "計畫安排與未來夢想", "desc": "決定、準備、希望、成功、失敗、努力", "ids": ["v_3065", "v_3102"], "art": "art_229", "ready": false}, {"no": 55, "level": 2, "title": "程度副詞與語氣轉折詞", "desc": "非常、稍微、完全、突然、所以、因此", "ids": ["v_3103", "v_3140"], "art": "art_230", "ready": false}];
 
 const VOCAB_ID_MAP = {"v_1029": "v_1118", "v_1011": "v_1307", "v_1003": "v_1308", "v_1022": "v_1309", "v_1001": "v_1341", "v_1002": "v_1342", "v_1013": "v_1343", "v_1014": "v_1344", "v_1015": "v_1345", "v_1016": "v_1346", "v_1004": "v_1375", "v_1005": "v_1376", "v_1017": "v_1377", "v_1018": "v_1378", "v_1019": "v_1379", "v_1023": "v_1380", "v_1024": "v_1381", "v_1025": "v_1382", "v_1026": "v_1383", "v_1027": "v_1384", "v_1028": "v_1385", "v_1030": "v_1386", "v_1006": "v_1409", "v_1007": "v_1410", "v_1008": "v_1411", "v_1009": "v_1412", "v_1010": "v_1413", "v_1012": "v_1414", "v_1020": "v_1749", "v_1021": "v_1750"};
 const ARTICLE_ID_MAP = { 'art_101:new_01': 'art_112:new_01', 'art_101:new_02': 'art_112:new_02' };
@@ -13539,6 +13539,2096 @@ const READ_VOCAB = [
   "meaning_zh": "自動扣款",
   "example_ko": "공과금을 자동이체로 내요.",
   "example_zh": "公共費用用自動扣款繳。"
+ },
+ {
+  "id": "v_2381",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "청소",
+  "pos": "名詞",
+  "hanja": "淸掃",
+  "meaning_zh": "打掃",
+  "example_ko": "주말마다 방 청소를 해요.",
+  "example_zh": "每個週末都打掃房間。"
+ },
+ {
+  "id": "v_2382",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "청소기",
+  "pos": "名詞",
+  "hanja": "淸掃機",
+  "meaning_zh": "吸塵器",
+  "example_ko": "청소기를 돌렸어요.",
+  "example_zh": "用吸塵器吸了地。"
+ },
+ {
+  "id": "v_2383",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "빨래",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "洗衣服；要洗的衣物",
+  "example_ko": "빨래가 많이 쌓였어요.",
+  "example_zh": "要洗的衣服堆了好多。"
+ },
+ {
+  "id": "v_2384",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "세탁",
+  "pos": "名詞",
+  "hanja": "洗濯",
+  "meaning_zh": "洗衣（名詞）",
+  "example_ko": "이 옷은 손세탁만 돼요.",
+  "example_zh": "這件衣服只能手洗。"
+ },
+ {
+  "id": "v_2385",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "설거지",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "洗碗",
+  "example_ko": "밥을 먹고 설거지를 했어요.",
+  "example_zh": "吃完飯洗了碗。"
+ },
+ {
+  "id": "v_2386",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "걸레",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "抹布（擦地用）",
+  "example_ko": "걸레로 바닥을 닦았어요.",
+  "example_zh": "用抹布擦了地板。"
+ },
+ {
+  "id": "v_2387",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "빗자루",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "掃把",
+  "example_ko": "빗자루로 마당을 쓸었어요.",
+  "example_zh": "用掃把掃了院子。"
+ },
+ {
+  "id": "v_2388",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "쓸다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "掃（地）",
+  "example_ko": "방을 깨끗하게 쓸었어요.",
+  "example_zh": "把房間掃得很乾淨。"
+ },
+ {
+  "id": "v_2389",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "닦다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "擦；刷（牙）",
+  "example_ko": "창문을 닦았어요.",
+  "example_zh": "擦了窗戶。"
+ },
+ {
+  "id": "v_2390",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "쓰레기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "垃圾",
+  "example_ko": "쓰레기를 밖에 내놓았어요.",
+  "example_zh": "把垃圾拿到外面了。"
+ },
+ {
+  "id": "v_2391",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "버리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "丟、扔",
+  "example_ko": "쓰레기는 여기에 버리세요.",
+  "example_zh": "垃圾請丟這裡。"
+ },
+ {
+  "id": "v_2392",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "분리수거",
+  "pos": "名詞",
+  "hanja": "分離收去",
+  "meaning_zh": "垃圾分類回收",
+  "example_ko": "오늘은 분리수거하는 날이에요.",
+  "example_zh": "今天是垃圾分類回收的日子。"
+ },
+ {
+  "id": "v_2393",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "재활용",
+  "pos": "名詞",
+  "hanja": "再活用",
+  "meaning_zh": "回收再利用",
+  "example_ko": "이 병은 재활용할 수 있어요.",
+  "example_zh": "這個瓶子可以回收。"
+ },
+ {
+  "id": "v_2394",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "음식물",
+  "pos": "名詞",
+  "hanja": "飮食物",
+  "meaning_zh": "食物；廚餘",
+  "example_ko": "음식물 쓰레기는 따로 버려요.",
+  "example_zh": "廚餘另外丟。"
+ },
+ {
+  "id": "v_2395",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "쓰레기봉투",
+  "pos": "名詞",
+  "hanja": "封套",
+  "meaning_zh": "垃圾袋",
+  "example_ko": "쓰레기봉투를 사야 해요.",
+  "example_zh": "要買垃圾袋。"
+ },
+ {
+  "id": "v_2396",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "정리하다",
+  "pos": "動詞",
+  "hanja": "整理",
+  "meaning_zh": "整理",
+  "example_ko": "책상을 정리했어요.",
+  "example_zh": "整理了書桌。"
+ },
+ {
+  "id": "v_2397",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "치우다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "收拾、清理",
+  "example_ko": "먹은 그릇은 직접 치우세요.",
+  "example_zh": "吃過的碗請自己收拾。"
+ },
+ {
+  "id": "v_2398",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "개다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "摺（衣服、被子）",
+  "example_ko": "빨래를 개서 옷장에 넣었어요.",
+  "example_zh": "把洗好的衣服摺好放進衣櫃。"
+ },
+ {
+  "id": "v_2399",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "널다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "晾（衣服）",
+  "example_ko": "베란다에 빨래를 널었어요.",
+  "example_zh": "把衣服晾在陽台上。"
+ },
+ {
+  "id": "v_2400",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "다리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "燙（衣服）",
+  "example_ko": "셔츠를 다려 입었어요.",
+  "example_zh": "把襯衫燙過才穿。"
+ },
+ {
+  "id": "v_2401",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "다리미",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "熨斗",
+  "example_ko": "다리미가 뜨거우니까 조심하세요.",
+  "example_zh": "熨斗很燙，請小心。"
+ },
+ {
+  "id": "v_2402",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "먼지",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "灰塵",
+  "example_ko": "책장에 먼지가 많아요.",
+  "example_zh": "書櫃上有很多灰塵。"
+ },
+ {
+  "id": "v_2403",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "얼룩",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "污漬、斑點",
+  "example_ko": "옷에 커피 얼룩이 생겼어요.",
+  "example_zh": "衣服上沾到咖啡漬了。"
+ },
+ {
+  "id": "v_2404",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "세제",
+  "pos": "名詞",
+  "hanja": "洗劑",
+  "meaning_zh": "洗衣精、洗潔劑",
+  "example_ko": "세제를 너무 많이 넣지 마세요.",
+  "example_zh": "不要放太多洗衣精。"
+ },
+ {
+  "id": "v_2405",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "섬유유연제",
+  "pos": "名詞",
+  "hanja": "纖維柔軟劑",
+  "meaning_zh": "衣物柔軟精",
+  "example_ko": "섬유유연제 냄새가 좋아요.",
+  "example_zh": "柔軟精的味道很香。"
+ },
+ {
+  "id": "v_2406",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "고무장갑",
+  "pos": "名詞",
+  "hanja": "掌匣",
+  "meaning_zh": "橡膠手套",
+  "example_ko": "고무장갑을 끼고 설거지해요.",
+  "example_zh": "戴橡膠手套洗碗。"
+ },
+ {
+  "id": "v_2407",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "집안일",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "家事",
+  "example_ko": "집안일은 끝이 없어요.",
+  "example_zh": "家事做不完。"
+ },
+ {
+  "id": "v_2408",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "분담하다",
+  "pos": "動詞",
+  "hanja": "分擔",
+  "meaning_zh": "分擔",
+  "example_ko": "가족이 집안일을 분담해요.",
+  "example_zh": "家人分擔家事。"
+ },
+ {
+  "id": "v_2409",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "맡다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "負責、擔任",
+  "example_ko": "저는 화장실 청소를 맡았어요.",
+  "example_zh": "我負責打掃廁所。"
+ },
+ {
+  "id": "v_2410",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "당번",
+  "pos": "名詞",
+  "hanja": "當番",
+  "meaning_zh": "值日（生）、輪值",
+  "example_ko": "오늘 설거지 당번은 누구예요?",
+  "example_zh": "今天輪到誰洗碗？"
+ },
+ {
+  "id": "v_2411",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "깔끔하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "整潔、乾淨俐落",
+  "example_ko": "방이 아주 깔끔해요.",
+  "example_zh": "房間非常整潔。"
+ },
+ {
+  "id": "v_2412",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "지저분하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "髒亂",
+  "example_ko": "책상이 너무 지저분해요.",
+  "example_zh": "書桌太亂了。"
+ },
+ {
+  "id": "v_2413",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "엉망",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "亂七八糟、一團糟",
+  "example_ko": "파티 후에 집이 엉망이 됐어요.",
+  "example_zh": "派對後家裡亂成一團。"
+ },
+ {
+  "id": "v_2414",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "환기하다",
+  "pos": "動詞",
+  "hanja": "換氣",
+  "meaning_zh": "通風、換氣",
+  "example_ko": "창문을 열고 환기하세요.",
+  "example_zh": "請打開窗戶通風。"
+ },
+ {
+  "id": "v_2415",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "쌓이다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "堆積、累積",
+  "example_ko": "설거지가 쌓여 있어요.",
+  "example_zh": "碗盤堆著沒洗。"
+ },
+ {
+  "id": "v_2416",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "대청소",
+  "pos": "名詞",
+  "hanja": "大淸掃",
+  "meaning_zh": "大掃除",
+  "example_ko": "연말에 대청소를 했어요.",
+  "example_zh": "年底做了大掃除。"
+ },
+ {
+  "id": "v_2417",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "빨래통",
+  "pos": "名詞",
+  "hanja": "桶",
+  "meaning_zh": "洗衣籃",
+  "example_ko": "더러운 옷은 빨래통에 넣으세요.",
+  "example_zh": "髒衣服請放進洗衣籃。"
+ },
+ {
+  "id": "v_2418",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "word": "행주",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "抹布（擦桌子碗盤用）",
+  "example_ko": "행주로 식탁을 닦아요.",
+  "example_zh": "用抹布擦餐桌。"
+ },
+ {
+  "id": "v_2419",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "냄비",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鍋子",
+  "example_ko": "냄비에 물을 끓여요.",
+  "example_zh": "用鍋子燒水。"
+ },
+ {
+  "id": "v_2420",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "프라이팬",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "平底鍋",
+  "example_ko": "프라이팬에 계란을 부쳤어요.",
+  "example_zh": "用平底鍋煎了蛋。"
+ },
+ {
+  "id": "v_2421",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "칼",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "刀",
+  "example_ko": "칼을 조심해서 쓰세요.",
+  "example_zh": "用刀請小心。"
+ },
+ {
+  "id": "v_2422",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "도마",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "砧板",
+  "example_ko": "도마 위에서 야채를 썰어요.",
+  "example_zh": "在砧板上切菜。"
+ },
+ {
+  "id": "v_2423",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "국자",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "湯勺",
+  "example_ko": "국자로 국을 떠 주세요.",
+  "example_zh": "請用湯勺舀湯。"
+ },
+ {
+  "id": "v_2424",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "주걱",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "飯匙、鍋鏟",
+  "example_ko": "주걱으로 밥을 펐어요.",
+  "example_zh": "用飯匙盛了飯。"
+ },
+ {
+  "id": "v_2425",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "가위",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "剪刀",
+  "example_ko": "한국에서는 가위로 고기를 잘라요.",
+  "example_zh": "在韓國會用剪刀剪肉。"
+ },
+ {
+  "id": "v_2426",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "전자레인지",
+  "pos": "名詞",
+  "hanja": "電子",
+  "meaning_zh": "微波爐",
+  "example_ko": "전자레인지에 이 분만 돌리세요.",
+  "example_zh": "放進微波爐熱兩分鐘就好。"
+ },
+ {
+  "id": "v_2427",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "오븐",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "烤箱",
+  "example_ko": "오븐에 빵을 구웠어요.",
+  "example_zh": "用烤箱烤了麵包。"
+ },
+ {
+  "id": "v_2428",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "가스레인지",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "瓦斯爐",
+  "example_ko": "가스레인지 불을 끄세요.",
+  "example_zh": "請把瓦斯爐的火關掉。"
+ },
+ {
+  "id": "v_2429",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "밥솥",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "電鍋、電子鍋",
+  "example_ko": "밥솥에 밥이 있어요.",
+  "example_zh": "電鍋裡有飯。"
+ },
+ {
+  "id": "v_2430",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "재료",
+  "pos": "名詞",
+  "hanja": "材料",
+  "meaning_zh": "材料、食材",
+  "example_ko": "재료를 먼저 준비하세요.",
+  "example_zh": "請先準備好食材。"
+ },
+ {
+  "id": "v_2431",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "양념",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "調味料、醬料",
+  "example_ko": "고기에 양념을 했어요.",
+  "example_zh": "把肉醃好了。"
+ },
+ {
+  "id": "v_2432",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "간장",
+  "pos": "名詞",
+  "hanja": "醬",
+  "meaning_zh": "醬油",
+  "example_ko": "간장을 조금 넣으세요.",
+  "example_zh": "請放一點醬油。"
+ },
+ {
+  "id": "v_2433",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "고추장",
+  "pos": "名詞",
+  "hanja": "醬",
+  "meaning_zh": "韓式辣椒醬",
+  "example_ko": "고추장을 넣으면 매워요.",
+  "example_zh": "加辣椒醬會變辣。"
+ },
+ {
+  "id": "v_2434",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "된장",
+  "pos": "名詞",
+  "hanja": "醬",
+  "meaning_zh": "韓式大醬",
+  "example_ko": "된장으로 찌개를 끓였어요.",
+  "example_zh": "用大醬煮了鍋。"
+ },
+ {
+  "id": "v_2435",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "참기름",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "香油、芝麻油",
+  "example_ko": "비빔밥에 참기름을 넣어요.",
+  "example_zh": "在拌飯裡加香油。"
+ },
+ {
+  "id": "v_2436",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "식용유",
+  "pos": "名詞",
+  "hanja": "食用油",
+  "meaning_zh": "食用油、沙拉油",
+  "example_ko": "프라이팬에 식용유를 둘러요.",
+  "example_zh": "在平底鍋裡倒一圈油。"
+ },
+ {
+  "id": "v_2437",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "후추",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "胡椒",
+  "example_ko": "후추를 조금 뿌려 주세요.",
+  "example_zh": "請撒一點胡椒。"
+ },
+ {
+  "id": "v_2438",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "썰다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "切（片、絲）",
+  "example_ko": "양파를 얇게 썰어요.",
+  "example_zh": "把洋蔥切成薄片。"
+ },
+ {
+  "id": "v_2439",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "다지다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "剁碎、切碎",
+  "example_ko": "마늘을 잘게 다졌어요.",
+  "example_zh": "把大蒜剁得很碎。"
+ },
+ {
+  "id": "v_2440",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "볶다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "炒",
+  "example_ko": "야채를 기름에 볶아요.",
+  "example_zh": "用油炒蔬菜。"
+ },
+ {
+  "id": "v_2441",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "굽다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "烤、煎",
+  "example_ko": "고기를 구워 먹었어요.",
+  "example_zh": "烤肉來吃了。"
+ },
+ {
+  "id": "v_2442",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "끓이다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "煮（滾）、燒（開）",
+  "example_ko": "라면을 끓여 먹었어요.",
+  "example_zh": "煮泡麵吃了。"
+ },
+ {
+  "id": "v_2443",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "삶다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "水煮、燙",
+  "example_ko": "계란을 삶았어요.",
+  "example_zh": "煮了水煮蛋。"
+ },
+ {
+  "id": "v_2444",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "튀기다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "炸",
+  "example_ko": "감자를 튀겼어요.",
+  "example_zh": "炸了馬鈴薯。"
+ },
+ {
+  "id": "v_2445",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "찌다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "蒸",
+  "example_ko": "만두를 쪄서 먹어요.",
+  "example_zh": "把餃子蒸來吃。"
+ },
+ {
+  "id": "v_2446",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "섞다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "攪拌、混合",
+  "example_ko": "재료를 잘 섞으세요.",
+  "example_zh": "請把材料攪拌均勻。"
+ },
+ {
+  "id": "v_2447",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "데우다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "加熱",
+  "example_ko": "국을 다시 데웠어요.",
+  "example_zh": "把湯重新加熱了。"
+ },
+ {
+  "id": "v_2448",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "익다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "（煮）熟；（水果）熟",
+  "example_ko": "고기가 다 익었어요.",
+  "example_zh": "肉都熟了。"
+ },
+ {
+  "id": "v_2449",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "익히다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "煮熟、弄熟",
+  "example_ko": "돼지고기는 꼭 익혀서 드세요.",
+  "example_zh": "豬肉一定要煮熟再吃。"
+ },
+ {
+  "id": "v_2450",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "껍질",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "皮、外殼",
+  "example_ko": "사과 껍질을 깎았어요.",
+  "example_zh": "削了蘋果皮。"
+ },
+ {
+  "id": "v_2451",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "벗기다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "剝（皮）、脫掉",
+  "example_ko": "감자 껍질을 벗겨 주세요.",
+  "example_zh": "請把馬鈴薯的皮剝掉。"
+ },
+ {
+  "id": "v_2452",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "간",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鹹淡、調味（간을 보다：試鹹淡）",
+  "example_ko": "간을 좀 봐 주세요.",
+  "example_zh": "請幫我試一下鹹淡。"
+ },
+ {
+  "id": "v_2453",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "레시피",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "食譜",
+  "example_ko": "인터넷에서 레시피를 찾았어요.",
+  "example_zh": "在網路上找了食譜。"
+ },
+ {
+  "id": "v_2454",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "넘치다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "溢出、滿出來",
+  "example_ko": "국이 끓어서 넘쳤어요.",
+  "example_zh": "湯滾到溢出來了。"
+ },
+ {
+  "id": "v_2455",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "식다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "變涼、冷掉",
+  "example_ko": "국이 다 식었어요.",
+  "example_zh": "湯都冷掉了。"
+ },
+ {
+  "id": "v_2456",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "word": "앞치마",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "圍裙",
+  "example_ko": "앞치마를 하고 요리해요.",
+  "example_zh": "穿上圍裙做菜。"
+ },
+ {
+  "id": "v_2457",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "명절",
+  "pos": "名詞",
+  "hanja": "名節",
+  "meaning_zh": "（傳統）節日",
+  "example_ko": "명절에는 가족이 모여요.",
+  "example_zh": "過節的時候家人會團聚。"
+ },
+ {
+  "id": "v_2458",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "설날",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "春節、農曆新年",
+  "example_ko": "설날에 떡국을 먹어요.",
+  "example_zh": "春節吃年糕湯。"
+ },
+ {
+  "id": "v_2459",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "추석",
+  "pos": "名詞",
+  "hanja": "秋夕",
+  "meaning_zh": "中秋節",
+  "example_ko": "추석에 송편을 만들어요.",
+  "example_zh": "中秋節做松餅。"
+ },
+ {
+  "id": "v_2460",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "새해",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "新年",
+  "example_ko": "새해 복 많이 받으세요!",
+  "example_zh": "新年快樂（祝你新年多福）！"
+ },
+ {
+  "id": "v_2461",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "세배",
+  "pos": "名詞",
+  "hanja": "歲拜",
+  "meaning_zh": "（春節向長輩）拜年",
+  "example_ko": "할머니께 세배를 했어요.",
+  "example_zh": "向奶奶拜了年。"
+ },
+ {
+  "id": "v_2462",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "세뱃돈",
+  "pos": "名詞",
+  "hanja": "歲拜",
+  "meaning_zh": "壓歲錢、紅包",
+  "example_ko": "세뱃돈을 받았어요.",
+  "example_zh": "拿到了壓歲錢。"
+ },
+ {
+  "id": "v_2463",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "떡국",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "年糕湯",
+  "example_ko": "떡국을 먹으면 한 살 더 먹어요.",
+  "example_zh": "吃了年糕湯就長一歲。"
+ },
+ {
+  "id": "v_2464",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "송편",
+  "pos": "名詞",
+  "hanja": "松",
+  "meaning_zh": "松餅（中秋節的半月形年糕）",
+  "example_ko": "송편은 반달 모양이에요.",
+  "example_zh": "松餅是半月形的。"
+ },
+ {
+  "id": "v_2465",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "차례",
+  "pos": "名詞",
+  "hanja": "茶禮",
+  "meaning_zh": "（節日）祭祖",
+  "example_ko": "설날 아침에 차례를 지내요.",
+  "example_zh": "春節早上祭祖。"
+ },
+ {
+  "id": "v_2466",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "고향",
+  "pos": "名詞",
+  "hanja": "故鄕",
+  "meaning_zh": "故鄉、老家",
+  "example_ko": "추석에 고향에 내려가요.",
+  "example_zh": "中秋節回老家。"
+ },
+ {
+  "id": "v_2467",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "성묘",
+  "pos": "名詞",
+  "hanja": "省墓",
+  "meaning_zh": "掃墓",
+  "example_ko": "추석에 성묘를 가요.",
+  "example_zh": "中秋節去掃墓。"
+ },
+ {
+  "id": "v_2468",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "선물",
+  "pos": "名詞",
+  "hanja": "膳物",
+  "meaning_zh": "禮物",
+  "example_ko": "친구에게 생일 선물을 줬어요.",
+  "example_zh": "送了生日禮物給朋友。"
+ },
+ {
+  "id": "v_2469",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "축하하다",
+  "pos": "動詞",
+  "hanja": "祝賀",
+  "meaning_zh": "祝賀、恭喜",
+  "example_ko": "생일 축하해요!",
+  "example_zh": "生日快樂！"
+ },
+ {
+  "id": "v_2470",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "파티",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "派對",
+  "example_ko": "친구 집에서 생일 파티를 했어요.",
+  "example_zh": "在朋友家辦了生日派對。"
+ },
+ {
+  "id": "v_2471",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "촛불",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "燭光、蠟燭的火",
+  "example_ko": "케이크의 촛불을 껐어요.",
+  "example_zh": "吹熄了蛋糕上的蠟燭。"
+ },
+ {
+  "id": "v_2472",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "소원",
+  "pos": "名詞",
+  "hanja": "所願",
+  "meaning_zh": "願望",
+  "example_ko": "소원을 빌었어요.",
+  "example_zh": "許了願。"
+ },
+ {
+  "id": "v_2473",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "빌다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "祈求、許（願）",
+  "example_ko": "새해 소원을 빌어요.",
+  "example_zh": "許新年願望。"
+ },
+ {
+  "id": "v_2474",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "기념일",
+  "pos": "名詞",
+  "hanja": "紀念日",
+  "meaning_zh": "紀念日",
+  "example_ko": "오늘은 결혼 기념일이에요.",
+  "example_zh": "今天是結婚紀念日。"
+ },
+ {
+  "id": "v_2475",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "어린이날",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "兒童節（5 月 5 日）",
+  "example_ko": "어린이날에 놀이공원에 갔어요.",
+  "example_zh": "兒童節去了遊樂園。"
+ },
+ {
+  "id": "v_2476",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "어버이날",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "父母節（5 月 8 日）",
+  "example_ko": "어버이날에 카네이션을 드려요.",
+  "example_zh": "父母節送康乃馨。"
+ },
+ {
+  "id": "v_2477",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "크리스마스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "聖誕節",
+  "example_ko": "크리스마스에 선물을 받았어요.",
+  "example_zh": "聖誕節收到了禮物。"
+ },
+ {
+  "id": "v_2478",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "연말",
+  "pos": "名詞",
+  "hanja": "年末",
+  "meaning_zh": "年底",
+  "example_ko": "연말에는 모임이 많아요.",
+  "example_zh": "年底聚會很多。"
+ },
+ {
+  "id": "v_2479",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "연휴",
+  "pos": "名詞",
+  "hanja": "連休",
+  "meaning_zh": "連假",
+  "example_ko": "이번 연휴에 여행을 가요.",
+  "example_zh": "這次連假要去旅行。"
+ },
+ {
+  "id": "v_2480",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "꽃다발",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "花束",
+  "example_ko": "졸업식에 꽃다발을 받았어요.",
+  "example_zh": "畢業典禮上收到了花束。"
+ },
+ {
+  "id": "v_2481",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "포장지",
+  "pos": "名詞",
+  "hanja": "包裝紙",
+  "meaning_zh": "包裝紙",
+  "example_ko": "예쁜 포장지로 쌌어요.",
+  "example_zh": "用漂亮的包裝紙包起來了。"
+ },
+ {
+  "id": "v_2482",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "리본",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "緞帶、蝴蝶結",
+  "example_ko": "선물에 리본을 달았어요.",
+  "example_zh": "在禮物上綁了緞帶。"
+ },
+ {
+  "id": "v_2483",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "상품권",
+  "pos": "名詞",
+  "hanja": "商品券",
+  "meaning_zh": "禮券、商品券",
+  "example_ko": "어머니께 상품권을 드렸어요.",
+  "example_zh": "送了禮券給媽媽。"
+ },
+ {
+  "id": "v_2484",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "정성",
+  "pos": "名詞",
+  "hanja": "精誠",
+  "meaning_zh": "誠意、心意",
+  "example_ko": "정성이 담긴 선물이에요.",
+  "example_zh": "是充滿心意的禮物。"
+ },
+ {
+  "id": "v_2485",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "전하다",
+  "pos": "動詞",
+  "hanja": "傳",
+  "meaning_zh": "轉達、傳達",
+  "example_ko": "부모님께 안부를 전해 주세요.",
+  "example_zh": "請代我向你父母問好。"
+ },
+ {
+  "id": "v_2486",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "돌잔치",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "週歲宴",
+  "example_ko": "조카 돌잔치에 갔어요.",
+  "example_zh": "去了姪子的週歲宴。"
+ },
+ {
+  "id": "v_2487",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "환갑",
+  "pos": "名詞",
+  "hanja": "還甲",
+  "meaning_zh": "六十大壽",
+  "example_ko": "아버지 환갑 잔치를 했어요.",
+  "example_zh": "幫爸爸辦了六十大壽。"
+ },
+ {
+  "id": "v_2488",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "축제",
+  "pos": "名詞",
+  "hanja": "祝祭",
+  "meaning_zh": "慶典、節慶活動",
+  "example_ko": "대학교 축제에 갔어요.",
+  "example_zh": "去了大學的校慶活動。"
+ },
+ {
+  "id": "v_2489",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "불꽃놀이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "煙火（表演）",
+  "example_ko": "새해에 불꽃놀이를 봤어요.",
+  "example_zh": "新年看了煙火。"
+ },
+ {
+  "id": "v_2490",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "덕담",
+  "pos": "名詞",
+  "hanja": "德談",
+  "meaning_zh": "祝福的話",
+  "example_ko": "할아버지께서 덕담을 해 주셨어요.",
+  "example_zh": "爺爺對我們說了祝福的話。"
+ },
+ {
+  "id": "v_2491",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "복",
+  "pos": "名詞",
+  "hanja": "福",
+  "meaning_zh": "福、福氣",
+  "example_ko": "복 많이 받으세요.",
+  "example_zh": "祝你福氣滿滿。"
+ },
+ {
+  "id": "v_2492",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "즐기다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "享受、喜愛",
+  "example_ko": "연휴를 즐겁게 즐겼어요.",
+  "example_zh": "愉快地享受了連假。"
+ },
+ {
+  "id": "v_2493",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "모이다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "聚集、團聚",
+  "example_ko": "명절에 친척들이 모였어요.",
+  "example_zh": "過節的時候親戚們團聚了。"
+ },
+ {
+  "id": "v_2494",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "word": "친척",
+  "pos": "名詞",
+  "hanja": "親戚",
+  "meaning_zh": "親戚",
+  "example_ko": "친척 집에 인사하러 가요.",
+  "example_zh": "去親戚家拜訪問候。"
+ },
+ {
+  "id": "v_2495",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "초대하다",
+  "pos": "動詞",
+  "hanja": "招待",
+  "meaning_zh": "邀請",
+  "example_ko": "친구를 집에 초대했어요.",
+  "example_zh": "邀請朋友到家裡。"
+ },
+ {
+  "id": "v_2496",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "초대장",
+  "pos": "名詞",
+  "hanja": "招待狀",
+  "meaning_zh": "邀請函",
+  "example_ko": "결혼식 초대장을 받았어요.",
+  "example_zh": "收到了婚禮的邀請函。"
+ },
+ {
+  "id": "v_2497",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "방문하다",
+  "pos": "動詞",
+  "hanja": "訪問",
+  "meaning_zh": "拜訪、造訪",
+  "example_ko": "선생님 댁을 방문했어요.",
+  "example_zh": "拜訪了老師家。"
+ },
+ {
+  "id": "v_2498",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "집들이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "喬遷宴（新居請客）",
+  "example_ko": "이사해서 집들이를 했어요.",
+  "example_zh": "搬家後辦了喬遷宴。"
+ },
+ {
+  "id": "v_2499",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "대접하다",
+  "pos": "動詞",
+  "hanja": "待接",
+  "meaning_zh": "招待、款待",
+  "example_ko": "손님에게 저녁을 대접했어요.",
+  "example_zh": "請客人吃了晚餐。"
+ },
+ {
+  "id": "v_2500",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "준비하다",
+  "pos": "動詞",
+  "hanja": "準備",
+  "meaning_zh": "準備",
+  "example_ko": "파티 음식을 준비했어요.",
+  "example_zh": "準備了派對的食物。"
+ },
+ {
+  "id": "v_2501",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "차리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "準備（飯菜）、擺（桌）",
+  "example_ko": "어머니가 저녁상을 차리셨어요.",
+  "example_zh": "媽媽準備好了晚餐。"
+ },
+ {
+  "id": "v_2502",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "상",
+  "pos": "名詞",
+  "hanja": "床",
+  "meaning_zh": "（飯）桌",
+  "example_ko": "상 위에 음식이 많아요.",
+  "example_zh": "桌上有很多菜。"
+ },
+ {
+  "id": "v_2503",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "건배",
+  "pos": "名詞",
+  "hanja": "乾杯",
+  "meaning_zh": "乾杯",
+  "example_ko": "우리의 건강을 위해 건배!",
+  "example_zh": "為了我們的健康乾杯！"
+ },
+ {
+  "id": "v_2504",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "술잔",
+  "pos": "名詞",
+  "hanja": "盞",
+  "meaning_zh": "酒杯",
+  "example_ko": "술잔을 두 손으로 받으세요.",
+  "example_zh": "請用雙手接酒杯。"
+ },
+ {
+  "id": "v_2505",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "어른",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "長輩、大人",
+  "example_ko": "어른께 먼저 인사하세요.",
+  "example_zh": "請先向長輩打招呼。"
+ },
+ {
+  "id": "v_2506",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "드시다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "吃、喝（먹다、마시다 的敬語）",
+  "example_ko": "할머니, 많이 드세요.",
+  "example_zh": "奶奶，請多吃一點。"
+ },
+ {
+  "id": "v_2507",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "잘 먹겠습니다",
+  "pos": "慣用語",
+  "hanja": null,
+  "meaning_zh": "我要開動了（謝謝招待）",
+  "example_ko": "잘 먹겠습니다!",
+  "example_zh": "我要開動了！"
+ },
+ {
+  "id": "v_2508",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "잘 먹었습니다",
+  "pos": "慣用語",
+  "hanja": null,
+  "meaning_zh": "我吃飽了（謝謝招待）",
+  "example_ko": "정말 잘 먹었습니다.",
+  "example_zh": "真的吃得很飽，謝謝招待。"
+ },
+ {
+  "id": "v_2509",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "고개",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "頭（脖子以上，低頭、轉頭的「頭」）",
+  "example_ko": "고개를 숙여 인사했어요.",
+  "example_zh": "低頭行了禮。"
+ },
+ {
+  "id": "v_2510",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "돌리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "轉（過去）、轉動",
+  "example_ko": "고개를 돌리고 마셔요.",
+  "example_zh": "轉過頭去喝。"
+ },
+ {
+  "id": "v_2511",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "예의",
+  "pos": "名詞",
+  "hanja": "禮儀",
+  "meaning_zh": "禮貌、禮儀",
+  "example_ko": "어른 앞에서는 예의를 지켜야 해요.",
+  "example_zh": "在長輩面前要有禮貌。"
+ },
+ {
+  "id": "v_2512",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "실례하다",
+  "pos": "動詞",
+  "hanja": "失禮",
+  "meaning_zh": "打擾、失禮",
+  "example_ko": "실례합니다. 들어가도 돼요?",
+  "example_zh": "打擾了，可以進去嗎？"
+ },
+ {
+  "id": "v_2513",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "사양하다",
+  "pos": "動詞",
+  "hanja": "辭讓",
+  "meaning_zh": "婉拒、客氣推辭",
+  "example_ko": "사양하지 말고 많이 드세요.",
+  "example_zh": "別客氣，多吃一點。"
+ },
+ {
+  "id": "v_2514",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "권하다",
+  "pos": "動詞",
+  "hanja": "勸",
+  "meaning_zh": "勸、推薦",
+  "example_ko": "친구가 술을 권했어요.",
+  "example_zh": "朋友勸我喝酒。"
+ },
+ {
+  "id": "v_2515",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "덜다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "分出來、減少（덜어 먹다：夾到自己盤子吃）",
+  "example_ko": "앞접시에 덜어 드세요.",
+  "example_zh": "請夾到小盤子裡吃。"
+ },
+ {
+  "id": "v_2516",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "흘리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "灑出、掉、流（汗、淚）",
+  "example_ko": "국물을 흘렸어요.",
+  "example_zh": "把湯灑出來了。"
+ },
+ {
+  "id": "v_2517",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "후식",
+  "pos": "名詞",
+  "hanja": "後食",
+  "meaning_zh": "飯後甜點",
+  "example_ko": "후식으로 과일이 나왔어요.",
+  "example_zh": "飯後甜點上了水果。"
+ },
+ {
+  "id": "v_2518",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "환영하다",
+  "pos": "動詞",
+  "hanja": "歡迎",
+  "meaning_zh": "歡迎",
+  "example_ko": "우리 집에 온 것을 환영해요.",
+  "example_zh": "歡迎來我們家。"
+ },
+ {
+  "id": "v_2519",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "빈손",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "空手",
+  "example_ko": "빈손으로 가기가 좀 그래요.",
+  "example_zh": "空手去有點不好意思。"
+ },
+ {
+  "id": "v_2520",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "인사하다",
+  "pos": "動詞",
+  "hanja": "人事",
+  "meaning_zh": "打招呼、問候",
+  "example_ko": "이웃에게 인사했어요.",
+  "example_zh": "向鄰居打了招呼。"
+ },
+ {
+  "id": "v_2521",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "배웅하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "送行、送客",
+  "example_ko": "손님을 문 앞까지 배웅했어요.",
+  "example_zh": "把客人送到門口。"
+ },
+ {
+  "id": "v_2522",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "마중하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "迎接、接（人）",
+  "example_ko": "역에 친구를 마중하러 갔어요.",
+  "example_zh": "去車站接朋友。"
+ },
+ {
+  "id": "v_2523",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "대화",
+  "pos": "名詞",
+  "hanja": "對話",
+  "meaning_zh": "對話、聊天",
+  "example_ko": "식사하면서 즐겁게 대화했어요.",
+  "example_zh": "邊吃飯邊愉快地聊天。"
+ },
+ {
+  "id": "v_2524",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "분위기",
+  "pos": "名詞",
+  "hanja": "雰圍氣",
+  "meaning_zh": "氣氛",
+  "example_ko": "파티 분위기가 좋았어요.",
+  "example_zh": "派對氣氛很好。"
+ },
+ {
+  "id": "v_2525",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "나누다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "分享、分開",
+  "example_ko": "음식을 이웃과 나눠 먹었어요.",
+  "example_zh": "把食物和鄰居分著吃了。"
+ },
+ {
+  "id": "v_2526",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "냅킨",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "餐巾紙",
+  "example_ko": "냅킨 좀 주세요.",
+  "example_zh": "請給我餐巾紙。"
+ },
+ {
+  "id": "v_2527",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "물수건",
+  "pos": "名詞",
+  "hanja": "手巾",
+  "meaning_zh": "濕毛巾",
+  "example_ko": "식당에서 물수건을 줬어요.",
+  "example_zh": "餐廳給了濕毛巾。"
+ },
+ {
+  "id": "v_2528",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "앞접시",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "（分菜用的）小盤子",
+  "example_ko": "앞접시 하나 더 주세요.",
+  "example_zh": "請再給我一個小盤子。"
+ },
+ {
+  "id": "v_2529",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "칭찬하다",
+  "pos": "動詞",
+  "hanja": "稱讚",
+  "meaning_zh": "稱讚",
+  "example_ko": "선생님이 저를 칭찬하셨어요.",
+  "example_zh": "老師稱讚了我。"
+ },
+ {
+  "id": "v_2530",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "솜씨",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "手藝",
+  "example_ko": "어머니의 요리 솜씨가 최고예요.",
+  "example_zh": "媽媽的廚藝最棒了。"
+ },
+ {
+  "id": "v_2531",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "입맛",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "胃口、口味",
+  "example_ko": "한국 음식이 입맛에 맞아요?",
+  "example_zh": "韓國菜合你的口味嗎？"
+ },
+ {
+  "id": "v_2532",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "word": "맞추다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "配合、對準",
+  "example_ko": "어른의 속도에 맞춰서 먹어요.",
+  "example_zh": "配合長輩的速度吃飯。"
+ },
+ {
+  "id": "v_2533",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "성격",
+  "pos": "名詞",
+  "hanja": "性格",
+  "meaning_zh": "個性、性格",
+  "example_ko": "동생은 성격이 밝아요.",
+  "example_zh": "弟弟個性很開朗。"
+ },
+ {
+  "id": "v_2534",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "친절하다",
+  "pos": "形容詞",
+  "hanja": "親切",
+  "meaning_zh": "親切",
+  "example_ko": "가게 직원이 아주 친절해요.",
+  "example_zh": "店員非常親切。"
+ },
+ {
+  "id": "v_2535",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "활발하다",
+  "pos": "形容詞",
+  "hanja": "活潑",
+  "meaning_zh": "活潑",
+  "example_ko": "제 친구는 활발해서 인기가 많아요.",
+  "example_zh": "我朋友很活潑，所以很受歡迎。"
+ },
+ {
+  "id": "v_2536",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "얌전하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "文靜、乖巧",
+  "example_ko": "그 아이는 아주 얌전해요.",
+  "example_zh": "那個孩子很文靜。"
+ },
+ {
+  "id": "v_2537",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "정직하다",
+  "pos": "形容詞",
+  "hanja": "正直",
+  "meaning_zh": "正直、誠實",
+  "example_ko": "정직한 사람이 좋아요.",
+  "example_zh": "我喜歡誠實的人。"
+ },
+ {
+  "id": "v_2538",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "솔직하다",
+  "pos": "形容詞",
+  "hanja": "率直",
+  "meaning_zh": "坦率、直率",
+  "example_ko": "솔직하게 말해 주세요.",
+  "example_zh": "請坦白告訴我。"
+ },
+ {
+  "id": "v_2539",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "게으르다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "懶惰",
+  "example_ko": "주말에는 좀 게을러져요.",
+  "example_zh": "週末會變得有點懶。"
+ },
+ {
+  "id": "v_2540",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "부지런하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "勤勞、勤快",
+  "example_ko": "아버지는 정말 부지런하세요.",
+  "example_zh": "爸爸真的很勤快。"
+ },
+ {
+  "id": "v_2541",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "똑똑하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "聰明",
+  "example_ko": "그 학생은 아주 똑똑해요.",
+  "example_zh": "那個學生很聰明。"
+ },
+ {
+  "id": "v_2542",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "성실하다",
+  "pos": "形容詞",
+  "hanja": "誠實",
+  "meaning_zh": "認真踏實",
+  "example_ko": "성실하게 일하는 사람이에요.",
+  "example_zh": "是個踏實工作的人。"
+ },
+ {
+  "id": "v_2543",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "꼼꼼하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "細心、仔細",
+  "example_ko": "언니는 성격이 꼼꼼해요.",
+  "example_zh": "姊姊做事很細心。"
+ },
+ {
+  "id": "v_2544",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "덜렁대다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "冒冒失失、粗心大意",
+  "example_ko": "저는 덜렁대서 물건을 자주 잃어버려요.",
+  "example_zh": "我很粗心，常常弄丟東西。"
+ },
+ {
+  "id": "v_2545",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "차분하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "沉穩、冷靜",
+  "example_ko": "그 선생님은 말투가 차분해요.",
+  "example_zh": "那位老師說話很沉穩。"
+ },
+ {
+  "id": "v_2546",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "성급하다",
+  "pos": "形容詞",
+  "hanja": "性急",
+  "meaning_zh": "性急、急躁",
+  "example_ko": "성급하게 결정하지 마세요.",
+  "example_zh": "請不要急著做決定。"
+ },
+ {
+  "id": "v_2547",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "느긋하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "從容、慢條斯理",
+  "example_ko": "동생은 성격이 느긋해요.",
+  "example_zh": "弟弟個性很慢條斯理。"
+ },
+ {
+  "id": "v_2548",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "내성적",
+  "pos": "名詞",
+  "hanja": "內省的",
+  "meaning_zh": "內向的",
+  "example_ko": "저는 좀 내성적인 편이에요.",
+  "example_zh": "我算是比較內向的。"
+ },
+ {
+  "id": "v_2549",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "외향적",
+  "pos": "名詞",
+  "hanja": "外向的",
+  "meaning_zh": "外向的",
+  "example_ko": "외향적인 사람은 친구가 많아요.",
+  "example_zh": "外向的人朋友很多。"
+ },
+ {
+  "id": "v_2550",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "소심하다",
+  "pos": "形容詞",
+  "hanja": "小心",
+  "meaning_zh": "膽小、玻璃心",
+  "example_ko": "너무 소심하게 생각하지 마세요.",
+  "example_zh": "別想得那麼玻璃心。"
+ },
+ {
+  "id": "v_2551",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "용감하다",
+  "pos": "形容詞",
+  "hanja": "勇敢",
+  "meaning_zh": "勇敢",
+  "example_ko": "그 소방관은 정말 용감해요.",
+  "example_zh": "那位消防員真的很勇敢。"
+ },
+ {
+  "id": "v_2552",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "겁",
+  "pos": "名詞",
+  "hanja": "怯",
+  "meaning_zh": "膽怯、害怕（겁이 많다：膽小）",
+  "example_ko": "저는 겁이 많아요.",
+  "example_zh": "我很膽小。"
+ },
+ {
+  "id": "v_2553",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "고집",
+  "pos": "名詞",
+  "hanja": "固執",
+  "meaning_zh": "固執",
+  "example_ko": "고집이 세서 말을 안 들어요.",
+  "example_zh": "很固執，不聽勸。"
+ },
+ {
+  "id": "v_2554",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "이기적",
+  "pos": "名詞",
+  "hanja": "利己的",
+  "meaning_zh": "自私的",
+  "example_ko": "이기적인 행동은 싫어요.",
+  "example_zh": "我討厭自私的行為。"
+ },
+ {
+  "id": "v_2555",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "배려",
+  "pos": "名詞",
+  "hanja": "配慮",
+  "meaning_zh": "體貼、關照",
+  "example_ko": "친구의 배려에 감동했어요.",
+  "example_zh": "被朋友的體貼感動了。"
+ },
+ {
+  "id": "v_2556",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "예의 바르다",
+  "pos": "形容詞",
+  "hanja": "禮儀",
+  "meaning_zh": "有禮貌",
+  "example_ko": "그 학생은 예의 바르게 인사해요.",
+  "example_zh": "那個學生很有禮貌地打招呼。"
+ },
+ {
+  "id": "v_2557",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "유머",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "幽默",
+  "example_ko": "유머가 있는 사람이 좋아요.",
+  "example_zh": "我喜歡有幽默感的人。"
+ },
+ {
+  "id": "v_2558",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "재치",
+  "pos": "名詞",
+  "hanja": "才致",
+  "meaning_zh": "機智、機靈",
+  "example_ko": "재치 있는 대답에 모두 웃었어요.",
+  "example_zh": "機智的回答讓大家都笑了。"
+ },
+ {
+  "id": "v_2559",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "장점",
+  "pos": "名詞",
+  "hanja": "長點",
+  "meaning_zh": "優點",
+  "example_ko": "당신의 장점은 뭐예요?",
+  "example_zh": "你的優點是什麼？"
+ },
+ {
+  "id": "v_2560",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "단점",
+  "pos": "名詞",
+  "hanja": "短點",
+  "meaning_zh": "缺點",
+  "example_ko": "누구나 단점이 있어요.",
+  "example_zh": "每個人都有缺點。"
+ },
+ {
+  "id": "v_2561",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "인기",
+  "pos": "名詞",
+  "hanja": "人氣",
+  "meaning_zh": "人氣、受歡迎",
+  "example_ko": "그 가수는 인기가 많아요.",
+  "example_zh": "那位歌手很受歡迎。"
+ },
+ {
+  "id": "v_2562",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "다정하다",
+  "pos": "形容詞",
+  "hanja": "多情",
+  "meaning_zh": "溫柔體貼",
+  "example_ko": "남자 친구가 다정해요.",
+  "example_zh": "男朋友很溫柔體貼。"
+ },
+ {
+  "id": "v_2563",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "무뚝뚝하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "冷淡、木訥",
+  "example_ko": "아버지는 좀 무뚝뚝하세요.",
+  "example_zh": "爸爸有點木訥。"
+ },
+ {
+  "id": "v_2564",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "까다롭다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "挑剔、難搞",
+  "example_ko": "입맛이 까다로워요.",
+  "example_zh": "口味很挑剔。"
+ },
+ {
+  "id": "v_2565",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "상냥하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "和藹、親切溫柔",
+  "example_ko": "점원이 상냥하게 웃었어요.",
+  "example_zh": "店員親切地笑了。"
+ },
+ {
+  "id": "v_2566",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "수다스럽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "愛講話、話多",
+  "example_ko": "제 친구는 좀 수다스러워요.",
+  "example_zh": "我朋友話有點多。"
+ },
+ {
+  "id": "v_2567",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "엄하다",
+  "pos": "形容詞",
+  "hanja": "嚴",
+  "meaning_zh": "嚴格、嚴厲",
+  "example_ko": "우리 아버지는 엄하세요.",
+  "example_zh": "我爸爸很嚴格。"
+ },
+ {
+  "id": "v_2568",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "너그럽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "寬容、大度",
+  "example_ko": "할머니는 마음이 너그러우세요.",
+  "example_zh": "奶奶心胸很寬大。"
+ },
+ {
+  "id": "v_2569",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "겸손하다",
+  "pos": "形容詞",
+  "hanja": "謙遜",
+  "meaning_zh": "謙虛",
+  "example_ko": "그는 실력이 좋은데도 겸손해요.",
+  "example_zh": "他實力很好卻很謙虛。"
+ },
+ {
+  "id": "v_2570",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "word": "자신감",
+  "pos": "名詞",
+  "hanja": "自信感",
+  "meaning_zh": "自信心",
+  "example_ko": "발표할 때 자신감을 가지세요.",
+  "example_zh": "報告的時候要有自信。"
  }
 ];
 
@@ -22345,6 +24435,1418 @@ const READ_ARTICLES = [
     "explanation": "表示做了決定，或和別人約定好：계약하기로 했어요（決定簽約了）。不管有沒有收音都接 -기로 하다，通常用過去式 -기로 했어요。和朋友約好一起做某事也用它：같이 이사하기로 했어요（約好一起搬家）。",
     "extra_example_ko": "다음 달부터 운동하기로 했어요.",
     "extra_example_zh": "我決定從下個月開始運動。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_211",
+  "level": 2,
+  "topic": "家務分工與打掃清潔",
+  "title_ko": "우리 집 대청소",
+  "title_zh": "我們家的大掃除",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "엄마",
+    "ko": "오늘은 대청소를 하는 날이에요. 집안일을 같이 분담해요.",
+    "zh": "今天是大掃除的日子。我們一起分擔家事吧。",
+    "target_words": [
+     {
+      "surface": "오늘은",
+      "lemma": "오늘",
+      "vocab_id": "v_1817"
+     },
+     {
+      "surface": "대청소를",
+      "lemma": "대청소",
+      "vocab_id": "v_2416"
+     },
+     {
+      "surface": "하는",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     },
+     {
+      "surface": "날이에요",
+      "lemma": "날",
+      "vocab_id": "v_1577"
+     },
+     {
+      "surface": "집안일을",
+      "lemma": "집안일",
+      "vocab_id": "v_2407"
+     },
+     {
+      "surface": "같이",
+      "lemma": "같이",
+      "vocab_id": "v_1064"
+     },
+     {
+      "surface": "분담해요",
+      "lemma": "분담하다",
+      "vocab_id": "v_2408"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "아들",
+    "ko": "저는 음악을 들으면서 청소기를 돌릴게요.",
+    "zh": "我一邊聽音樂一邊用吸塵器吸地。",
+    "target_words": [
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "음악을",
+      "lemma": "음악",
+      "vocab_id": "v_1581"
+     },
+     {
+      "surface": "들으면서",
+      "lemma": "듣다",
+      "vocab_id": "v_1754"
+     },
+     {
+      "surface": "청소기를",
+      "lemma": "청소기",
+      "vocab_id": "v_2382"
+     }
+    ],
+    "grammar_ids": [
+     "g_221"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "엄마",
+    "ko": "좋아요. 아빠는 설거지를 하고 저는 빨래를 할게요.",
+    "zh": "好。爸爸洗碗，我來洗衣服。",
+    "target_words": [
+     {
+      "surface": "좋아요",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
+     {
+      "surface": "아빠는",
+      "lemma": "아빠",
+      "vocab_id": "v_1038"
+     },
+     {
+      "surface": "설거지를",
+      "lemma": "설거지",
+      "vocab_id": "v_2385"
+     },
+     {
+      "surface": "하고",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     },
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "빨래를",
+      "lemma": "빨래",
+      "vocab_id": "v_2383"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "딸",
+    "ko": "저는 쓰레기를 분리수거해서 버릴게요.",
+    "zh": "我把垃圾分類好拿去丟。",
+    "target_words": [
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "쓰레기를",
+      "lemma": "쓰레기",
+      "vocab_id": "v_2390"
+     },
+     {
+      "surface": "분리수거",
+      "lemma": "분리수거",
+      "vocab_id": "v_2392"
+     },
+     {
+      "surface": "버릴게요",
+      "lemma": "버리다",
+      "vocab_id": "v_2391"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "엄마",
+    "ko": "빨래가 다 마르면 옷을 개서 옷장에 넣어 놓으세요.",
+    "zh": "衣服乾了以後，請摺好放進衣櫃裡。",
+    "target_words": [
+     {
+      "surface": "빨래가",
+      "lemma": "빨래",
+      "vocab_id": "v_2383"
+     },
+     {
+      "surface": "다",
+      "lemma": "다",
+      "vocab_id": "v_1472"
+     },
+     {
+      "surface": "옷을",
+      "lemma": "옷",
+      "vocab_id": "v_1477"
+     },
+     {
+      "surface": "개서",
+      "lemma": "개다",
+      "vocab_id": "v_2398"
+     },
+     {
+      "surface": "옷장에",
+      "lemma": "옷장",
+      "vocab_id": "v_1189"
+     },
+     {
+      "surface": "넣어",
+      "lemma": "넣다",
+      "vocab_id": "v_1776"
+     }
+    ],
+    "grammar_ids": [
+     "g_222"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "아들",
+    "ko": "다 같이 하니까 금방 끝났어요. 집이 훨씬 깔끔해졌어요!",
+    "zh": "大家一起做，很快就做完了。家裡變得整潔多了！",
+    "target_words": [
+     {
+      "surface": "다",
+      "lemma": "다",
+      "vocab_id": "v_1472"
+     },
+     {
+      "surface": "같이",
+      "lemma": "같이",
+      "vocab_id": "v_1064"
+     },
+     {
+      "surface": "금방",
+      "lemma": "금방",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "끝났어요",
+      "lemma": "끝나다",
+      "vocab_id": "v_1170"
+     },
+     {
+      "surface": "집이",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "훨씬",
+      "lemma": "훨씬",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "깔끔해졌어요",
+      "lemma": "깔끔하다",
+      "vocab_id": "v_2411"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "금방",
+    "pos": "副詞",
+    "hanja": "今方",
+    "meaning_zh": "很快、馬上、剛剛"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "훨씬",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "（比較）…得多、更加"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_221",
+    "pattern": "動詞語幹 + -(으)면서",
+    "meaning": "一邊…一邊…",
+    "explanation": "兩個動作同時進行。沒有收音接 -면서（보다 → 보면서），有收音接 -으면서（먹다 → 먹으면서）；ㄷ 不規則的 듣다 變成 들으면서。前後兩個動作要是同一個人做的。",
+    "extra_example_ko": "저는 커피를 마시면서 신문을 읽어요.",
+    "extra_example_zh": "我一邊喝咖啡一邊看報紙。"
+   },
+   {
+    "grammar_id": "g_222",
+    "pattern": "動詞語幹 + -아/어 놓다（두다）",
+    "meaning": "（事先）做好…放著",
+    "explanation": "表示把動作做完，讓結果保持著，常是為了之後方便：넣어 놓으세요（放進去擺好）、예약해 놓았어요（先訂好了）。接法和 -아요/어요 一樣。-아/어 두다 意思差不多，語氣稍微正式。",
+    "extra_example_ko": "손님이 오기 전에 음식을 만들어 놓았어요.",
+    "extra_example_zh": "客人來之前先把菜做好了。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_212",
+  "level": 2,
+  "topic": "料理步驟與廚房用具",
+  "title_ko": "떡볶이 만들기",
+  "title_zh": "做辣炒年糕",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "오늘은 집에서 떡볶이를 만들어 봤어요.",
+    "zh": "今天試著在家做了辣炒年糕。",
+    "target_words": [
+     {
+      "surface": "오늘은",
+      "lemma": "오늘",
+      "vocab_id": "v_1817"
+     },
+     {
+      "surface": "집에서",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "떡볶이를",
+      "lemma": "떡볶이",
+      "vocab_id": "v_1347"
+     },
+     {
+      "surface": "만들어",
+      "lemma": "만들다",
+      "vocab_id": "v_1760"
+     },
+     {
+      "surface": "봤어요",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "먼저 재료를 준비하고 양파와 어묵을 먹기 좋게 썰었어요.",
+    "zh": "先準備好食材，把洋蔥和魚板切成方便吃的大小。",
+    "target_words": [
+     {
+      "surface": "먼저",
+      "lemma": "먼저",
+      "vocab_id": "v_1826"
+     },
+     {
+      "surface": "재료를",
+      "lemma": "재료",
+      "vocab_id": "v_2430"
+     },
+     {
+      "surface": "준비하고",
+      "lemma": "준비하다",
+      "vocab_id": "v_2500"
+     },
+     {
+      "surface": "양파와",
+      "lemma": "양파",
+      "vocab_id": "v_1430"
+     },
+     {
+      "surface": "어묵을",
+      "lemma": "어묵",
+      "vocab_id": "v_1369"
+     },
+     {
+      "surface": "좋게",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
+     {
+      "surface": "썰었어요",
+      "lemma": "썰다",
+      "vocab_id": "v_2438"
+     }
+    ],
+    "grammar_ids": [
+     "g_224"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "냄비에 물을 붓고 고추장, 간장, 설탕을 넣어서 잘 섞었어요.",
+    "zh": "在鍋裡倒水，加入辣椒醬、醬油、糖，攪拌均勻。",
+    "target_words": [
+     {
+      "surface": "냄비에",
+      "lemma": "냄비",
+      "vocab_id": "v_2419"
+     },
+     {
+      "surface": "물을",
+      "lemma": "물",
+      "vocab_id": "v_1308"
+     },
+     {
+      "surface": "고추장",
+      "lemma": "고추장",
+      "vocab_id": "v_2433"
+     },
+     {
+      "surface": "간장",
+      "lemma": "간장",
+      "vocab_id": "v_2432"
+     },
+     {
+      "surface": "설탕을",
+      "lemma": "설탕",
+      "vocab_id": "v_1329"
+     },
+     {
+      "surface": "넣어서",
+      "lemma": "넣다",
+      "vocab_id": "v_1776"
+     },
+     {
+      "surface": "섞었어요",
+      "lemma": "섞다",
+      "vocab_id": "v_2446"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "물이 끓으면 떡과 어묵을 넣고 떡이 부드러워질 때까지 끓였어요.",
+    "zh": "水滾了就放年糕和魚板，煮到年糕變軟為止。",
+    "target_words": [
+     {
+      "surface": "물이",
+      "lemma": "물",
+      "vocab_id": "v_1308"
+     },
+     {
+      "surface": "떡과",
+      "lemma": "떡",
+      "vocab_id": "v_1361"
+     },
+     {
+      "surface": "어묵을",
+      "lemma": "어묵",
+      "vocab_id": "v_1369"
+     },
+     {
+      "surface": "넣고",
+      "lemma": "넣다",
+      "vocab_id": "v_1776"
+     },
+     {
+      "surface": "떡이",
+      "lemma": "떡",
+      "vocab_id": "v_1361"
+     },
+     {
+      "surface": "부드러워질",
+      "lemma": "부드럽다",
+      "vocab_id": "v_1812"
+     },
+     {
+      "surface": "끓였어요",
+      "lemma": "끓이다",
+      "vocab_id": "v_2442"
+     }
+    ],
+    "grammar_ids": [
+     "g_223"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "마지막으로 간을 보고 소금을 살짝 넣었어요.",
+    "zh": "最後試一下鹹淡，再加了一點點鹽。",
+    "target_words": [
+     {
+      "surface": "마지막으로",
+      "lemma": "마지막",
+      "vocab_id": "v_1838"
+     },
+     {
+      "surface": "간을",
+      "lemma": "간",
+      "vocab_id": "v_2452"
+     },
+     {
+      "surface": "보고",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     },
+     {
+      "surface": "소금을",
+      "lemma": "소금",
+      "vocab_id": "v_1442"
+     },
+     {
+      "surface": "살짝",
+      "lemma": "살짝",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "넣었어요",
+      "lemma": "넣다",
+      "vocab_id": "v_1776"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "맛있어서 가족들이 아주 좋아했어요. 다음에는 다른 레시피도 도전해 볼 거예요.",
+    "zh": "很好吃，家人都很喜歡。下次要挑戰別的食譜。",
+    "target_words": [
+     {
+      "surface": "맛있어서",
+      "lemma": "맛있다",
+      "vocab_id": "v_1380"
+     },
+     {
+      "surface": "가족들이",
+      "lemma": "가족",
+      "vocab_id": "v_1035"
+     },
+     {
+      "surface": "좋아했어요",
+      "lemma": "좋아하다",
+      "vocab_id": "v_1602"
+     },
+     {
+      "surface": "다음에는",
+      "lemma": "다음",
+      "vocab_id": "v_1827"
+     },
+     {
+      "surface": "다른",
+      "lemma": "다르다",
+      "vocab_id": "v_1794"
+     },
+     {
+      "surface": "레시피도",
+      "lemma": "레시피",
+      "vocab_id": "v_2453"
+     },
+     {
+      "surface": "도전해",
+      "lemma": "도전하다",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "볼",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "살짝",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "稍微、輕輕地"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "도전하다",
+    "pos": "動詞",
+    "hanja": "挑戰",
+    "meaning_zh": "挑戰"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_223",
+    "pattern": "動詞／形容詞語幹 + -(으)ㄹ 때까지",
+    "meaning": "直到…為止",
+    "explanation": "表示一直做到某個狀態或時間點。沒有收音接 -ㄹ 때까지（부드러워지다 → 부드러워질 때까지），有收音接 -을 때까지（익다 → 익을 때까지）。名詞直接接 까지：다섯 시까지。",
+    "extra_example_ko": "고기가 다 익을 때까지 구우세요.",
+    "extra_example_zh": "請烤到肉全熟為止。"
+   },
+   {
+    "grammar_id": "g_224",
+    "pattern": "形容詞語幹 + -게",
+    "meaning": "…地（把形容詞變成副詞）",
+    "explanation": "把形容詞變成修飾動作的副詞：좋다 → 좋게、맛있다 → 맛있게、작다 → 작게、얇다 → 얇게。不管有沒有收音都接 -게。먹기 좋게 썰다＝切成方便吃的樣子；맛있게 드세요＝請好好享用。",
+    "extra_example_ko": "양파를 얇게 썰어 주세요.",
+    "extra_example_zh": "請把洋蔥切成薄片。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_213",
+  "level": 2,
+  "topic": "節日慶祝與送禮文化",
+  "title_ko": "한국의 설날",
+  "title_zh": "韓國的春節",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "한국에서 큰 명절은 설날과 추석이에요.",
+    "zh": "韓國的大節日是春節和中秋節。",
+    "target_words": [
+     {
+      "surface": "한국에서",
+      "lemma": "한국",
+      "vocab_id": "v_1018"
+     },
+     {
+      "surface": "큰",
+      "lemma": "크다",
+      "vocab_id": "v_1529"
+     },
+     {
+      "surface": "명절은",
+      "lemma": "명절",
+      "vocab_id": "v_2457"
+     },
+     {
+      "surface": "설날과",
+      "lemma": "설날",
+      "vocab_id": "v_2458"
+     },
+     {
+      "surface": "추석이에요",
+      "lemma": "추석",
+      "vocab_id": "v_2459"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "설날마다 가족들이 고향에 모여서 차례를 지내요.",
+    "zh": "每年春節，家人都會回老家團聚、祭祖。",
+    "target_words": [
+     {
+      "surface": "설날마다",
+      "lemma": "설날",
+      "vocab_id": "v_2458"
+     },
+     {
+      "surface": "가족들이",
+      "lemma": "가족",
+      "vocab_id": "v_1035"
+     },
+     {
+      "surface": "고향에",
+      "lemma": "고향",
+      "vocab_id": "v_2466"
+     },
+     {
+      "surface": "모여서",
+      "lemma": "모이다",
+      "vocab_id": "v_2493"
+     },
+     {
+      "surface": "차례를",
+      "lemma": "차례",
+      "vocab_id": "v_2465"
+     },
+     {
+      "surface": "지내요",
+      "lemma": "지내다",
+      "vocab_id": "new_01"
+     }
+    ],
+    "grammar_ids": [
+     "g_225"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "아이들은 어른들께 세배를 하고 세뱃돈을 받아요.",
+    "zh": "小孩向長輩拜年，拿壓歲錢。",
+    "target_words": [
+     {
+      "surface": "아이들은",
+      "lemma": "아이",
+      "vocab_id": "v_1055"
+     },
+     {
+      "surface": "어른들께",
+      "lemma": "어른",
+      "vocab_id": "v_2505"
+     },
+     {
+      "surface": "세배를",
+      "lemma": "세배",
+      "vocab_id": "v_2461"
+     },
+     {
+      "surface": "하고",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     },
+     {
+      "surface": "세뱃돈을",
+      "lemma": "세뱃돈",
+      "vocab_id": "v_2462"
+     },
+     {
+      "surface": "받아요",
+      "lemma": "받다",
+      "vocab_id": "v_1721"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "그리고 떡국을 먹으면서 새해 덕담을 나눠요.",
+    "zh": "然後一邊吃年糕湯，一邊互相說新年祝福的話。",
+    "target_words": [
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
+     {
+      "surface": "떡국을",
+      "lemma": "떡국",
+      "vocab_id": "v_2463"
+     },
+     {
+      "surface": "먹으면서",
+      "lemma": "먹다",
+      "vocab_id": "v_1749"
+     },
+     {
+      "surface": "새해",
+      "lemma": "새해",
+      "vocab_id": "v_2460"
+     },
+     {
+      "surface": "덕담을",
+      "lemma": "덕담",
+      "vocab_id": "v_2490"
+     },
+     {
+      "surface": "나눠요",
+      "lemma": "나누다",
+      "vocab_id": "v_2525"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "올해 설날 연휴에는 저도 한국 친구 집에 갈 거예요.",
+    "zh": "今年春節連假我也要去韓國朋友家。",
+    "target_words": [
+     {
+      "surface": "올해",
+      "lemma": "올해",
+      "vocab_id": "v_1831"
+     },
+     {
+      "surface": "설날",
+      "lemma": "설날",
+      "vocab_id": "v_2458"
+     },
+     {
+      "surface": "연휴에는",
+      "lemma": "연휴",
+      "vocab_id": "v_2479"
+     },
+     {
+      "surface": "저도",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "한국",
+      "lemma": "한국",
+      "vocab_id": "v_1018"
+     },
+     {
+      "surface": "친구",
+      "lemma": "친구",
+      "vocab_id": "v_1056"
+     },
+     {
+      "surface": "집에",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "갈",
+      "lemma": "가다",
+      "vocab_id": "v_1751"
+     }
+    ],
+    "grammar_ids": [
+     "g_226"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "친구 부모님께 드릴 선물로 과일 상자를 정성껏 준비했어요.",
+    "zh": "用心準備了一盒水果，要送給朋友的父母當禮物。",
+    "target_words": [
+     {
+      "surface": "친구",
+      "lemma": "친구",
+      "vocab_id": "v_1056"
+     },
+     {
+      "surface": "부모님께",
+      "lemma": "부모님",
+      "vocab_id": "v_1040"
+     },
+     {
+      "surface": "선물로",
+      "lemma": "선물",
+      "vocab_id": "v_2468"
+     },
+     {
+      "surface": "과일",
+      "lemma": "과일",
+      "vocab_id": "v_1411"
+     },
+     {
+      "surface": "상자를",
+      "lemma": "상자",
+      "vocab_id": "v_1458"
+     },
+     {
+      "surface": "정성껏",
+      "lemma": "정성껏",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "준비했어요",
+      "lemma": "준비하다",
+      "vocab_id": "v_2500"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "지내다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "度過、過日子；舉行（祭祀）"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "정성껏",
+    "pos": "副詞",
+    "hanja": "精誠",
+    "meaning_zh": "盡心盡力地、用心地"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_225",
+    "pattern": "名詞 + 마다",
+    "meaning": "每…",
+    "explanation": "接在時間或名詞後面，表示「每一個都…」：설날마다（每年春節）、주말마다（每個週末）、아침마다（每天早上）、사람마다（每個人）。注意「每天」通常說 매일，「每年」說 매년 或 해마다。",
+    "extra_example_ko": "추석마다 할머니 댁에 가요.",
+    "extra_example_zh": "每年中秋節都去奶奶家。"
+   },
+   {
+    "grammar_id": "g_226",
+    "pattern": "動詞語幹 + -(으)ㄹ 거예요",
+    "meaning": "將會…、打算…（未來）",
+    "explanation": "說未來的計畫或推測。沒有收音接 -ㄹ 거예요（가다 → 갈 거예요），有收音接 -을 거예요（먹다 → 먹을 거예요）。說別人或天氣時表示推測：내일 비가 올 거예요（明天應該會下雨）。",
+    "extra_example_ko": "이번 추석에는 고향에 내려갈 거예요.",
+    "extra_example_zh": "這次中秋節要回老家。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_214",
+  "level": 2,
+  "topic": "邀請作客與餐桌禮儀",
+  "title_ko": "친구 집 집들이",
+  "title_zh": "朋友家的喬遷宴",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "민수",
+    "ko": "어서 오세요! 우리 집 집들이에 와 줘서 고마워요.",
+    "zh": "歡迎！謝謝你來我家的喬遷宴。",
+    "target_words": [
+     {
+      "surface": "우리",
+      "lemma": "우리",
+      "vocab_id": "v_1059"
+     },
+     {
+      "surface": "집",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "집들이에",
+      "lemma": "집들이",
+      "vocab_id": "v_2498"
+     },
+     {
+      "surface": "와",
+      "lemma": "오다",
+      "vocab_id": "v_1752"
+     },
+     {
+      "surface": "고마워요",
+      "lemma": "고맙다",
+      "vocab_id": "v_1004"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "지민",
+    "ko": "초대해 줘서 고마워요. 이건 작은 선물이에요.",
+    "zh": "謝謝你邀請我。這是一點小禮物。",
+    "target_words": [
+     {
+      "surface": "초대해",
+      "lemma": "초대하다",
+      "vocab_id": "v_2495"
+     },
+     {
+      "surface": "고마워요",
+      "lemma": "고맙다",
+      "vocab_id": "v_1004"
+     },
+     {
+      "surface": "작은",
+      "lemma": "작다",
+      "vocab_id": "v_1530"
+     },
+     {
+      "surface": "선물이에요",
+      "lemma": "선물",
+      "vocab_id": "v_2468"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "어머니",
+    "ko": "음식을 많이 차렸으니까 편하게 드세요.",
+    "zh": "準備了很多菜，請隨意吃。",
+    "target_words": [
+     {
+      "surface": "음식을",
+      "lemma": "음식",
+      "vocab_id": "v_1341"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "차렸으니까",
+      "lemma": "차리다",
+      "vocab_id": "v_2501"
+     },
+     {
+      "surface": "편하게",
+      "lemma": "편하다",
+      "vocab_id": "v_1701"
+     },
+     {
+      "surface": "드세요",
+      "lemma": "드시다",
+      "vocab_id": "v_2506"
+     }
+    ],
+    "grammar_ids": [
+     "g_227"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "지민",
+    "ko": "잘 먹겠습니다! 어머님 요리 솜씨가 정말 좋으시네요.",
+    "zh": "我要開動了！伯母的廚藝真好。",
+    "target_words": [
+     {
+      "surface": "잘 먹겠습니다",
+      "lemma": "잘 먹겠습니다",
+      "vocab_id": "v_2507"
+     },
+     {
+      "surface": "요리",
+      "lemma": "요리",
+      "vocab_id": "v_1374"
+     },
+     {
+      "surface": "솜씨가",
+      "lemma": "솜씨",
+      "vocab_id": "v_2530"
+     },
+     {
+      "surface": "좋으시네요",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     }
+    ],
+    "grammar_ids": [
+     "g_227"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "지민",
+    "ko": "한국에서는 어른이 먼저 드신 후에 먹어야 하지요?",
+    "zh": "在韓國要等長輩先吃了以後才能吃，對吧？",
+    "target_words": [
+     {
+      "surface": "한국에서는",
+      "lemma": "한국",
+      "vocab_id": "v_1018"
+     },
+     {
+      "surface": "어른이",
+      "lemma": "어른",
+      "vocab_id": "v_2505"
+     },
+     {
+      "surface": "먼저",
+      "lemma": "먼저",
+      "vocab_id": "v_1826"
+     },
+     {
+      "surface": "드신",
+      "lemma": "드시다",
+      "vocab_id": "v_2506"
+     },
+     {
+      "surface": "먹어야",
+      "lemma": "먹다",
+      "vocab_id": "v_1749"
+     }
+    ],
+    "grammar_ids": [
+     "g_228"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "어머니",
+    "ko": "맞아요. 그리고 어르신 앞에서 술을 마실 때는 고개를 돌리고 공손하게 마셔요.",
+    "zh": "對。還有在長輩面前喝酒的時候，要把頭轉過去、恭敬地喝。",
+    "target_words": [
+     {
+      "surface": "맞아요",
+      "lemma": "맞다",
+      "vocab_id": "v_1796"
+     },
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
+     {
+      "surface": "어르신",
+      "lemma": "어르신",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "앞에서",
+      "lemma": "앞",
+      "vocab_id": "v_1211"
+     },
+     {
+      "surface": "술을",
+      "lemma": "술",
+      "vocab_id": "v_1400"
+     },
+     {
+      "surface": "마실",
+      "lemma": "마시다",
+      "vocab_id": "v_1750"
+     },
+     {
+      "surface": "고개를",
+      "lemma": "고개",
+      "vocab_id": "v_2509"
+     },
+     {
+      "surface": "돌리고",
+      "lemma": "돌리다",
+      "vocab_id": "v_2510"
+     },
+     {
+      "surface": "공손하게",
+      "lemma": "공손하다",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "마셔요",
+      "lemma": "마시다",
+      "vocab_id": "v_1750"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "어르신",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "長輩、老人家（尊稱）"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "공손하다",
+    "pos": "形容詞",
+    "hanja": "恭遜",
+    "meaning_zh": "恭敬、有禮"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_227",
+    "pattern": "動詞／形容詞語幹 + -(으)시-（尊敬語）",
+    "meaning": "（表示對主詞的尊敬）",
+    "explanation": "說到長輩、客人做的事或狀態時，在語幹後加 -(으)시-：좋다 → 좋으세요、가다 → 가세요。有些詞有專用的敬語：먹다／마시다 → 드시다、자다 → 주무시다、있다 → 계시다、말하다 → 말씀하시다。請長輩吃東西說 드세요，不說 먹으세요。",
+    "extra_example_ko": "할아버지께서 지금 주무세요.",
+    "extra_example_zh": "爺爺現在在睡覺。"
+   },
+   {
+    "grammar_id": "g_228",
+    "pattern": "動詞／形容詞語幹 + -지요?（-죠?）",
+    "meaning": "…對吧？、…吧？",
+    "explanation": "確認自己已經知道或認為對方也同意的事：먹어야 하지요?（要先吃對吧？）。不管有沒有收音都接 -지요，口語常縮成 -죠。也可以用在溫和的提議：같이 가시죠（一起走吧）。",
+    "extra_example_ko": "한국 음식이 좀 맵지요?",
+    "extra_example_zh": "韓國菜有點辣，對吧？"
+   }
+  ]
+ },
+ {
+  "article_id": "art_215",
+  "level": 2,
+  "topic": "性格特質與人物評價",
+  "title_ko": "성격이 다른 두 친구",
+  "title_zh": "個性不同的兩個朋友",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "우리 반에는 성격이 다른 두 친구가 있어요.",
+    "zh": "我們班有兩個個性不同的朋友。",
+    "target_words": [
+     {
+      "surface": "우리",
+      "lemma": "우리",
+      "vocab_id": "v_1059"
+     },
+     {
+      "surface": "반에는",
+      "lemma": "반",
+      "vocab_id": "v_1163"
+     },
+     {
+      "surface": "성격이",
+      "lemma": "성격",
+      "vocab_id": "v_2533"
+     },
+     {
+      "surface": "다른",
+      "lemma": "다르다",
+      "vocab_id": "v_1794"
+     },
+     {
+      "surface": "두",
+      "lemma": "둘",
+      "vocab_id": "v_1104"
+     },
+     {
+      "surface": "친구가",
+      "lemma": "친구",
+      "vocab_id": "v_1056"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "민수는 활발하고 유머가 많아서 인기가 많은 편이에요.",
+    "zh": "民秀很活潑又很幽默，算是很受歡迎的。",
+    "target_words": [
+     {
+      "surface": "활발하고",
+      "lemma": "활발하다",
+      "vocab_id": "v_2535"
+     },
+     {
+      "surface": "유머가",
+      "lemma": "유머",
+      "vocab_id": "v_2557"
+     },
+     {
+      "surface": "많아서",
+      "lemma": "많다",
+      "vocab_id": "v_1785"
+     },
+     {
+      "surface": "인기가",
+      "lemma": "인기",
+      "vocab_id": "v_2561"
+     },
+     {
+      "surface": "많은",
+      "lemma": "많다",
+      "vocab_id": "v_1785"
+     }
+    ],
+    "grammar_ids": [
+     "g_229"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "지은이는 조용하고 내성적이지만 꼼꼼하고 성실해요.",
+    "zh": "智恩雖然安靜又內向，但很細心、做事踏實。",
+    "target_words": [
+     {
+      "surface": "조용하고",
+      "lemma": "조용하다",
+      "vocab_id": "v_1799"
+     },
+     {
+      "surface": "내성적이지만",
+      "lemma": "내성적",
+      "vocab_id": "v_2548"
+     },
+     {
+      "surface": "꼼꼼하고",
+      "lemma": "꼼꼼하다",
+      "vocab_id": "v_2543"
+     },
+     {
+      "surface": "성실해요",
+      "lemma": "성실하다",
+      "vocab_id": "v_2542"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "민수는 지은이보다 더 덜렁대서 물건을 자주 잃어버려요.",
+    "zh": "民秀比智恩更冒失，常常弄丟東西。",
+    "target_words": [
+     {
+      "surface": "덜렁대서",
+      "lemma": "덜렁대다",
+      "vocab_id": "v_2544"
+     },
+     {
+      "surface": "물건을",
+      "lemma": "물건",
+      "vocab_id": "v_1444"
+     },
+     {
+      "surface": "자주",
+      "lemma": "자주",
+      "vocab_id": "v_1611"
+     }
+    ],
+    "grammar_ids": [
+     "g_230"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "하지만 두 사람 다 친절하고 다른 사람을 잘 배려해요.",
+    "zh": "不過兩個人都很親切，也很會體貼別人。",
+    "target_words": [
+     {
+      "surface": "하지만",
+      "lemma": "하지만",
+      "vocab_id": "v_1842"
+     },
+     {
+      "surface": "두",
+      "lemma": "둘",
+      "vocab_id": "v_1104"
+     },
+     {
+      "surface": "사람",
+      "lemma": "사람",
+      "vocab_id": "v_1015"
+     },
+     {
+      "surface": "다",
+      "lemma": "다",
+      "vocab_id": "v_1472"
+     },
+     {
+      "surface": "친절하고",
+      "lemma": "친절하다",
+      "vocab_id": "v_2534"
+     },
+     {
+      "surface": "다른",
+      "lemma": "다르다",
+      "vocab_id": "v_1794"
+     },
+     {
+      "surface": "사람을",
+      "lemma": "사람",
+      "vocab_id": "v_1015"
+     },
+     {
+      "surface": "배려",
+      "lemma": "배려",
+      "vocab_id": "v_2555"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "장점과 단점이 서로 달라서 오히려 좋은 단짝이 됐어요.",
+    "zh": "兩人的優缺點正好不同，反而成了很好的死黨。",
+    "target_words": [
+     {
+      "surface": "장점과",
+      "lemma": "장점",
+      "vocab_id": "v_2559"
+     },
+     {
+      "surface": "단점이",
+      "lemma": "단점",
+      "vocab_id": "v_2560"
+     },
+     {
+      "surface": "달라서",
+      "lemma": "다르다",
+      "vocab_id": "v_1794"
+     },
+     {
+      "surface": "오히려",
+      "lemma": "오히려",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "좋은",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
+     {
+      "surface": "단짝이",
+      "lemma": "단짝",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "됐어요",
+      "lemma": "되다",
+      "vocab_id": "v_1743"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "오히려",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "反而、倒不如"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "단짝",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "最要好的朋友、死黨"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_229",
+    "pattern": "動詞語幹 + -는 편이다／形容詞語幹 + -(으)ㄴ 편이다",
+    "meaning": "算是…、比較…",
+    "explanation": "不直接下定論，委婉地說「大致上屬於…那一類」：인기가 많은 편이에요（算是很受歡迎）。形容詞沒有收音接 -ㄴ 편이다、有收音接 -은 편이다；動詞接 -는 편이다（자주 먹는 편이에요）。描述自己的個性時很好用。",
+    "extra_example_ko": "저는 성격이 급한 편이에요.",
+    "extra_example_zh": "我算是個性比較急的。"
+   },
+   {
+    "grammar_id": "g_230",
+    "pattern": "名詞 + 보다 (더)",
+    "meaning": "比…（更）",
+    "explanation": "比較兩樣東西：A는 B보다 더 + 形容詞（A 比 B 更…）。보다 直接接在被比較的名詞後面，不管有沒有收音。더 可以省略：지하철이 버스보다 빨라요。相反「比較不…」用 덜：어제보다 덜 추워요（比昨天沒那麼冷）。",
+    "extra_example_ko": "언니는 저보다 더 꼼꼼해요.",
+    "extra_example_zh": "姊姊比我更細心。"
    }
   ]
  },

@@ -261,13 +261,14 @@ W[5] = [
  ('끝나다','動詞',None,'結束','수업이 세 시에 끝나요.','課三點結束。'),
 ]
 sys.path.insert(0, HERE)
-import batch2, batch3, batch4, batch5, batch6, batch7
+import batch2, batch3, batch4, batch5, batch6, batch7, batch8
 W[6], W[7], W[8], W[9], W[10] = batch2.W6, batch2.W7, batch2.W8, batch2.W9, batch2.W10
 W[11], W[12], W[13], W[14], W[15] = batch3.W11, batch3.W12, batch3.W13, batch3.W14, batch3.W15
 W[16], W[17], W[18], W[19], W[20] = batch4.W16, batch4.W17, batch4.W18, batch4.W19, batch4.W20
 W[21], W[22], W[23], W[24], W[25] = batch5.W21, batch5.W22, batch5.W23, batch5.W24, batch5.W25
 W[26], W[27], W[28], W[29], W[30] = batch6.W26, batch6.W27, batch6.W28, batch6.W29, batch6.W30
 W[31], W[32], W[33], W[34], W[35] = batch7.W31, batch7.W32, batch7.W33, batch7.W34, batch7.W35
+W[36], W[37], W[38], W[39], W[40] = batch8.W36, batch8.W37, batch8.W38, batch8.W39, batch8.W40
 START = {10: 4, 11: 7, 12: 13, 13: 7, 23: 8}  # 這些主題的區段開頭已有先前的飲食單字
 # 先前「飲食與餐廳」的單字：放進它們所屬主題的區段（舊 id → 新 id，複習進度會跟著換）
 OLD = [  # 舊 id, 主題, 區段內位置, (資料)
@@ -445,6 +446,7 @@ ARTS.extend(batch4.articles(S, TITLE))
 ARTS.extend(batch5.articles(S, TITLE))
 ARTS.extend(batch6.articles(S, TITLE, gid))
 ARTS.extend(batch7.articles(S, TITLE, gid))
+ARTS.extend(batch8.articles(S, TITLE, gid))
 # ---------- art_112：餐廳（原本的 art_101，改到主題 12） ----------
 ARTS.append(dict(article_id='art_112', level=1, topic=TITLE[12], title_ko='식당에서', title_zh='在餐廳', sentences=[
  S(1,'A','배고파요. 이 식당 음식이 맛있어요?','我餓了。這家餐廳的菜好吃嗎？',[('배고파요','배고프다'),('식당','식당'),('음식이','음식'),('맛있어요','맛있다')],['g_123']),
@@ -488,7 +490,7 @@ def autolink(sen):
 for a in ARTS:
     for sen in a['sentences']: autolink(sen)
 
-READY = 35  # 已完成到第幾個主題
+READY = 40  # 已完成到第幾個主題
 topics_js = [dict(no=n, level=lvl(n), title=t, desc=d, ids=[vid(n, 1), vid(n, per(n))], art=aid(n), ready=n <= READY) for n, t, d in TOPICS + TOPICS2]
 V.sort(key=lambda v: v['id'])
 out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入） =================\n"
@@ -505,8 +507,8 @@ out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入�
 open(os.path.join(ROOT, 'js', 'reading.js'), 'w', encoding='utf8').write(out)
 D = os.path.join(HERE, 'out') + os.sep
 os.makedirs(D, exist_ok=True)
-json.dump([v for v in V if 2191 <= int(v['id'][2:]) <= 2380], open(D + 'topik2_vocab_31-35.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
-json.dump(sorted([a for a in ARTS if 'art_206' <= a['article_id'] <= 'art_210'], key=lambda a: a['article_id']), open(D + 'topik2_articles_31-35.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump([v for v in V if 2381 <= int(v['id'][2:]) <= 2570], open(D + 'topik2_vocab_36-40.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump(sorted([a for a in ARTS if 'art_211' <= a['article_id'] <= 'art_215'], key=lambda a: a['article_id']), open(D + 'topik2_articles_36-40.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
 print('vocab', len(V), 'articles', len(ARTS))
 for a in ARTS:
     tws = [t for s in a['sentences'] for t in s['target_words']]

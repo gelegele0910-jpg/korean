@@ -129,6 +129,13 @@ h2 { font-size:1.25rem; } h3 { font-size:1.05rem; }
 .rr { color:var(--accent2); font-weight:700; letter-spacing:.02em; }
 .rr.tap { filter:blur(5px); cursor:pointer; user-select:none; }
 .pron { color:var(--sub); font-family:var(--font-ko); }
+.kr { background:none; border:0; padding:0 1px; margin:0; font:inherit; color:inherit; cursor:pointer; border-radius:6px; line-height:inherit; vertical-align:baseline; }
+.kr:hover, .kr:focus-visible { background:var(--soft); }
+.kr ruby { ruby-position:over; font-weight:700; text-decoration:underline dotted var(--accent2); text-underline-offset:3px; }
+.kr rt { font-family:system-ui, sans-serif; font-size:calc(.58em); font-weight:700; color:var(--accent2); letter-spacing:0; }
+.kr.tap rt { filter:blur(4px); }
+.rd-ge, .rd-gm, .rd-gp > span:last-child, .tip:has(.kr) { line-height:2.1; }
+.lesson.off { opacity:.5; cursor:default; box-shadow:none; background:var(--chip); }
 .tip { background:var(--chip); border-radius:12px; padding:10px 12px; margin:10px 0; font-size:.95rem; }
 .koline { display:flex; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
 .koline:last-child { border-bottom:0; }

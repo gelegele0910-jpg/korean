@@ -45,6 +45,8 @@ GitHub Pages 從 `main` 的根目錄發佈（網址 `https://gelegele0910-jpg.gi
 - 語音：`speak()`（`ko-KR`，優先挑 Google／Yuna 等聲音）；辨識 `startRec()` 同時只開一個，`abortRec()` 關掉，舊的結果不可蓋掉新的。
 - 發音檢查「念給 App 聽」（`checkHtml(key, 對比單字組)`，狀態在 `U.ck`）：用語音辨識的所有候選，`judgeSay()` 依可能性順序先碰到目標字＝念對、先碰到同組其他字＝念成那個字，`ckHint()` 依兩字差的字母給提示（平音／送氣／硬音、圓唇／拉平…）。念對每個字每天 +10。與錄音互斥：開始一個就停掉另一個。
 - 發音動畫在 app 裡：`saBox(字母...)`（一個畫面＋按鈕；母音會加左上角的正面嘴型 `.sa-mouth`）、`cmapHtml(full)`（子音發音地圖，`cplace` 步驟與 `cmap` 畫面共用）、`vmapHtml(full)`（母音發音地圖，`vmap` 步驟與 `vwmap` 畫面共用）、`saPlay(scope, 字母)`；按鈕是 `data-act="sa-play"`，同一個 `data-sa-scope` 裡找畫面。`render()` 會先 `SA.stop()` 再 `SA.mountAll()`；子音與母音字母卡的自動播放改成播動畫（子音在放開時、母音在擺好嘴型時念字）。
+- 學習頁 `vLearn()` 順序：① 基礎發音（工具格子＋`sec:'基礎發音'` 的課）→ ② 旅遊實用會話（原本叫生活主題，`TOPICS` 的課）→ ③ TOPIK 專欄（一張收起來的卡，`tk-open`）。TOPIK 專欄 `vTopik()`：`U.tlv` 空＝1～4 級（`TOPIK_LV`，沒有主題的級數顯示準備中），有值＝那一級的主題格子；主題頁返回該級列表（`tk-lv`）。基礎發音沒做完會顯示提示（`pronLeft()`），不擋。
+- 說明文字裡夾的韓文用 `koRuby(文字)` 輸出（會跳脫）：每段韓文上方加 `KH.romanize()` 的小字拼音（`<ruby>`，跟著 `S.set.rr`：顯示／點一下才看／不顯示），點了念出來。用在文法筆記（pattern、meaning、explanation）與會話課的 note；新增中文說明含韓文的地方也用它。
 - 主題畫面 `vTopic()`（`U.tp` 主題編號、`U.tpx` 展開例句的單字）：單字列表（發音、例句、單一／全部加入複習）＋文章入口；「學習」頁的主題格子（`tpWords()`、`tpArticle()`）。`migrate()` 依 `S.vocabV` 只做一次舊編號轉換。
 - 閱讀畫面 `vArticle()`（狀態 `U.rd = {id, si, wi, zh, allZh, ex}`）：`rdSegs()` 依 `target_words` 切句子，點單字（`rd-word`）顯示 `rdCard()`——電腦版在右側固定，手機版從下方滑出（例句收在「例句 ▾」）。`rd-add` 加入 `S.srs`（當天到期）。閱讀單字放在 `RWORD`，並併入 `WORD` 查詢表（不加進主題遊戲用的 `WORDS`），所以複習、單字本都能用。
 - 錄自己的聲音（`myRecHtml(key, 標準句)`、`myStart()`／`myStop()`，狀態在 `U.my`）：MediaRecorder，最長 5 秒，錄完自動播放並記一次跟讀；換步驟、切畫面、切到背景一律 `myStop(true)` 丟掉並關麥克風。

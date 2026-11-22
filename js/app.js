@@ -69,7 +69,7 @@ function save() {
 }
 
 let S = load();
-const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, saSlow: false, saLbl: true, rd: null, tp: null, tpx: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
+const U = { view: 'home', ls: null, g: null, rv: null, sp: null, sheet: null, pops: [], arm: '', shopCat: 'skin', meTab: 'shop', moreT: false, my: null, ck: null, saSlow: false, saLbl: true, rd: null, tp: null, tpx: null, tlv: null, bd: { l: 'ㄱ', v: 'ㅏ', t: '' } };
 
 /* ================= 進度工具 ================= */
 function owned(id, s) { s = s || S; const it = SHOP.find(x => x.id === id); return !!it && (it.price === 0 || !!s.own[id]); }
@@ -166,6 +166,14 @@ function pronHtml(ko) {
   if (!S.set.pron) return '';
   const p = KH.pronounce(ko);
   return p !== ko ? `<span class="pron">[${h(p)}]</span>` : '';
+}
+/** 中文說明裡夾的韓文：每段韓文上方加小字拼音（跟著「羅馬拼音」設定），點了念出來。其他文字照常跳脫。 */
+function koRuby(text) {
+  return String(text).split(/([가-힣]+)/).map((x, i) => {
+    if (!(i % 2)) return h(x);
+    const rr = S.set.rr === 'hide' ? '' : `<rt>${h(KH.romanize(x))}</rt>`;
+    return `<button class="kr ${S.set.rr === 'tap' ? 'tap' : ''}" data-act="say" data-t="${h(x)}"><ruby class="ko">${h(x)}${rr}</ruby></button>`;
+  }).join('');
 }
 const sayBtn = (ko, cls) => `<button class="say ${cls || ''}" data-act="say" data-t="${h(ko)}" aria-label="播放">🔊</button>`;
 const slowBtn = ko => `<button class="say slow" data-act="say" data-t="${h(ko)}" data-r="0.6" aria-label="慢速播放">慢</button>`;
@@ -307,23 +315,48 @@ function vHome() {
 }
 
 /* ================= 畫面：課程列表、40 音表、拼音工坊 ================= */
+const TOPIK_LV = [[1, '初級・生活基本'], [2, '初級・日常應用'], [3, '中級・社會生活'], [4, '中級・抽象話題']];
+const lessonBtn = L => `<button class="lesson" data-act="lesson" data-id="${L.id}"><div class="ic">${h(L.ic)}</div>
+    <div class="tx"><b>${h(L.t)}</b><span class="sub small">${h(L.sub)}</span></div>${S.done[L.id] ? '<span class="ok">✓</span>' : ''}</button>`;
+/** 基礎發音還沒做完的課數（TOPIK 畫面顯示提示用） */
+const pronLeft = () => LESSONS.filter(L => L.sec === '基礎發音' && !S.done[L.id]).length;
+function tpStat(lv) {
+  const ts = TOPIK_TOPICS.filter(t => t.level === lv), ws = ts.flatMap(t => tpWords(t.no));
+  return { ts, ready: ts.filter(t => tpWords(t.no).length).length, words: ws.length, inR: ws.filter(w => S.srs[w.id]).length };
+}
 function vLearn() {
-  const secs = uniq(LESSONS.map(L => L.sec));
+  const pron = LESSONS.filter(L => L.sec === '基礎發音'), talk = LESSONS.filter(L => L.sec !== '基礎發音');
+  const pd = pron.filter(L => S.done[L.id]).length, all = TOPIK_TOPICS.filter(t => tpWords(t.no).length).length;
   return `<h2 class="mt">學習</h2>
+  <div class="row wrap"><h3 class="mt grow">① 基礎發音</h3><span class="sub small">已完成 ${pd}／${pron.length} 課</span></div>
   <div class="tile-grid">
     <button class="tile" data-act="go" data-v="chart"><span class="ic ko">가</span><b>40 音表</b></button>
     <button class="tile" data-act="go" data-v="builder"><span class="ic">🧩</span><b>拼音工坊</b></button>
     <button class="tile" data-act="go" data-v="cmap"><span class="ic">👄</span><b>子音發音地圖</b></button>
     <button class="tile" data-act="go" data-v="vwmap"><span class="ic">😮</span><b>母音發音地圖</b></button>
   </div>
-  <h3 class="mt">TOPIK 1 級主題單字與閱讀</h3><div class="sub small mb">每個主題約 34 個單字＋一篇 i+1 閱讀文章，陸續增加中。</div>
-  <div class="tp-grid">${TOPIK_TOPICS.filter(t => t.level === 1).map(t => { const ws = tpWords(t.no), art = tpArticle(t.no), inR = ws.filter(w => S.srs[w.id]).length;
+  ${pron.map(lessonBtn).join('')}
+  <h3 class="mt">② 旅遊實用會話</h3><div class="sub small mb">學完發音先學幾句馬上用得到的話。</div>
+  ${talk.map(lessonBtn).join('')}
+  <h3 class="mt">③ TOPIK 單字與閱讀</h3>
+  <button class="lesson tk-col" data-act="tk-open"><div class="ic">📚</div><div class="tx"><b>TOPIK 專欄</b>
+    <span class="sub small">1～4 級主題單字＋i+1 閱讀文章・目前 ${all} 個主題</span></div><span class="ok">▶</span></button>`;
+}
+/** TOPIK 專欄：U.tlv 為空＝選級數，有值＝那一級的主題列表 */
+function vTopik() {
+  const lv = U.tlv, left = pronLeft();
+  const tip = left ? `<div class="tip" style="text-align:left">💡 建議先完成「基礎發音」（還有 ${left} 課），看文章和文法會輕鬆很多。</div>` : '';
+  if (!lv) return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0">TOPIK 專欄</h2></div>
+    <div class="sub mb">每個主題約 34 個單字＋一篇 i+1 閱讀文章（大部分是學過的字，加上 2～3 個高一級的挑戰單字）。</div>${tip}
+    ${TOPIK_LV.map(([n, d]) => { const st = tpStat(n);
+      return st.ready ? `<button class="lesson" data-act="tk-lv" data-lv="${n}"><div class="ic">${n}</div><div class="tx"><b>TOPIK ${n} 級</b>
+        <span class="sub small">${d}・${st.ready} 個主題・${st.words} 字${st.inR ? `・複習中 ${st.inR}` : ''}</span></div><span class="ok">▶</span></button>`
+        : `<div class="lesson off"><div class="ic">${n}</div><div class="tx"><b>TOPIK ${n} 級</b><span class="sub small">${d}・準備中</span></div></div>`; }).join('')}`;
+  return `<div class="step-top"><button class="x" data-act="tk-lv" data-lv="" aria-label="返回">←</button><h2 style="margin:0">TOPIK ${lv} 級主題</h2></div>${tip}
+  <div class="tp-grid">${TOPIK_TOPICS.filter(t => t.level === lv).map(t => { const ws = tpWords(t.no), art = tpArticle(t.no), inR = ws.filter(w => S.srs[w.id]).length;
     return ws.length ? `<button class="tp-tile" data-act="tp-open" data-n="${t.no}"><span class="tp-no">${String(t.no).padStart(2, '0')}</span><b>${h(t.title)}</b>
       <span class="sub small">${ws.length} 字${art ? '・📖 文章' : ''}${inR ? `・複習中 ${inR}` : ''}</span>${ws.length < 34 ? '<span class="tp-part">部分完成</span>' : ''}</button>`
-      : `<div class="tp-tile off"><span class="tp-no">${String(t.no).padStart(2, '0')}</span><b>${h(t.title)}</b><span class="sub small">準備中</span></div>`; }).join('')}</div>
-  ${secs.map(sec => `<h3 class="mt">${h(sec)}</h3>` + LESSONS.filter(L => L.sec === sec).map(L => `
-    <button class="lesson" data-act="lesson" data-id="${L.id}"><div class="ic">${h(L.ic)}</div>
-      <div class="tx"><b>${h(L.t)}</b><span class="sub small">${h(L.sub)}</span></div>${S.done[L.id] ? '<span class="ok">✓</span>' : ''}</button>`).join('')).join('')}`;
+      : `<div class="tp-tile off"><span class="tp-no">${String(t.no).padStart(2, '0')}</span><b>${h(t.title)}</b><span class="sub small">準備中</span></div>`; }).join('')}</div>`;
 }
 function vChart() {
   const grp = (t, set, nm) => `<h3 class="mt">${t}</h3><div class="chart">${set.map(x => `<button data-act="say" data-t="${h(x.say)}"><b>${h(x.j)}</b><span>${h(x.rr)}</span>${nm && x.nm ? `<div class="sub small ko">${h(x.nm)}</div>` : ''}</button>`).join('')}</div>`;
@@ -366,7 +399,7 @@ function vStep(s) {
   const L = U.ls.L;
   switch (s.k) {
     case 'intro': return `<div class="card center">${mascot(S.wear, 110, 'happy')}<h2>${h(L.t)}</h2><p style="text-align:left">${h(L.intro)}</p>
-      ${L.kind === 'topic' && TOPICS.find(t => t.id === L.topic).note ? `<div class="tip" style="text-align:left">💡 ${h(TOPICS.find(t => t.id === L.topic).note)}</div>` : ''}
+      ${L.kind === 'topic' && TOPICS.find(t => t.id === L.topic).note ? `<div class="tip" style="text-align:left">💡 ${koRuby(TOPICS.find(t => t.id === L.topic).note)}</div>` : ''}
       <div class="sub">${U.ls.steps.filter(x => x.k !== 'quiz').length - 1} 張學習卡＋${U.ls.steps.filter(x => x.k === 'quiz').length} 題小測驗</div>
       <button class="btn main block mt" data-act="ls-next">開始 ▶</button></div>`;
     case 'letter': { const x = s.x; return `<div class="card center"><div class="big">${h(x.j)}</div>
@@ -462,7 +495,7 @@ const tpArticle = no => READ_ARTICLES.find(a => a.article_id === 'art_1' + Strin
 function vTopic() {
   const t = TOPIK_TOPICS.find(x => x.no === U.tp); if (!t) return vLearn();
   const ws = tpWords(t.no), art = tpArticle(t.no), notIn = ws.filter(w => !S.srs[w.id]).length;
-  return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0" class="grow">${String(t.no).padStart(2, '0')}. ${h(t.title)}</h2></div>
+  return `<div class="step-top"><button class="x" data-act="tk-lv" data-lv="${t.level}" aria-label="返回">←</button><h2 style="margin:0" class="grow">${String(t.no).padStart(2, '0')}. ${h(t.title)}</h2></div>
   <div class="sub mb">TOPIK ${t.level} 級・${h(t.desc)}</div>
   ${art ? `<button class="lesson" data-act="rd-open" data-id="${art.article_id}"><div class="ic">📖</div><div class="tx"><b><span class="ko">${h(art.title_ko)}</span>　${h(art.title_zh)}</b>
     <span class="sub small">閱讀文章・${art.sentences.length} 句・點單字看解釋、+1 挑戰單字 ${art.challenge_vocab.length} 個</span></div><span class="ok">▶</span></button>` : ''}
@@ -542,8 +575,8 @@ function vArticle() {
         <button class="btn sm ${rd.allZh ? 'alt' : ''}" data-act="rd-allzh">${rd.allZh ? '隱藏翻譯' : '顯示翻譯'}</button></div>
         <div class="rd-text">${sents}</div></div>
       <div class="card"><h3>🌱 +1 挑戰單字</h3><div class="sub small mb">比這篇高一級的生字，點了看解釋。</div>${plusList}</div>
-      <div class="card"><h3>📐 文法筆記</h3>${art.grammar_notes.map((g, i) => `<div class="rd-gn" id="g-${h(g.grammar_id)}"><div class="rd-gp"><span class="rd-gnum">${i + 1}</span>${h(g.pattern)}</div>
-        <div class="rd-gm">${h(g.meaning)}</div><div class="rd-ge">${h(g.explanation)}</div>${koLine(g.extra_example_ko, g.extra_example_zh)}</div>`).join('')}</div>
+      <div class="card"><h3>📐 文法筆記</h3>${art.grammar_notes.map((g, i) => `<div class="rd-gn" id="g-${h(g.grammar_id)}"><div class="rd-gp"><span class="rd-gnum">${i + 1}</span><span>${koRuby(g.pattern)}</span></div>
+        <div class="rd-gm">${koRuby(g.meaning)}</div><div class="rd-ge">${koRuby(g.explanation)}</div>${koLine(g.extra_example_ko, g.extra_example_zh)}</div>`).join('')}</div>
     </div>
     <aside class="rd-side" aria-live="polite">${rdCard(art)}</aside>
   </div>`;
@@ -852,7 +885,7 @@ function vReview() {
     const d = due().length, n = Object.keys(S.srs).filter(id => WORD[id]).length;
     return `<h2 class="mt">複習</h2><div class="card center">${mascot(S.wear, 100, d ? 'think' : 'happy')}
       ${d ? `<h3>今天有 ${d} 個單字要複習</h3><button class="btn main block" data-act="review">開始複習</button>`
-        : n ? '<h3>今天的複習都完成了 🎉</h3><div class="sub">想多練習可以自由複習（不影響複習排程）。</div>' : '<h3>還沒有單字</h3><div class="sub">完成「生活主題」的課程後，單字會加進這裡。</div>'}
+        : n ? '<h3>今天的複習都完成了 🎉</h3><div class="sub">想多練習可以自由複習（不影響複習排程）。</div>' : '<h3>還沒有單字</h3><div class="sub">完成「旅遊實用會話」的課程後，單字會加進這裡。</div>'}
       ${n && !d ? '<button class="btn block mt" data-act="review-free">自由複習 10 個字</button>' : ''}</div>
       <button class="btn block" data-act="go" data-v="words">📒 單字本（${n} 個）</button>`;
   }
@@ -943,8 +976,8 @@ function vSheet() {
 
 /* ================= 繪製 ================= */
 const VIEWS = { home: vHome, learn: vLearn, chart: vChart, builder: vBuilder, lesson: vLesson, done: vDone, games: vGames, game: vGame,
-  review: vReview, words: vWords, me: vMe, cmap: vCmap, vwmap: vVwmap, article: vArticle, topic: vTopic };
-const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', vwmap: 'learn', article: 'learn', topic: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
+  review: vReview, words: vWords, me: vMe, cmap: vCmap, vwmap: vVwmap, article: vArticle, topic: vTopic, topik: vTopik };
+const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', vwmap: 'learn', article: 'learn', topic: 'learn', topik: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
 const TABS = [['home', '🏠', '首頁'], ['learn', '📘', '學習'], ['games', '🎮', '遊戲'], ['review', '📇', '複習'], ['me', '🐯', '我的']];
 function applySkin() {
   document.body.dataset.skin = S.skin;
@@ -990,7 +1023,7 @@ function autoPlay() {
 /* ================= 動作 ================= */
 const ACT = {
   go: d => { if (d.tab) U.meTab = d.tab; if (d.v === 'review') U.rv = null; go(d.v); },
-  say: d => speak(d.t, d.r ? Number(d.r) : null),
+  say: (d, el) => { speak(d.t, d.r ? Number(d.r) : null); if (el.classList.contains('kr')) el.classList.remove('tap'); },
   rrshow: (d, el) => el.classList.remove('tap'),
   lesson: d => startLesson(d.id),
   'ls-next': () => {
@@ -1021,6 +1054,8 @@ const ACT = {
     });
   },
   'tp-open': d => { U.tp = Number(d.n); U.tpx = null; go('topic'); },
+  'tk-open': () => { U.tlv = null; go('topik'); },
+  'tk-lv': d => { U.tlv = d.lv ? Number(d.lv) : null; go('topik'); },
   'tp-ex': d => { U.tpx = U.tpx === d.id ? null : d.id; render(); if (U.tpx) speak(RWORD[d.id].ko); },
   'tp-add': d => { if (!RWORD[d.id] || S.srs[d.id]) return; S.srs[d.id] = { l: 0, d: dayNo(), m: 0 }; save(); toast('已加入複習清單'); render(); },
   'tp-addall': () => {

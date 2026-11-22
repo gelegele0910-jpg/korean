@@ -362,7 +362,18 @@ const INIT = () => {
   await p.click('[data-act=go][data-v=home]');
   ok(await ev(() => !SA.isPlaying()), 'E16 離開停止');
   // E17 閱讀文章：點單字看解釋卡、+1 挑戰單字、加入複習（今天就到期）、翻譯、文法、重新整理保留
-  await ev(() => go('learn')); await p.click('[data-act=tp-open][data-n="12"]'); await p.click('[data-act=rd-open][data-id=art_112]');
+  await ev(() => go('learn')); await p.click('[data-act=tk-open]'); await p.click('[data-act=tk-lv][data-lv="1"]');
+  await p.click('[data-act=tp-open][data-n="12"]'); await p.click('[data-act=rd-open][data-id=art_112]');
+  // 文法解釋裡的韓文：上方有拼音（由 KH.romanize 產生），點了念出來；拼音設定「不顯示」就沒有
+  const kr = await ev(() => [...document.querySelectorAll('.rd-ge .kr')].map(b => [b.dataset.t, (b.querySelector('rt') || {}).textContent]));
+  ok(kr.length > 0 && await ev(k => k.every(([t, r]) => r === KH.romanize(t)), kr), 'E17 文法解釋的韓文都有拼音 ' + kr.length);
+  ok(!(await ev(() => /<(?!\/?(button|ruby|rt)\b)[a-z]/i.test(document.querySelector('.rd-ge').innerHTML))), 'E17 文法解釋沒有多餘的 HTML');
+  await ev(() => { window.__spoken = []; }); await p.click('.rd-ge .kr');
+  ok(await ev(t => window.__spoken.includes(t), kr[0][0]), 'E17 點文法裡的韓文會念出來');
+  await ev(() => { S.set.rr = 'hide'; render(); }); ok((await p.$$('.rd-ge .kr')).length > 0 && !(await p.$('.rd-ge rt')), 'E17 拼音設定不顯示時沒有拼音');
+  await ev(() => { S.set.rr = 'tap'; render(); }); ok(!!(await p.$('.rd-ge .kr.tap rt')), 'E17 點一下才看：拼音先模糊');
+  await p.click('.rd-ge .kr.tap'); ok(await ev(() => !!document.querySelector('.rd-ge .kr:not(.tap) rt')), 'E17 點了就顯示拼音');
+  await ev(() => { S.set.rr = 'show'; save(); render(); });
   const nTW = await ev(() => READ_ARTICLES.find(a => a.article_id === 'art_112').sentences.reduce((n, s) => n + s.target_words.length, 0));
   ok(await ev(() => U.view === 'article') && (await p.$$('.rd-text .rw')).length === nTW, 'E17 文章可以點的單字 ' + nTW);
   ok(!(await p.$('.rd-card')), 'E17 一開始沒有解釋卡');
@@ -397,7 +408,13 @@ const INIT = () => {
   ok(await ev(() => S.srs['art_112:new_01'].l === 1), 'E17 閱讀單字照間隔複習');
   // E18 TOPIK 主題頁：34 個字、看例句、單一加入、全部加入、文章入口與返回
   await ev(() => go('learn'));
-  ok((await p.$$('.tp-tile[data-act=tp-open]')).length === await ev(() => TOPIK_TOPICS.filter(t => t.ready).length) && (await p.$$('.tp-tile.off')).length === await ev(() => TOPIK_TOPICS.filter(t => !t.ready).length), 'E18 主題列表（完成的可以點、其他準備中）');
+  const order = await ev(() => { const m = document.querySelector('#main'), pos = q => [...m.querySelectorAll(q)].map(e => m.innerHTML.indexOf(e.outerHTML)); return { pron: Math.max(...pos('.lesson[data-id=r1]')), talk: Math.min(...pos('.lesson[data-id^="t-"]')), tk: pos('[data-act=tk-open]')[0], tiles: m.querySelectorAll('.tp-tile').length }; });
+  ok(order.pron < order.talk && order.talk < order.tk && order.tiles === 0, 'E18 學習頁：基礎發音 → 旅遊會話 → TOPIK（收起來）');
+  await p.click('[data-act=tk-open]');
+  ok((await p.$$('[data-act=tk-lv][data-lv="1"]')).length === 1 && (await p.$$('.lesson.off')).length === 3, 'E18 TOPIK 專欄：1 級可以點、2～4 級準備中');
+  ok(/建議先完成「基礎發音」/.test(await p.textContent('#main')) === await ev(() => pronLeft() > 0), 'E18 發音還沒完成才提示');
+  await p.click('[data-act=tk-lv][data-lv="1"]');
+  ok((await p.$$('.tp-tile[data-act=tp-open]')).length === await ev(() => TOPIK_TOPICS.filter(t => t.level === 1 && t.ready).length) && (await p.$$('.tp-tile.off')).length === await ev(() => TOPIK_TOPICS.filter(t => t.level === 1 && !t.ready).length), 'E18 1 級主題列表（完成的可以點、其他準備中）');
   await p.click('[data-act=tp-open][data-n="1"]');
   ok((await p.$$('.tp-w')).length === 34, 'E18 主題 1 有 34 個字');
   await ev(() => { window.__spoken = []; }); await p.click('[data-act=tp-ex][data-id=v_1009]');
@@ -408,6 +425,9 @@ const INIT = () => {
   ok(await ev(() => tpWords(1).every(w => S.srs[w.id])) && await p.$('[data-act=tp-addall][disabled]'), 'E18 全部加入複習');
   await p.click('[data-act=rd-open][data-id=art_101]'); ok(await ev(() => U.view === 'article'), 'E18 進入主題文章');
   await p.click('.step-top [data-act=tp-open]'); ok(await ev(() => U.view === 'topic' && U.tp === 1), 'E18 文章返回主題頁');
+  await p.click('.step-top [data-act=tk-lv]'); ok(await ev(() => U.view === 'topik' && U.tlv === 1), 'E18 主題頁返回 1 級列表');
+  await p.click('.step-top [data-act=tk-lv]'); ok(await ev(() => U.view === 'topik' && U.tlv === null), 'E18 返回級數列表');
+  await p.click('.step-top [data-act=go][data-v=learn]'); ok(await ev(() => U.view === 'learn'), 'E18 返回學習頁');
   // E19 舊編號的複習進度會換到新編號（只換一次）
   await ev(() => { const o = JSON.parse(localStorage.getItem('hoya-korean-v1')); o.srs = { v_1029: { l: 3, d: 5, m: 0 }, v_1016: { l: 2, d: 6, m: 0 }, 'art_101:new_01': { l: 1, d: 7, m: 0 }, 'me-w0': { l: 1, d: 8, m: 0 } }; delete o.vocabV; localStorage.setItem('hoya-korean-v1', JSON.stringify(o)); });
   await p.reload(); await p.waitForSelector('#tabs button');

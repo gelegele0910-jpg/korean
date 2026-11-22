@@ -407,8 +407,16 @@ const INIT = () => {
   await p.click('[data-act=rv-show]'); await p.click('[data-act=rv-ans][data-ok="1"]');
   ok(await ev(() => S.srs['art_112:new_01'].l === 1), 'E17 閱讀單字照間隔複習');
   // E18 TOPIK 主題頁：34 個字、看例句、單一加入、全部加入、文章入口與返回
+  // 插畫圖示都載入成功（頁籤、首頁小老虎與工具、學習頁工具、遊戲）
+  for (const v of ['home', 'learn', 'games']) {
+    await ev(x => go(x), v);
+    await p.waitForFunction(() => [...document.querySelectorAll('img.pic, img.hero-hoya')].every(i => i.complete));
+    const imgs = await ev(() => [...document.querySelectorAll('img.pic, img.hero-hoya')].map(i => [i.getAttribute('src'), i.naturalWidth]));
+    const need = { home: 9, learn: 9, games: 10 }[v];
+    ok(imgs.length >= need && imgs.every(([, w]) => w > 0), `E20 ${v} 圖示都載入（${imgs.length}）` + imgs.filter(([, w]) => !w).map(([s]) => s).join(','));
+  }
   await ev(() => go('learn'));
-  const order = await ev(() => { const m = document.querySelector('#main'), pos = q => [...m.querySelectorAll(q)].map(e => m.innerHTML.indexOf(e.outerHTML)); return { pron: Math.max(...pos('.lesson[data-id=r1]')), talk: Math.min(...pos('.lesson[data-id^="t-"]')), tk: pos('[data-act=tk-open]')[0], tiles: m.querySelectorAll('.tp-tile').length }; });
+  const order =await ev(() => { const m = document.querySelector('#main'), pos = q => [...m.querySelectorAll(q)].map(e => m.innerHTML.indexOf(e.outerHTML)); return { pron: Math.max(...pos('.lesson[data-id=r1]')), talk: Math.min(...pos('.lesson[data-id^="t-"]')), tk: pos('[data-act=tk-open]')[0], tiles: m.querySelectorAll('.tp-tile').length }; });
   ok(order.pron < order.talk && order.talk < order.tk && order.tiles === 0, 'E18 學習頁：基礎發音 → 旅遊會話 → TOPIK（收起來）');
   await p.click('[data-act=tk-open]');
   ok((await p.$$('[data-act=tk-lv][data-lv="1"]')).length === 1 && (await p.$$('.lesson.off')).length === 3, 'E18 TOPIK 專欄：1 級可以點、2～4 級準備中');

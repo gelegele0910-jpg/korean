@@ -15,6 +15,16 @@ for (const m of html.matchAll(/(?:src|href)="([^"#:]+)"/g)) {
 const img = path.join(ROOT, 'img/girl.webp');
 if (!fs.existsSync(img)) { bad++; console.log('  ✗ 找不到 img/girl.webp'); }
 else { const b = fs.readFileSync(img); if (b.toString('ascii', 0, 4) !== 'RIFF' || b.toString('ascii', 8, 12) !== 'WEBP') { bad++; console.log('  ✗ img/girl.webp 不是 WebP'); } }
+// 使用者提供的插畫圖示：頁籤、工具、遊戲（pic(代號) → img/ic/代號.webp）與首頁小老虎
+const app = fs.readFileSync(path.join(ROOT, 'js/app.js'), 'utf8');
+const games = [...app.matchAll(/\{ id: '(\w+)',\s+ic:/g)].map(m => 'g-' + m[1]);
+const pics = ['chart', 'builder', 'cmap', 'vwmap', 't-home', 't-learn', 't-games', 't-review', 't-me', ...games];
+for (const n of pics) {
+  const f = path.join(ROOT, 'img/ic', n + '.webp');
+  if (!fs.existsSync(f) || fs.readFileSync(f).toString('ascii', 8, 12) !== 'WEBP') { bad++; console.log('  ✗ 圖示', n); }
+}
+if (games.length !== 5 || !fs.existsSync(path.join(ROOT, 'img/hoya.webp'))) { bad++; console.log('  ✗ 遊戲圖示數量或 img/hoya.webp'); }
+else console.log('  ok 圖示', pics.length, '個＋首頁小老虎');
 // 安裝成 App（Android）：manifest 的圖示存在且尺寸正確、sw.js 語法正確
 try {
   const mf = JSON.parse(fs.readFileSync(path.join(ROOT, 'manifest.webmanifest'), 'utf8'));

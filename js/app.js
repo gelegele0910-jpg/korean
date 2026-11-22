@@ -175,6 +175,8 @@ function koRuby(text) {
     return `<button class="kr ${S.set.rr === 'tap' ? 'tap' : ''}" data-act="say" data-t="${h(x)}"><ruby class="ko">${h(x)}${rr}</ruby></button>`;
   }).join('');
 }
+/** 使用者提供的插畫圖示（img/ic/代號.webp，192×192） */
+const pic = (name, cls) => `<img class="pic ${cls || ''}" src="img/ic/${name}.webp" alt="" draggable="false">`;
 const sayBtn = (ko, cls) => `<button class="say ${cls || ''}" data-act="say" data-t="${h(ko)}" aria-label="播放">🔊</button>`;
 const slowBtn = ko => `<button class="say slow" data-act="say" data-t="${h(ko)}" data-r="0.6" aria-label="慢速播放">慢</button>`;
 function koLine(ko, zh, extra) {
@@ -295,7 +297,7 @@ function vHome() {
         : `<button class="btn sm ${v >= t.n ? 'main' : ''}" data-act="task" data-id="${t.id}" ${v >= t.n ? '' : 'disabled'}>${v}/${t.n}・₩${TASK_COIN}</button>`}</div>`;
   }).join('');
   return `
-  <div class="card hero">${mascot(S.wear, 96, practicedToday() ? 'happy' : 'normal')}
+  <div class="card hero"><img class="hero-hoya" src="img/hoya.webp" alt="호야" draggable="false">
     <div class="bub"><div class="line ko">${h(HOYA_LINES[new Date().getDate() % HOYA_LINES.length])}</div>
     <div class="sub mt" style="margin-top:6px">🔥 連續 ${streakNow()} 天　📘 完成 ${doneN}/${LESSONS.length} 課</div></div></div>
   ${nx ? `<div class="card"><div class="sub">繼續學習</div><div class="row" style="margin-top:6px">
@@ -307,9 +309,9 @@ function vHome() {
     ${S.day.checkin ? '<span class="sub">已簽到 ✓</span>' : `<button class="btn sm ${practicedToday() ? 'main' : ''}" data-act="checkin">簽到 ₩${CHECKIN_COIN}</button>`}</div>
     ${tasks}<div class="sub small" style="margin-top:6px">三個任務都領取，再送 ₩${TASK_ALL}！</div></div>
   <div class="tile-grid">
-    <button class="tile" data-act="go" data-v="chart"><span class="ic ko">가</span><b>40 音表</b><span class="sub small">點字母聽發音</span></button>
-    <button class="tile" data-act="go" data-v="builder"><span class="ic">🧩</span><b>拼音工坊</b><span class="sub small">自己組字聽聽看</span></button>
-    <button class="tile" data-act="go" data-v="games"><span class="ic">🎮</span><b>遊戲</b><span class="sub small">邊玩邊賺點數</span></button>
+    <button class="tile" data-act="go" data-v="chart"><span class="ic">${pic('chart')}</span><b>40 音表</b><span class="sub small">點字母聽發音</span></button>
+    <button class="tile" data-act="go" data-v="builder"><span class="ic">${pic('builder')}</span><b>拼音工坊</b><span class="sub small">自己組字聽聽看</span></button>
+    <button class="tile" data-act="go" data-v="games"><span class="ic">${pic('t-games')}</span><b>遊戲</b><span class="sub small">邊玩邊賺點數</span></button>
     <button class="tile" data-act="go" data-v="me" data-tab="shop"><span class="ic">🎁</span><b>商店</b><span class="sub small">幫호야換裝</span></button>
   </div>`;
 }
@@ -330,10 +332,10 @@ function vLearn() {
   return `<h2 class="mt">學習</h2>
   <div class="row wrap"><h3 class="mt grow">① 基礎發音</h3><span class="sub small">已完成 ${pd}／${pron.length} 課</span></div>
   <div class="tile-grid">
-    <button class="tile" data-act="go" data-v="chart"><span class="ic ko">가</span><b>40 音表</b></button>
-    <button class="tile" data-act="go" data-v="builder"><span class="ic">🧩</span><b>拼音工坊</b></button>
-    <button class="tile" data-act="go" data-v="cmap"><span class="ic">👄</span><b>子音發音地圖</b></button>
-    <button class="tile" data-act="go" data-v="vwmap"><span class="ic">😮</span><b>母音發音地圖</b></button>
+    <button class="tile" data-act="go" data-v="chart"><span class="ic">${pic('chart')}</span><b>40 音表</b></button>
+    <button class="tile" data-act="go" data-v="builder"><span class="ic">${pic('builder')}</span><b>拼音工坊</b></button>
+    <button class="tile" data-act="go" data-v="cmap"><span class="ic">${pic('cmap')}</span><b>子音發音地圖</b></button>
+    <button class="tile" data-act="go" data-v="vwmap"><span class="ic">${pic('vwmap')}</span><b>母音發音地圖</b></button>
   </div>
   ${pron.map(lessonBtn).join('')}
   <h3 class="mt">② 旅遊實用會話</h3><div class="sub small mb">學完發音先學幾句馬上用得到的話。</div>
@@ -759,7 +761,7 @@ const GAMES = [
 const GAME_FIRST = 50, GAME_DONE = 30, GAME_OK = 10;
 function vGames() {
   return `<h2 class="mt">遊戲</h2><div class="sub">每答對一題 ₩${GAME_OK}；每種遊戲每天第一次玩完再送 ₩${GAME_FIRST}。</div>
-  <div class="tile-grid mt">${GAMES.map(g => `<button class="tile" data-act="game" data-id="${g.id}"><span class="ic">${g.ic}</span><b>${h(g.t)}</b>
+  <div class="tile-grid mt">${GAMES.map(g => `<button class="tile" data-act="game" data-id="${g.id}"><span class="ic">${pic('g-' + g.id)}</span><b>${h(g.t)}</b>
     <span class="sub small">${h(g.d)}</span>${S.best[g.id] ? `<span class="small">最佳：${S.best[g.id]}</span>` : ''}${S.day.games[g.id] ? '<span class="small" style="color:var(--good)">今天已玩 ✓</span>' : ''}</button>`).join('')}</div>`;
 }
 const CONS_GRP = [['ㄱ','ㅋ','ㄲ'], ['ㄷ','ㅌ','ㄸ'], ['ㅂ','ㅍ','ㅃ'], ['ㅈ','ㅊ','ㅉ'], ['ㅅ','ㅆ','ㅎ'], ['ㄴ','ㅁ','ㄹ']];
@@ -832,7 +834,7 @@ function endGame() {
 function gameHead(g, extra) {
   const meta = GAMES.find(x => x.id === g.id);
   const total = g.qs ? g.qs.length : g.n;
-  return `<div class="step-top"><button class="x" data-act="g-quit" aria-label="離開">✕</button><b class="grow">${meta.ic} ${h(meta.t)}</b>${extra || `<span class="sub">${Math.min(g.i + 1, total)}/${total}</span>`}</div>`;
+  return `<div class="step-top"><button class="x" data-act="g-quit" aria-label="離開">✕</button><b class="grow g-ttl">${pic('g-' + meta.id, 'sm')}${h(meta.t)}</b>${extra || `<span class="sub">${Math.min(g.i + 1, total)}/${total}</span>`}</div>`;
 }
 function vGame() {
   const g = U.g; if (!g) return vGames();
@@ -978,7 +980,7 @@ function vSheet() {
 const VIEWS = { home: vHome, learn: vLearn, chart: vChart, builder: vBuilder, lesson: vLesson, done: vDone, games: vGames, game: vGame,
   review: vReview, words: vWords, me: vMe, cmap: vCmap, vwmap: vVwmap, article: vArticle, topic: vTopic, topik: vTopik };
 const TAB_OF = { home: 'home', learn: 'learn', chart: 'learn', cmap: 'learn', vwmap: 'learn', article: 'learn', topic: 'learn', topik: 'learn', builder: 'learn', lesson: 'learn', done: 'learn', games: 'games', game: 'games', review: 'review', words: 'review', me: 'me' };
-const TABS = [['home', '🏠', '首頁'], ['learn', '📘', '學習'], ['games', '🎮', '遊戲'], ['review', '📇', '複習'], ['me', '🐯', '我的']];
+const TABS = [['home', '首頁'], ['learn', '學習'], ['games', '遊戲'], ['review', '複習'], ['me', '我的']];
 function applySkin() {
   document.body.dataset.skin = S.skin;
   const m = document.querySelector('meta[name=theme-color]');
@@ -989,7 +991,8 @@ function render() {
   $('#main').innerHTML = (VIEWS[U.view] || vHome)();
   SA.mountAll($('#main'));
   const tab = TAB_OF[U.view];
-  $('#tabs .in').innerHTML = TABS.map(([v, i, nm]) => `<button class="${tab === v ? 'on' : ''}" data-act="go" data-v="${v}"><span class="i">${i}</span>${nm}</button>`).join('');
+  const tin = $('#tabs .in');  // 頁籤只在換分頁時重畫（圖片不閃）
+  if (tin.dataset.tab !== tab || !tin.firstChild) { tin.dataset.tab = tab; tin.innerHTML = TABS.map(([v, nm]) => `<button class="${tab === v ? 'on' : ''}" data-act="go" data-v="${v}"><span class="i">${pic('t-' + v)}</span>${nm}</button>`).join(''); }
   $('#top .in').innerHTML = `<div class="brand">${mascot(S.wear, 34)}<span class="ko">호야</span> 韓語</div>
     <button class="pill" data-act="go" data-v="me" data-tab="stats" aria-label="連續天數">🔥 ${streakNow()}</button>${coinPill()}`;
   const sh = $('#sheet'); const html = vSheet();

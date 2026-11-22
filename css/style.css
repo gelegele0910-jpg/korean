@@ -71,7 +71,14 @@ h2 { font-size:1.25rem; } h3 { font-size:1.05rem; }
 #tabs { position:fixed; left:0; right:0; bottom:0; z-index:30; background:var(--card); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
 #tabs .in { max-width:720px; margin:0 auto; display:grid; grid-template-columns:repeat(5,1fr); height:var(--tabs-h); }
 #tabs button { background:none; border:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:.75rem; color:var(--sub); cursor:pointer; min-width:0; }
-#tabs button .i { font-size:1.35rem; line-height:1; }
+#tabs button .i { line-height:0; }
+#tabs button .i .pic { width:34px; height:34px; transition:transform .15s; }
+#tabs button:not(.on) .i .pic { opacity:.75; filter:saturate(.7); }
+#tabs button.on .i .pic { transform:scale(1.12); }
+.pic { display:inline-block; width:56px; height:56px; object-fit:contain; vertical-align:middle; user-select:none; -webkit-user-drag:none; }
+.pic.sm { width:28px; height:28px; margin-right:6px; flex:0 0 28px; }
+.g-ttl { display:flex; align-items:center; min-width:0; }
+.hero-hoya { width:110px; height:110px; flex:0 0 110px; object-fit:contain; }
 #tabs button.on { color:var(--accent); font-weight:700; }
 @media (min-width:1000px) {
   body.side .app { padding-left:180px; max-width:900px; padding-bottom:24px; }
@@ -110,6 +117,7 @@ h2 { font-size:1.25rem; } h3 { font-size:1.05rem; }
 .tile-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
 .tile { background:var(--card); border-radius:var(--r); box-shadow:var(--shadow); padding:14px; border:0; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:4px; min-width:0; }
 .tile .ic { font-size:1.6rem; line-height:1.2; }
+.tile .ic .pic { width:64px; height:64px; margin:-4px 0 0 -4px; }
 .tile b { font-size:1rem; }
 .tile.on { outline:3px solid var(--accent); }
 

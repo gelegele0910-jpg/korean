@@ -219,9 +219,10 @@ W[5] = [
  ('끝나다','動詞',None,'結束','수업이 세 시에 끝나요.','課三點結束。'),
 ]
 sys.path.insert(0, HERE)
-import batch2, batch3
+import batch2, batch3, batch4
 W[6], W[7], W[8], W[9], W[10] = batch2.W6, batch2.W7, batch2.W8, batch2.W9, batch2.W10
 W[11], W[12], W[13], W[14], W[15] = batch3.W11, batch3.W12, batch3.W13, batch3.W14, batch3.W15
+W[16], W[17], W[18], W[19], W[20] = batch4.W16, batch4.W17, batch4.W18, batch4.W19, batch4.W20
 START = {10: 4, 11: 7, 12: 13, 13: 7}  # 這些主題的區段開頭已有先前的飲食單字
 # 先前「飲食與餐廳」的單字：放進它們所屬主題的區段（舊 id → 新 id，複習進度會跟著換）
 OLD = [  # 舊 id, 主題, 區段內位置, (資料)
@@ -269,6 +270,9 @@ for old, t, slot, (w, p, hj, m, ek, ez) in OLD:
     nid = vid(t, slot); idmap[old] = nid
     V.append(dict(id=nid, level=1, topic=TITLE[t], word=w, pos=p, hanja=hj, meaning_zh=m, example_ko=ek, example_zh=ez))
 assert len(idmap) == 30
+# 先放進主題 23 的基本動詞（文章需要）
+for slot, (w, p, hj, m, ek, ez) in batch4.PRE23:
+    V.append(dict(id=vid(23, slot), level=1, topic=TITLE[23], word=w, pos=p, hanja=hj, meaning_zh=m, example_ko=ek, example_zh=ez))
 byid = {v['id']: v for v in V}
 assert len(byid) == len(V)
 
@@ -334,10 +338,10 @@ ARTS.append(dict(article_id='art_102', level=1, topic=TITLE[2], title_ko='우리
 ARTS.append(dict(article_id='art_103', level=1, topic=TITLE[3], title_ko='생일이 언제예요?', title_zh='你的生日是哪天？', sentences=[
  S(1, 'A', '생일이 몇 월 며칠이에요?', '你的生日是幾月幾號？', [('생일이','생일'),('몇','몇'),('월','월'),('며칠이에요','며칠')], ['g_105']),
  S(2, 'B', '삼월 구일이에요. 이번 주 토요일이에요.', '三月九號，就是這個星期六。', [('삼','삼'),('월','월'),('구','구'),('일이에요','일',3,'日'),('주','주'),('토요일이에요','토요일')], ['g_105']),
- S(3, 'A', '와, 축하해요! 생일 파티를 해요?', '哇，生日快樂！要辦生日派對嗎？', [('축하해요','new_01','축하하다'),('생일','생일'),('파티를','new_02','파티')], []),
+ S(3, 'A', '와, 축하해요! 생일 파티를 해요?', '哇，生日快樂！要辦生日派對嗎？', [('축하해요','new_01','축하하다'),('생일','생일'),('파티를','new_02','파티'),('해요','하다')], []),
  S(4, 'B', '네, 토요일 저녁에 식당에 친구들을 초대해요. 식당은 삼 층에 있어요.', '對，星期六晚上我請朋友們來餐廳。餐廳在三樓。', [('네','네'),('토요일','토요일'),('저녁에','저녁'),('식당에','식당'),('친구들을','친구'),('초대해요','new_03','초대하다'),('식당은','식당'),('삼','삼'),('층에','층'),('있어요','있다')], ['g_106','g_105']),
  S(5, 'A', '알겠어요. 전화번호가 몇 번이에요?', '我知道了。你的電話號碼是幾號？', [('알겠어요','알다'),('전화번호가','전화번호'),('몇','몇'),('번이에요','번')], ['g_105']),
- S(6, 'B', '공일공 일이삼사에 오육칠팔이에요.', '010-1234-5678。', [('공','공'),('일','일',3,'一'),('이','이',3),('삼','삼'),('사','사'),('오','오'),('육','육'),('칠','칠'),('팔','팔')], ['g_105']),
+ S(6, 'B', '공일공 일이삼사에 오육칠팔이에요.', '010-1234-5678。', [('공','공',3),('일','일',3,'一'),('이','이',3),('삼','삼'),('사','사'),('오','오'),('육','육'),('칠','칠'),('팔','팔',3)], ['g_105']),
 ], challenge_vocab=[
  dict(id='new_01', level=2, word='축하하다', pos='動詞', hanja='祝賀', meaning_zh='祝賀、恭喜'),
  dict(id='new_02', level=2, word='파티', pos='名詞', hanja=None, meaning_zh='派對'),
@@ -392,6 +396,7 @@ ARTS.append(dict(article_id='art_105', level=1, topic=TITLE[5], title_ko='교실
 ]))
 ARTS.extend(batch2.articles(S, TITLE))
 ARTS.extend(batch3.articles(S, TITLE))
+ARTS.extend(batch4.articles(S, TITLE))
 # ---------- art_112：餐廳（原本的 art_101，改到主題 12） ----------
 ARTS.append(dict(article_id='art_112', level=1, topic=TITLE[12], title_ko='식당에서', title_zh='在餐廳', sentences=[
  S(1,'A','배고파요. 이 식당 음식이 맛있어요?','我餓了。這家餐廳的菜好吃嗎？',[('배고파요','배고프다'),('식당','식당'),('음식이','음식'),('맛있어요','맛있다')],['g_123']),
@@ -412,7 +417,7 @@ ARTS.append(dict(article_id='art_112', level=1, topic=TITLE[12], title_ko='식�
       extra_example_ko='배가 고파서 라면을 먹었어요.', extra_example_zh='肚子餓了，所以吃了泡麵。'),
 ]))
 
-topics_js = [dict(no=n, level=1, title=t, desc=d, ids=[vid(n, 1), vid(n, PER)], ready=n <= 15) for n, t, d in TOPICS]
+topics_js = [dict(no=n, level=1, title=t, desc=d, ids=[vid(n, 1), vid(n, PER)], ready=n <= 20) for n, t, d in TOPICS]
 V.sort(key=lambda v: v['id'])
 out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入） =================\n"
  " * TOPIK_TOPICS：主題（1 級 25 個，每個主題固定 34 個字的編號區段：主題 n＝v_(1001+(n-1)×34)～+33）。ready＝已完成。\n"
@@ -428,8 +433,8 @@ out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入�
 open(os.path.join(ROOT, 'js', 'reading.js'), 'w', encoding='utf8').write(out)
 D = os.path.join(HERE, 'out') + os.sep
 os.makedirs(D, exist_ok=True)
-json.dump([v for v in V if 1341 <= int(v['id'][2:]) <= 1510], open(D + 'topik1_vocab_11-15.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
-json.dump(sorted([a for a in ARTS if 'art_111' <= a['article_id'] <= 'art_115'], key=lambda a: a['article_id']), open(D + 'topik1_articles_11-15.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump([v for v in V if 1511 <= int(v['id'][2:]) <= 1680], open(D + 'topik1_vocab_16-20.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump(sorted([a for a in ARTS if 'art_116' <= a['article_id'] <= 'art_120'], key=lambda a: a['article_id']), open(D + 'topik1_articles_16-20.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
 print('vocab', len(V), 'articles', len(ARTS))
 for a in ARTS:
     tws = [t for s in a['sentences'] for t in s['target_words']]

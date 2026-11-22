@@ -4,7 +4,7 @@
  * READ_ARTICLES：文章；target_words 的 surface 必須照順序出現在句子裡，vocab_id 指向 READ_VOCAB 或該篇的 challenge_vocab（+1 生字）。
  * VOCAB_ID_MAP：舊編號 → 新編號（2026-11 重新編號，migrate() 會把複習進度換過去）。
  * 檢查：tests/hangul.js 的 R1～R5。 */
-const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": false}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": false}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": false}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": false}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": false}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": false}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": false}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": false}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": false}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": false}];
+const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": false}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": false}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": false}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": false}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": false}];
 
 const VOCAB_ID_MAP = {"v_1029": "v_1118", "v_1011": "v_1307", "v_1003": "v_1308", "v_1022": "v_1309", "v_1001": "v_1341", "v_1002": "v_1342", "v_1013": "v_1343", "v_1014": "v_1344", "v_1015": "v_1345", "v_1016": "v_1346", "v_1004": "v_1375", "v_1005": "v_1376", "v_1017": "v_1377", "v_1018": "v_1378", "v_1019": "v_1379", "v_1023": "v_1380", "v_1024": "v_1381", "v_1025": "v_1382", "v_1026": "v_1383", "v_1027": "v_1384", "v_1028": "v_1385", "v_1030": "v_1386", "v_1006": "v_1409", "v_1007": "v_1410", "v_1008": "v_1411", "v_1009": "v_1412", "v_1010": "v_1413", "v_1012": "v_1414", "v_1020": "v_1749", "v_1021": "v_1750"};
 const ARTICLE_ID_MAP = { 'art_101:new_01': 'art_112:new_01', 'art_101:new_02': 'art_112:new_02' };
@@ -5621,6 +5621,1876 @@ const READ_VOCAB = [
   "example_zh": "我戴著手錶。"
  },
  {
+  "id": "v_1511",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "색깔",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "顏色",
+  "example_ko": "무슨 색깔을 좋아해요?",
+  "example_zh": "你喜歡什麼顏色？"
+ },
+ {
+  "id": "v_1512",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "빨간색",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "紅色",
+  "example_ko": "빨간색 가방을 샀어요.",
+  "example_zh": "我買了紅色的包包。"
+ },
+ {
+  "id": "v_1513",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "노란색",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "黃色",
+  "example_ko": "노란색은 밝은 색이에요.",
+  "example_zh": "黃色是明亮的顏色。"
+ },
+ {
+  "id": "v_1514",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "파란색",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "藍色",
+  "example_ko": "하늘이 파란색이에요.",
+  "example_zh": "天空是藍色的。"
+ },
+ {
+  "id": "v_1515",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "초록색",
+  "pos": "名詞",
+  "hanja": "草綠色",
+  "meaning_zh": "綠色",
+  "example_ko": "봄에는 나무가 초록색이에요.",
+  "example_zh": "春天的樹是綠色的。"
+ },
+ {
+  "id": "v_1516",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "검은색",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "黑色",
+  "example_ko": "검은색 구두를 신었어요.",
+  "example_zh": "穿了黑色皮鞋。"
+ },
+ {
+  "id": "v_1517",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "흰색",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "白色",
+  "example_ko": "흰색 셔츠가 깨끗해요.",
+  "example_zh": "白襯衫很乾淨。"
+ },
+ {
+  "id": "v_1518",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "회색",
+  "pos": "名詞",
+  "hanja": "灰色",
+  "meaning_zh": "灰色",
+  "example_ko": "회색 코트를 입었어요.",
+  "example_zh": "穿了灰色大衣。"
+ },
+ {
+  "id": "v_1519",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "분홍색",
+  "pos": "名詞",
+  "hanja": "粉紅色",
+  "meaning_zh": "粉紅色",
+  "example_ko": "동생은 분홍색을 좋아해요.",
+  "example_zh": "妹妹喜歡粉紅色。"
+ },
+ {
+  "id": "v_1520",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "보라색",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "紫色",
+  "example_ko": "보라색 꽃이 예뻐요.",
+  "example_zh": "紫色的花很漂亮。"
+ },
+ {
+  "id": "v_1521",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "갈색",
+  "pos": "名詞",
+  "hanja": "褐色",
+  "meaning_zh": "咖啡色、棕色",
+  "example_ko": "갈색 머리가 잘 어울려요.",
+  "example_zh": "咖啡色頭髮很適合你。"
+ },
+ {
+  "id": "v_1522",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "주황색",
+  "pos": "名詞",
+  "hanja": "朱黃色",
+  "meaning_zh": "橘色",
+  "example_ko": "귤은 주황색이에요.",
+  "example_zh": "橘子是橘色的。"
+ },
+ {
+  "id": "v_1523",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "하늘색",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "天藍色",
+  "example_ko": "하늘색 원피스를 입었어요.",
+  "example_zh": "穿了天藍色連身裙。"
+ },
+ {
+  "id": "v_1524",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "빨갛다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "紅、紅紅的",
+  "example_ko": "사과가 빨개요.",
+  "example_zh": "蘋果紅紅的。"
+ },
+ {
+  "id": "v_1525",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "노랗다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "黃、黃黃的",
+  "example_ko": "바나나가 노래요.",
+  "example_zh": "香蕉黃黃的。"
+ },
+ {
+  "id": "v_1526",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "파랗다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "藍、藍藍的",
+  "example_ko": "바다가 파래요.",
+  "example_zh": "大海藍藍的。"
+ },
+ {
+  "id": "v_1527",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "까맣다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "黑、黑黑的",
+  "example_ko": "고양이가 까매요.",
+  "example_zh": "貓咪黑黑的。"
+ },
+ {
+  "id": "v_1528",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "하얗다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "白、白白的",
+  "example_ko": "눈이 하얘요.",
+  "example_zh": "雪白白的。"
+ },
+ {
+  "id": "v_1529",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "크다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "大；（個子）高",
+  "example_ko": "이 신발은 저한테 커요.",
+  "example_zh": "這雙鞋我穿太大。"
+ },
+ {
+  "id": "v_1530",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "작다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "小；（個子）矮",
+  "example_ko": "제 방은 작지만 깨끗해요.",
+  "example_zh": "我的房間雖然小但很乾淨。"
+ },
+ {
+  "id": "v_1531",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "길다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "長",
+  "example_ko": "이 바지는 너무 길어요.",
+  "example_zh": "這條褲子太長了。"
+ },
+ {
+  "id": "v_1532",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "짧다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "短",
+  "example_ko": "머리가 짧아요.",
+  "example_zh": "頭髮很短。"
+ },
+ {
+  "id": "v_1533",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "예쁘다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "漂亮、好看",
+  "example_ko": "꽃이 정말 예뻐요.",
+  "example_zh": "花真漂亮。"
+ },
+ {
+  "id": "v_1534",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "귀엽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "可愛",
+  "example_ko": "강아지가 너무 귀여워요.",
+  "example_zh": "小狗好可愛。"
+ },
+ {
+  "id": "v_1535",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "높다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "高",
+  "example_ko": "저 산은 아주 높아요.",
+  "example_zh": "那座山很高。"
+ },
+ {
+  "id": "v_1536",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "낮다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "低",
+  "example_ko": "이 의자는 너무 낮아요.",
+  "example_zh": "這張椅子太低了。"
+ },
+ {
+  "id": "v_1537",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "두껍다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "厚",
+  "example_ko": "이 책은 두꺼워요.",
+  "example_zh": "這本書很厚。"
+ },
+ {
+  "id": "v_1538",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "얇다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "薄",
+  "example_ko": "얇은 옷을 입었어요.",
+  "example_zh": "穿了薄衣服。"
+ },
+ {
+  "id": "v_1539",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "밝다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "亮、明亮",
+  "example_ko": "방이 밝고 따뜻해요.",
+  "example_zh": "房間又亮又溫暖。"
+ },
+ {
+  "id": "v_1540",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "어둡다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "暗、黑暗",
+  "example_ko": "밖이 어두워요.",
+  "example_zh": "外面很暗。"
+ },
+ {
+  "id": "v_1541",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "새",
+  "pos": "冠形詞",
+  "hanja": null,
+  "meaning_zh": "新的",
+  "example_ko": "새 옷을 입었어요.",
+  "example_zh": "穿了新衣服。"
+ },
+ {
+  "id": "v_1542",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "모양",
+  "pos": "名詞",
+  "hanja": "模樣",
+  "meaning_zh": "形狀、樣子",
+  "example_ko": "이 컵은 모양이 예뻐요.",
+  "example_zh": "這個杯子形狀很漂亮。"
+ },
+ {
+  "id": "v_1543",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "둥글다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "圓、圓圓的",
+  "example_ko": "달이 둥글어요.",
+  "example_zh": "月亮圓圓的。"
+ },
+ {
+  "id": "v_1544",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "word": "오래되다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "舊、老、年代久遠",
+  "example_ko": "이 건물은 아주 오래됐어요.",
+  "example_zh": "這棟建築很老了。"
+ },
+ {
+  "id": "v_1545",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "계절",
+  "pos": "名詞",
+  "hanja": "季節",
+  "meaning_zh": "季節",
+  "example_ko": "어느 계절을 좋아해요?",
+  "example_zh": "你喜歡哪個季節？"
+ },
+ {
+  "id": "v_1546",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "봄",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "春天",
+  "example_ko": "봄에는 꽃이 많이 피어요.",
+  "example_zh": "春天開很多花。"
+ },
+ {
+  "id": "v_1547",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "여름",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "夏天",
+  "example_ko": "여름에는 바다에 가요.",
+  "example_zh": "夏天去海邊。"
+ },
+ {
+  "id": "v_1548",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "가을",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "秋天",
+  "example_ko": "가을에는 하늘이 높아요.",
+  "example_zh": "秋天的天空很高。"
+ },
+ {
+  "id": "v_1549",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "겨울",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "冬天",
+  "example_ko": "겨울에는 눈이 와요.",
+  "example_zh": "冬天會下雪。"
+ },
+ {
+  "id": "v_1550",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "날씨",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "天氣",
+  "example_ko": "오늘 날씨가 어때요?",
+  "example_zh": "今天天氣怎麼樣？"
+ },
+ {
+  "id": "v_1551",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "비",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "雨",
+  "example_ko": "비가 와서 우산을 썼어요.",
+  "example_zh": "下雨了，所以撐了傘。"
+ },
+ {
+  "id": "v_1552",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "눈",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "雪",
+  "example_ko": "어제 눈이 많이 왔어요.",
+  "example_zh": "昨天下了很多雪。"
+ },
+ {
+  "id": "v_1553",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "바람",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "風",
+  "example_ko": "바람이 많이 불어요.",
+  "example_zh": "風很大。"
+ },
+ {
+  "id": "v_1554",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "구름",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "雲",
+  "example_ko": "하늘에 구름이 많아요.",
+  "example_zh": "天上雲很多。"
+ },
+ {
+  "id": "v_1555",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "하늘",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "天空",
+  "example_ko": "하늘이 맑아요.",
+  "example_zh": "天空很晴朗。"
+ },
+ {
+  "id": "v_1556",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "해",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "太陽",
+  "example_ko": "해가 떴어요.",
+  "example_zh": "太陽出來了。"
+ },
+ {
+  "id": "v_1557",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "별",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "星星",
+  "example_ko": "시골에서는 별이 잘 보여요.",
+  "example_zh": "在鄉下可以清楚看到星星。"
+ },
+ {
+  "id": "v_1558",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "달",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "月亮",
+  "example_ko": "오늘 밤 달이 밝아요.",
+  "example_zh": "今晚月亮很亮。"
+ },
+ {
+  "id": "v_1559",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "맑다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "晴朗、清澈",
+  "example_ko": "오늘은 날씨가 맑아요.",
+  "example_zh": "今天天氣晴朗。"
+ },
+ {
+  "id": "v_1560",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "흐리다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "陰天、不清楚",
+  "example_ko": "날씨가 흐려요. 비가 올 것 같아요.",
+  "example_zh": "天氣陰陰的，好像要下雨了。"
+ },
+ {
+  "id": "v_1561",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "불다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "（風）吹",
+  "example_ko": "바람이 세게 불어요.",
+  "example_zh": "風吹得很強。"
+ },
+ {
+  "id": "v_1562",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "춥다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "冷（天氣）",
+  "example_ko": "겨울은 너무 추워요.",
+  "example_zh": "冬天太冷了。"
+ },
+ {
+  "id": "v_1563",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "덥다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "熱（天氣）",
+  "example_ko": "여름은 아주 더워요.",
+  "example_zh": "夏天很熱。"
+ },
+ {
+  "id": "v_1564",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "쌀쌀하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "涼颼颼、有點冷",
+  "example_ko": "아침저녁으로 쌀쌀해요.",
+  "example_zh": "早晚涼颼颼的。"
+ },
+ {
+  "id": "v_1565",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "도",
+  "pos": "名詞（量詞）",
+  "hanja": "度",
+  "meaning_zh": "度（溫度）",
+  "example_ko": "오늘 기온은 영하 오 도예요.",
+  "example_zh": "今天氣溫零下五度。"
+ },
+ {
+  "id": "v_1566",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "우산",
+  "pos": "名詞",
+  "hanja": "雨傘",
+  "meaning_zh": "雨傘",
+  "example_ko": "우산을 가지고 가세요.",
+  "example_zh": "請帶傘出門。"
+ },
+ {
+  "id": "v_1567",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "일기예보",
+  "pos": "名詞",
+  "hanja": "日氣預報",
+  "meaning_zh": "天氣預報",
+  "example_ko": "일기예보를 봤어요?",
+  "example_zh": "你看了天氣預報嗎？"
+ },
+ {
+  "id": "v_1568",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "꽃",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "花",
+  "example_ko": "꽃이 예쁘게 피었어요.",
+  "example_zh": "花開得很漂亮。"
+ },
+ {
+  "id": "v_1569",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "단풍",
+  "pos": "名詞",
+  "hanja": "丹楓",
+  "meaning_zh": "楓葉、紅葉",
+  "example_ko": "가을에는 단풍이 아름다워요.",
+  "example_zh": "秋天的楓葉很美。"
+ },
+ {
+  "id": "v_1570",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "눈사람",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "雪人",
+  "example_ko": "아이들이 눈사람을 만들어요.",
+  "example_zh": "孩子們在堆雪人。"
+ },
+ {
+  "id": "v_1571",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "방학",
+  "pos": "名詞",
+  "hanja": "放學",
+  "meaning_zh": "（學校的）寒暑假",
+  "example_ko": "여름 방학에 여행을 가요.",
+  "example_zh": "暑假要去旅行。"
+ },
+ {
+  "id": "v_1572",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "무지개",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "彩虹",
+  "example_ko": "비가 그치고 무지개가 떴어요.",
+  "example_zh": "雨停了，出現了彩虹。"
+ },
+ {
+  "id": "v_1573",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "햇빛",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "陽光",
+  "example_ko": "햇빛이 강해요.",
+  "example_zh": "陽光很強。"
+ },
+ {
+  "id": "v_1574",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "공기",
+  "pos": "名詞",
+  "hanja": "空氣",
+  "meaning_zh": "空氣",
+  "example_ko": "산은 공기가 맑아요.",
+  "example_zh": "山上的空氣很清新。"
+ },
+ {
+  "id": "v_1575",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "비옷",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "雨衣",
+  "example_ko": "비옷을 입고 학교에 가요.",
+  "example_zh": "穿雨衣去上學。"
+ },
+ {
+  "id": "v_1576",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "선풍기",
+  "pos": "名詞",
+  "hanja": "扇風機",
+  "meaning_zh": "電風扇",
+  "example_ko": "선풍기를 켜 주세요.",
+  "example_zh": "請開電風扇。"
+ },
+ {
+  "id": "v_1577",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "날",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "天、日子；天氣",
+  "example_ko": "비가 오는 날에는 집에 있어요.",
+  "example_zh": "下雨天我待在家。"
+ },
+ {
+  "id": "v_1578",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "word": "낮",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "白天",
+  "example_ko": "낮에는 덥고 밤에는 추워요.",
+  "example_zh": "白天熱，晚上冷。"
+ },
+ {
+  "id": "v_1579",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "취미",
+  "pos": "名詞",
+  "hanja": "趣味",
+  "meaning_zh": "興趣、嗜好",
+  "example_ko": "취미가 뭐예요?",
+  "example_zh": "你的興趣是什麼？"
+ },
+ {
+  "id": "v_1580",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "영화",
+  "pos": "名詞",
+  "hanja": "映畫",
+  "meaning_zh": "電影",
+  "example_ko": "주말에 영화를 봤어요.",
+  "example_zh": "週末看了電影。"
+ },
+ {
+  "id": "v_1581",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "음악",
+  "pos": "名詞",
+  "hanja": "音樂",
+  "meaning_zh": "音樂",
+  "example_ko": "저는 음악을 자주 들어요.",
+  "example_zh": "我常聽音樂。"
+ },
+ {
+  "id": "v_1582",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "노래",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "歌、歌曲",
+  "example_ko": "이 노래를 알아요?",
+  "example_zh": "你知道這首歌嗎？"
+ },
+ {
+  "id": "v_1583",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "부르다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "唱（歌）；叫、喊",
+  "example_ko": "노래를 불러 주세요.",
+  "example_zh": "請唱首歌。"
+ },
+ {
+  "id": "v_1584",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "노래방",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "KTV、練歌房",
+  "example_ko": "친구들하고 노래방에 갔어요.",
+  "example_zh": "和朋友們去了 KTV。"
+ },
+ {
+  "id": "v_1585",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "춤",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "舞、舞蹈",
+  "example_ko": "춤을 잘 춰요?",
+  "example_zh": "你很會跳舞嗎？"
+ },
+ {
+  "id": "v_1586",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "추다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "跳（舞）",
+  "example_ko": "같이 춤을 춰요.",
+  "example_zh": "一起跳舞吧。"
+ },
+ {
+  "id": "v_1587",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "그림",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "畫、圖畫",
+  "example_ko": "벽에 그림이 있어요.",
+  "example_zh": "牆上有一幅畫。"
+ },
+ {
+  "id": "v_1588",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "그리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "畫",
+  "example_ko": "공원에서 그림을 그려요.",
+  "example_zh": "在公園畫畫。"
+ },
+ {
+  "id": "v_1589",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "게임",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "遊戲、電玩",
+  "example_ko": "동생은 게임을 좋아해요.",
+  "example_zh": "弟弟喜歡玩遊戲。"
+ },
+ {
+  "id": "v_1590",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "카메라",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "相機",
+  "example_ko": "새 카메라를 샀어요.",
+  "example_zh": "買了新相機。"
+ },
+ {
+  "id": "v_1591",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "찍다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "拍（照）",
+  "example_ko": "여기에서 사진을 찍어요.",
+  "example_zh": "在這裡拍照。"
+ },
+ {
+  "id": "v_1592",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "여행",
+  "pos": "名詞",
+  "hanja": "旅行",
+  "meaning_zh": "旅行、旅遊",
+  "example_ko": "방학에 제주도로 여행을 가요.",
+  "example_zh": "放假要去濟州島旅行。"
+ },
+ {
+  "id": "v_1593",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "독서",
+  "pos": "名詞",
+  "hanja": "讀書",
+  "meaning_zh": "閱讀、讀書",
+  "example_ko": "제 취미는 독서예요.",
+  "example_zh": "我的興趣是閱讀。"
+ },
+ {
+  "id": "v_1594",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "드라마",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "連續劇",
+  "example_ko": "한국 드라마를 보면서 한국어를 배워요.",
+  "example_zh": "邊看韓劇邊學韓文。"
+ },
+ {
+  "id": "v_1595",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "만화",
+  "pos": "名詞",
+  "hanja": "漫畫",
+  "meaning_zh": "漫畫、卡通",
+  "example_ko": "만화책이 재미있어요.",
+  "example_zh": "漫畫書很有趣。"
+ },
+ {
+  "id": "v_1596",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "잡지",
+  "pos": "名詞",
+  "hanja": "雜誌",
+  "meaning_zh": "雜誌",
+  "example_ko": "카페에서 잡지를 읽어요.",
+  "example_zh": "在咖啡廳看雜誌。"
+ },
+ {
+  "id": "v_1597",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "낚시",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "釣魚",
+  "example_ko": "아버지는 낚시를 좋아하세요.",
+  "example_zh": "爸爸喜歡釣魚。"
+ },
+ {
+  "id": "v_1598",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "캠핑",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "露營",
+  "example_ko": "주말에 가족하고 캠핑을 갔어요.",
+  "example_zh": "週末和家人去露營了。"
+ },
+ {
+  "id": "v_1599",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "드라이브",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "開車兜風",
+  "example_ko": "바닷가로 드라이브를 가요.",
+  "example_zh": "開車去海邊兜風。"
+ },
+ {
+  "id": "v_1600",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "재미있다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "有趣、好玩",
+  "example_ko": "이 영화는 정말 재미있어요.",
+  "example_zh": "這部電影真的很有趣。"
+ },
+ {
+  "id": "v_1601",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "재미없다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "無聊、不好玩",
+  "example_ko": "그 드라마는 재미없어요.",
+  "example_zh": "那部連續劇很無聊。"
+ },
+ {
+  "id": "v_1602",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "좋아하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "喜歡",
+  "example_ko": "저는 운동을 좋아해요.",
+  "example_zh": "我喜歡運動。"
+ },
+ {
+  "id": "v_1603",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "싫어하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "討厭、不喜歡",
+  "example_ko": "저는 벌레를 싫어해요.",
+  "example_zh": "我討厭蟲子。"
+ },
+ {
+  "id": "v_1604",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "놀다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "玩、遊玩",
+  "example_ko": "주말에 친구하고 놀았어요.",
+  "example_zh": "週末和朋友一起玩了。"
+ },
+ {
+  "id": "v_1605",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "휴일",
+  "pos": "名詞",
+  "hanja": "休日",
+  "meaning_zh": "假日、休假日",
+  "example_ko": "휴일에는 늦게까지 자요.",
+  "example_zh": "假日會睡到很晚。"
+ },
+ {
+  "id": "v_1606",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "평일",
+  "pos": "名詞",
+  "hanja": "平日",
+  "meaning_zh": "平日、平常日",
+  "example_ko": "평일에는 바빠요.",
+  "example_zh": "平日很忙。"
+ },
+ {
+  "id": "v_1607",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "낮잠",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "午覺、午睡",
+  "example_ko": "점심을 먹고 낮잠을 잤어요.",
+  "example_zh": "吃完午餐睡了午覺。"
+ },
+ {
+  "id": "v_1608",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "혼자",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "獨自、一個人",
+  "example_ko": "혼자 영화를 봤어요.",
+  "example_zh": "一個人看了電影。"
+ },
+ {
+  "id": "v_1609",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "함께",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "一起、一同",
+  "example_ko": "가족하고 함께 여행해요.",
+  "example_zh": "和家人一起旅行。"
+ },
+ {
+  "id": "v_1610",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "가끔",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "偶爾、有時候",
+  "example_ko": "가끔 노래방에 가요.",
+  "example_zh": "偶爾去 KTV。"
+ },
+ {
+  "id": "v_1611",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "자주",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "常常、經常",
+  "example_ko": "저는 자주 산책해요.",
+  "example_zh": "我常常散步。"
+ },
+ {
+  "id": "v_1612",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "word": "유명하다",
+  "pos": "形容詞",
+  "hanja": "有名",
+  "meaning_zh": "有名、出名",
+  "example_ko": "이 식당은 아주 유명해요.",
+  "example_zh": "這家餐廳很有名。"
+ },
+ {
+  "id": "v_1613",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "운동",
+  "pos": "名詞",
+  "hanja": "運動",
+  "meaning_zh": "運動",
+  "example_ko": "운동은 건강에 좋아요.",
+  "example_zh": "運動對健康很好。"
+ },
+ {
+  "id": "v_1614",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "운동하다",
+  "pos": "動詞",
+  "hanja": "運動",
+  "meaning_zh": "運動、做運動",
+  "example_ko": "저는 아침마다 운동해요.",
+  "example_zh": "我每天早上運動。"
+ },
+ {
+  "id": "v_1615",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "축구",
+  "pos": "名詞",
+  "hanja": "蹴球",
+  "meaning_zh": "足球",
+  "example_ko": "남동생은 축구를 좋아해요.",
+  "example_zh": "弟弟喜歡足球。"
+ },
+ {
+  "id": "v_1616",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "야구",
+  "pos": "名詞",
+  "hanja": "野球",
+  "meaning_zh": "棒球",
+  "example_ko": "야구 경기를 보러 가요.",
+  "example_zh": "去看棒球比賽。"
+ },
+ {
+  "id": "v_1617",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "농구",
+  "pos": "名詞",
+  "hanja": "籠球",
+  "meaning_zh": "籃球",
+  "example_ko": "학교에서 농구를 해요.",
+  "example_zh": "在學校打籃球。"
+ },
+ {
+  "id": "v_1618",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "배구",
+  "pos": "名詞",
+  "hanja": "排球",
+  "meaning_zh": "排球",
+  "example_ko": "배구는 여섯 명이 한 팀이에요.",
+  "example_zh": "排球是六個人一隊。"
+ },
+ {
+  "id": "v_1619",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "테니스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "網球",
+  "example_ko": "주말에 테니스를 쳐요.",
+  "example_zh": "週末打網球。"
+ },
+ {
+  "id": "v_1620",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "탁구",
+  "pos": "名詞",
+  "hanja": "卓球",
+  "meaning_zh": "桌球、乒乓球",
+  "example_ko": "탁구를 잘 쳐요?",
+  "example_zh": "你桌球打得好嗎？"
+ },
+ {
+  "id": "v_1621",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "배드민턴",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "羽毛球",
+  "example_ko": "공원에서 배드민턴을 쳤어요.",
+  "example_zh": "在公園打了羽毛球。"
+ },
+ {
+  "id": "v_1622",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "골프",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "高爾夫球",
+  "example_ko": "아버지는 골프를 치세요.",
+  "example_zh": "爸爸打高爾夫球。"
+ },
+ {
+  "id": "v_1623",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "수영",
+  "pos": "名詞",
+  "hanja": "水泳",
+  "meaning_zh": "游泳",
+  "example_ko": "수영을 배우고 싶어요.",
+  "example_zh": "我想學游泳。"
+ },
+ {
+  "id": "v_1624",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "수영장",
+  "pos": "名詞",
+  "hanja": "水泳場",
+  "meaning_zh": "游泳池",
+  "example_ko": "여름에 수영장에 가요.",
+  "example_zh": "夏天去游泳池。"
+ },
+ {
+  "id": "v_1625",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "등산",
+  "pos": "名詞",
+  "hanja": "登山",
+  "meaning_zh": "爬山、登山",
+  "example_ko": "주말마다 등산을 해요.",
+  "example_zh": "每個週末都去爬山。"
+ },
+ {
+  "id": "v_1626",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "산",
+  "pos": "名詞",
+  "hanja": "山",
+  "meaning_zh": "山",
+  "example_ko": "한국에는 산이 많아요.",
+  "example_zh": "韓國的山很多。"
+ },
+ {
+  "id": "v_1627",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "산책하다",
+  "pos": "動詞",
+  "hanja": "散策",
+  "meaning_zh": "散步",
+  "example_ko": "저녁에 공원에서 산책해요.",
+  "example_zh": "晚上在公園散步。"
+ },
+ {
+  "id": "v_1628",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "달리기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "跑步、賽跑",
+  "example_ko": "달리기 대회에 나갔어요.",
+  "example_zh": "參加了跑步比賽。"
+ },
+ {
+  "id": "v_1629",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "스키",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "滑雪",
+  "example_ko": "겨울에 스키를 타요.",
+  "example_zh": "冬天去滑雪。"
+ },
+ {
+  "id": "v_1630",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "요가",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "瑜伽",
+  "example_ko": "요가를 하면 마음이 편해요.",
+  "example_zh": "做瑜伽心情很平靜。"
+ },
+ {
+  "id": "v_1631",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "태권도",
+  "pos": "名詞",
+  "hanja": "跆拳道",
+  "meaning_zh": "跆拳道",
+  "example_ko": "태권도는 한국의 전통 운동이에요.",
+  "example_zh": "跆拳道是韓國的傳統運動。"
+ },
+ {
+  "id": "v_1632",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "경기",
+  "pos": "名詞",
+  "hanja": "競技",
+  "meaning_zh": "比賽",
+  "example_ko": "오늘 축구 경기가 있어요.",
+  "example_zh": "今天有足球比賽。"
+ },
+ {
+  "id": "v_1633",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "선수",
+  "pos": "名詞",
+  "hanja": "選手",
+  "meaning_zh": "選手、運動員",
+  "example_ko": "그 선수는 아주 유명해요.",
+  "example_zh": "那個選手很有名。"
+ },
+ {
+  "id": "v_1634",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "팀",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "隊、團隊",
+  "example_ko": "우리 팀이 이겼어요!",
+  "example_zh": "我們隊贏了！"
+ },
+ {
+  "id": "v_1635",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "공",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "球",
+  "example_ko": "공을 던지세요.",
+  "example_zh": "請把球丟過來。"
+ },
+ {
+  "id": "v_1636",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "치다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "打（球）；彈（琴）",
+  "example_ko": "공을 세게 쳤어요.",
+  "example_zh": "用力打了球。"
+ },
+ {
+  "id": "v_1637",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "차다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "踢",
+  "example_ko": "공을 차요.",
+  "example_zh": "踢球。"
+ },
+ {
+  "id": "v_1638",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "던지다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "丟、投、扔",
+  "example_ko": "공을 멀리 던졌어요.",
+  "example_zh": "把球丟得很遠。"
+ },
+ {
+  "id": "v_1639",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "이기다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "贏、勝",
+  "example_ko": "어제 경기에서 이겼어요.",
+  "example_zh": "昨天的比賽贏了。"
+ },
+ {
+  "id": "v_1640",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "지다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "輸",
+  "example_ko": "아쉽게 졌어요.",
+  "example_zh": "可惜輸了。"
+ },
+ {
+  "id": "v_1641",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "응원하다",
+  "pos": "動詞",
+  "hanja": "應援",
+  "meaning_zh": "加油、應援",
+  "example_ko": "우리 팀을 응원해요.",
+  "example_zh": "為我們隊加油。"
+ },
+ {
+  "id": "v_1642",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "체육관",
+  "pos": "名詞",
+  "hanja": "體育館",
+  "meaning_zh": "體育館",
+  "example_ko": "체육관에서 배구를 해요.",
+  "example_zh": "在體育館打排球。"
+ },
+ {
+  "id": "v_1643",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "운동장",
+  "pos": "名詞",
+  "hanja": "運動場",
+  "meaning_zh": "操場、運動場",
+  "example_ko": "운동장에서 축구를 해요.",
+  "example_zh": "在操場踢足球。"
+ },
+ {
+  "id": "v_1644",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "헬스장",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "健身房",
+  "example_ko": "퇴근 후에 헬스장에 가요.",
+  "example_zh": "下班後去健身房。"
+ },
+ {
+  "id": "v_1645",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "잘하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "擅長、做得好",
+  "example_ko": "형은 수영을 잘해요.",
+  "example_zh": "哥哥很會游泳。"
+ },
+ {
+  "id": "v_1646",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "word": "못하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "不擅長、做不好",
+  "example_ko": "저는 운동을 못해요.",
+  "example_zh": "我不擅長運動。"
+ },
+ {
+  "id": "v_1647",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "몸",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "身體",
+  "example_ko": "몸이 피곤해요.",
+  "example_zh": "身體很累。"
+ },
+ {
+  "id": "v_1648",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "머리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "頭；頭髮",
+  "example_ko": "머리가 아파요.",
+  "example_zh": "頭痛。"
+ },
+ {
+  "id": "v_1649",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "얼굴",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "臉",
+  "example_ko": "얼굴이 작아요.",
+  "example_zh": "臉很小。"
+ },
+ {
+  "id": "v_1650",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "눈",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "眼睛",
+  "example_ko": "동생은 눈이 커요.",
+  "example_zh": "妹妹的眼睛很大。"
+ },
+ {
+  "id": "v_1651",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "코",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鼻子",
+  "example_ko": "코가 높아요.",
+  "example_zh": "鼻子很挺。"
+ },
+ {
+  "id": "v_1652",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "입",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "嘴巴",
+  "example_ko": "입을 크게 벌리세요.",
+  "example_zh": "請把嘴巴張大。"
+ },
+ {
+  "id": "v_1653",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "귀",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "耳朵",
+  "example_ko": "귀가 아파요.",
+  "example_zh": "耳朵痛。"
+ },
+ {
+  "id": "v_1654",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "牙齒",
+  "example_ko": "밥을 먹고 이를 닦아요.",
+  "example_zh": "吃完飯刷牙。"
+ },
+ {
+  "id": "v_1655",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "목",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "脖子；喉嚨",
+  "example_ko": "목이 말라요.",
+  "example_zh": "口好渴。"
+ },
+ {
+  "id": "v_1656",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "어깨",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "肩膀",
+  "example_ko": "어깨가 넓어요.",
+  "example_zh": "肩膀很寬。"
+ },
+ {
+  "id": "v_1657",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "팔",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "手臂",
+  "example_ko": "팔이 길어요.",
+  "example_zh": "手臂很長。"
+ },
+ {
+  "id": "v_1658",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "손",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "手",
+  "example_ko": "밥 먹기 전에 손을 씻으세요.",
+  "example_zh": "吃飯前請洗手。"
+ },
+ {
+  "id": "v_1659",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "손가락",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "手指",
+  "example_ko": "손가락이 길고 예뻐요.",
+  "example_zh": "手指又長又好看。"
+ },
+ {
+  "id": "v_1660",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "배",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "肚子",
+  "example_ko": "배가 아파요.",
+  "example_zh": "肚子痛。"
+ },
+ {
+  "id": "v_1661",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "등",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "背",
+  "example_ko": "등이 가려워요.",
+  "example_zh": "背好癢。"
+ },
+ {
+  "id": "v_1662",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "허리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "腰",
+  "example_ko": "오래 앉아 있어서 허리가 아파요.",
+  "example_zh": "坐太久，腰很痛。"
+ },
+ {
+  "id": "v_1663",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "다리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "腿",
+  "example_ko": "많이 걸어서 다리가 아파요.",
+  "example_zh": "走了很多路，腿很痠。"
+ },
+ {
+  "id": "v_1664",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "발",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "腳",
+  "example_ko": "발이 커서 신발이 작아요.",
+  "example_zh": "腳太大，鞋子穿不下。"
+ },
+ {
+  "id": "v_1665",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "무릎",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "膝蓋",
+  "example_ko": "무릎이 아파서 계단을 못 올라가요.",
+  "example_zh": "膝蓋痛，爬不了樓梯。"
+ },
+ {
+  "id": "v_1666",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "키",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "個子、身高",
+  "example_ko": "형은 키가 커요.",
+  "example_zh": "哥哥個子很高。"
+ },
+ {
+  "id": "v_1667",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "머리카락",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "頭髮（一根根的）",
+  "example_ko": "머리카락이 길어요.",
+  "example_zh": "頭髮很長。"
+ },
+ {
+  "id": "v_1668",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "피부",
+  "pos": "名詞",
+  "hanja": "皮膚",
+  "meaning_zh": "皮膚",
+  "example_ko": "피부가 하얘요.",
+  "example_zh": "皮膚很白。"
+ },
+ {
+  "id": "v_1669",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "뚱뚱하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "胖",
+  "example_ko": "고양이가 좀 뚱뚱해요.",
+  "example_zh": "貓有點胖。"
+ },
+ {
+  "id": "v_1670",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "날씬하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "苗條",
+  "example_ko": "언니는 키가 크고 날씬해요.",
+  "example_zh": "姊姊個子高又苗條。"
+ },
+ {
+  "id": "v_1671",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "마르다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "瘦；（口）渴",
+  "example_ko": "동생은 너무 말랐어요.",
+  "example_zh": "弟弟太瘦了。"
+ },
+ {
+  "id": "v_1672",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "잘생기다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "長得帥、好看",
+  "example_ko": "그 배우는 정말 잘생겼어요.",
+  "example_zh": "那個演員真的很帥。"
+ },
+ {
+  "id": "v_1673",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "아프다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "痛、不舒服",
+  "example_ko": "어디가 아파요?",
+  "example_zh": "哪裡不舒服？"
+ },
+ {
+  "id": "v_1674",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "젊다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "年輕",
+  "example_ko": "할머니는 나이보다 젊어 보여요.",
+  "example_zh": "奶奶看起來比實際年齡年輕。"
+ },
+ {
+  "id": "v_1675",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "닮다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "像、長得像",
+  "example_ko": "저는 엄마를 닮았어요.",
+  "example_zh": "我長得像媽媽。"
+ },
+ {
+  "id": "v_1676",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "발가락",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "腳趾",
+  "example_ko": "발가락이 다섯 개예요.",
+  "example_zh": "有五根腳趾。"
+ },
+ {
+  "id": "v_1677",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "입술",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "嘴唇",
+  "example_ko": "입술이 건조해요.",
+  "example_zh": "嘴唇很乾。"
+ },
+ {
+  "id": "v_1678",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "눈썹",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "眉毛",
+  "example_ko": "눈썹이 진해요.",
+  "example_zh": "眉毛很濃。"
+ },
+ {
+  "id": "v_1679",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "가슴",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "胸、胸口",
+  "example_ko": "가슴이 두근거려요.",
+  "example_zh": "心怦怦跳。"
+ },
+ {
+  "id": "v_1680",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "word": "수염",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鬍子",
+  "example_ko": "할아버지는 수염이 길어요.",
+  "example_zh": "爺爺的鬍子很長。"
+ },
+ {
   "id": "v_1749",
   "level": 1,
   "topic": "常用高頻基礎動詞（動作篇）",
@@ -5641,6 +7511,61 @@ const READ_VOCAB = [
   "meaning_zh": "喝",
   "example_ko": "저는 아침마다 차를 마셔요.",
   "example_zh": "我每天早上都喝茶。"
+ },
+ {
+  "id": "v_1751",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "가다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "去",
+  "example_ko": "주말에 친구 집에 가요.",
+  "example_zh": "週末要去朋友家。"
+ },
+ {
+  "id": "v_1752",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "오다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "來；（雨、雪）下",
+  "example_ko": "비가 와요.",
+  "example_zh": "下雨了。"
+ },
+ {
+  "id": "v_1753",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "보다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "看、看見",
+  "example_ko": "같이 사진을 봐요.",
+  "example_zh": "一起看照片吧。"
+ },
+ {
+  "id": "v_1754",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "듣다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "聽",
+  "example_ko": "저는 매일 음악을 들어요.",
+  "example_zh": "我每天聽音樂。"
+ },
+ {
+  "id": "v_1755",
+  "level": 1,
+  "topic": "常用高頻基礎動詞（動作篇）",
+  "word": "하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "做、從事",
+  "example_ko": "주말에 뭐 해요?",
+  "example_zh": "週末要做什麼？"
  }
 ];
 
@@ -6203,6 +8128,11 @@ const READ_ARTICLES = [
       "surface": "파티를",
       "lemma": "파티",
       "vocab_id": "new_02"
+     },
+     {
+      "surface": "해요",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
      }
     ],
     "grammar_ids": []
@@ -9270,6 +11200,1337 @@ const READ_ARTICLES = [
     "explanation": "禮貌地請對方不要做某事。不管有沒有收音都接 -지 마세요：잊다 → 잊지 마세요（別忘了）、가다 → 가지 마세요（不要去）。和 -(으)세요（請做…）正好相反。",
     "extra_example_ko": "여기에서 신발을 신지 마세요.",
     "extra_example_zh": "請不要在這裡穿鞋。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_116",
+  "level": 1,
+  "topic": "顏色與外觀形容詞",
+  "title_ko": "어떤 가방이 좋아요?",
+  "title_zh": "哪個包包好？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "이 가방 어때요? 색깔이 예뻐요.",
+    "zh": "這個包包怎麼樣？顏色很漂亮。",
+    "target_words": [
+     {
+      "surface": "이",
+      "lemma": "이",
+      "vocab_id": "v_1226"
+     },
+     {
+      "surface": "가방",
+      "lemma": "가방",
+      "vocab_id": "v_1146"
+     },
+     {
+      "surface": "색깔이",
+      "lemma": "색깔",
+      "vocab_id": "v_1511"
+     },
+     {
+      "surface": "예뻐요",
+      "lemma": "예쁘다",
+      "vocab_id": "v_1533"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "빨간색은 좀 밝아요. 검은색은 없어요?",
+    "zh": "紅色有點太亮了。沒有黑色的嗎？",
+    "target_words": [
+     {
+      "surface": "빨간색은",
+      "lemma": "빨간색",
+      "vocab_id": "v_1512"
+     },
+     {
+      "surface": "밝아요",
+      "lemma": "밝다",
+      "vocab_id": "v_1539"
+     },
+     {
+      "surface": "검은색은",
+      "lemma": "검은색",
+      "vocab_id": "v_1516"
+     },
+     {
+      "surface": "없어요",
+      "lemma": "없다",
+      "vocab_id": "v_1063"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "검은색은 너무 커요. 이 하얀 가방은 작고 귀여워요.",
+    "zh": "黑色的太大了。這個白色包包小小的很可愛。",
+    "target_words": [
+     {
+      "surface": "검은색은",
+      "lemma": "검은색",
+      "vocab_id": "v_1516"
+     },
+     {
+      "surface": "너무",
+      "lemma": "너무",
+      "vocab_id": "v_1403"
+     },
+     {
+      "surface": "커요",
+      "lemma": "크다",
+      "vocab_id": "v_1529"
+     },
+     {
+      "surface": "이",
+      "lemma": "이",
+      "vocab_id": "v_1226"
+     },
+     {
+      "surface": "하얀",
+      "lemma": "하얗다",
+      "vocab_id": "v_1528"
+     },
+     {
+      "surface": "가방은",
+      "lemma": "가방",
+      "vocab_id": "v_1146"
+     },
+     {
+      "surface": "작고",
+      "lemma": "작다",
+      "vocab_id": "v_1530"
+     },
+     {
+      "surface": "귀여워요",
+      "lemma": "귀엽다",
+      "vocab_id": "v_1534"
+     }
+    ],
+    "grammar_ids": [
+     "g_131",
+     "g_132"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "그런데 흰색은 금방 더러워져요.",
+    "zh": "可是白色很快就會髒。",
+    "target_words": [
+     {
+      "surface": "흰색은",
+      "lemma": "흰색",
+      "vocab_id": "v_1517"
+     },
+     {
+      "surface": "금방",
+      "lemma": "금방",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "더러워져요",
+      "lemma": "더러워지다",
+      "vocab_id": "new_02"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "그럼 이 갈색 가방은요? 모양도 둥글고 예뻐요.",
+    "zh": "那這個咖啡色的包包呢？形狀圓圓的也很漂亮。",
+    "target_words": [
+     {
+      "surface": "이",
+      "lemma": "이",
+      "vocab_id": "v_1226"
+     },
+     {
+      "surface": "갈색",
+      "lemma": "갈색",
+      "vocab_id": "v_1521"
+     },
+     {
+      "surface": "가방은요",
+      "lemma": "가방",
+      "vocab_id": "v_1146"
+     },
+     {
+      "surface": "모양도",
+      "lemma": "모양",
+      "vocab_id": "v_1542"
+     },
+     {
+      "surface": "둥글고",
+      "lemma": "둥글다",
+      "vocab_id": "v_1543"
+     },
+     {
+      "surface": "예뻐요",
+      "lemma": "예쁘다",
+      "vocab_id": "v_1533"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "좋아요! 그 가방이 제일 잘 어울려요.",
+    "zh": "好！那個包包最適合你。",
+    "target_words": [
+     {
+      "surface": "그",
+      "lemma": "그",
+      "vocab_id": "v_1227"
+     },
+     {
+      "surface": "가방이",
+      "lemma": "가방",
+      "vocab_id": "v_1146"
+     },
+     {
+      "surface": "어울려요",
+      "lemma": "어울리다",
+      "vocab_id": "new_03"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "금방",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "馬上、很快"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "더러워지다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "變髒"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "어울리다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "適合、相配"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_131",
+    "pattern": "ㅂ 不規則：形容詞語幹 ㅂ → 우 + -어요",
+    "meaning": "귀엽다 → 귀여워요、덥다 → 더워요",
+    "explanation": "很多形容詞的語幹最後是 ㅂ，接 -아요/어요 或 -(으)ㄴ 時，ㅂ 會變成 우：귀엽다 → 귀여워요、춥다 → 추워요、두껍다 → 두꺼운 책。不過 좁다、입다 等少數字是規則變化（좁아요、입어요）。",
+    "extra_example_ko": "오늘은 날씨가 너무 더워요.",
+    "extra_example_zh": "今天天氣太熱了。"
+   },
+   {
+    "grammar_id": "g_132",
+    "pattern": "ㅎ 不規則：顏色形容詞 하얗다／빨갛다…",
+    "meaning": "하얗다 → 하얀、하얘요",
+    "explanation": "顏色形容詞（하얗다、빨갛다、노랗다、파랗다、까맣다）的 ㅎ 會脫落。修飾名詞時去掉 ㅎ 加 ㄴ：하얀 가방、빨간 사과；說「…的顏色」時變成 -애요：하얘요、빨개요、노래요。名詞「흰색、빨간색」則是顏色的名稱。",
+    "extra_example_ko": "빨간 사과가 정말 빨개요.",
+    "extra_example_zh": "紅蘋果真的好紅。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_117",
+  "level": 1,
+  "topic": "四季與基礎天氣",
+  "title_ko": "한국의 사계절",
+  "title_zh": "韓國的四季",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "한국에는 계절이 네 개 있어요. 봄, 여름, 가을, 겨울이에요.",
+    "zh": "韓國有四個季節：春、夏、秋、冬。",
+    "target_words": [
+     {
+      "surface": "한국에는",
+      "lemma": "한국",
+      "vocab_id": "v_1018"
+     },
+     {
+      "surface": "계절이",
+      "lemma": "계절",
+      "vocab_id": "v_1545"
+     },
+     {
+      "surface": "네",
+      "lemma": "넷",
+      "vocab_id": "v_1106"
+     },
+     {
+      "surface": "개",
+      "lemma": "개",
+      "vocab_id": "v_1455"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     },
+     {
+      "surface": "봄",
+      "lemma": "봄",
+      "vocab_id": "v_1546"
+     },
+     {
+      "surface": "여름",
+      "lemma": "여름",
+      "vocab_id": "v_1547"
+     },
+     {
+      "surface": "가을",
+      "lemma": "가을",
+      "vocab_id": "v_1548"
+     },
+     {
+      "surface": "겨울이에요",
+      "lemma": "겨울",
+      "vocab_id": "v_1549"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "봄에는 날씨가 따뜻하고 꽃이 많이 피어요.",
+    "zh": "春天天氣溫暖，開很多花。",
+    "target_words": [
+     {
+      "surface": "봄에는",
+      "lemma": "봄",
+      "vocab_id": "v_1546"
+     },
+     {
+      "surface": "날씨가",
+      "lemma": "날씨",
+      "vocab_id": "v_1550"
+     },
+     {
+      "surface": "따뜻하고",
+      "lemma": "따뜻하다",
+      "vocab_id": "v_1322"
+     },
+     {
+      "surface": "꽃이",
+      "lemma": "꽃",
+      "vocab_id": "v_1568"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "피어요",
+      "lemma": "피다",
+      "vocab_id": "new_01"
+     }
+    ],
+    "grammar_ids": [
+     "g_133"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "여름은 아주 더워요. 그래서 선풍기하고 에어컨을 켜요.",
+    "zh": "夏天很熱，所以會開電風扇和冷氣。",
+    "target_words": [
+     {
+      "surface": "여름은",
+      "lemma": "여름",
+      "vocab_id": "v_1547"
+     },
+     {
+      "surface": "더워요",
+      "lemma": "덥다",
+      "vocab_id": "v_1563"
+     },
+     {
+      "surface": "선풍기하고",
+      "lemma": "선풍기",
+      "vocab_id": "v_1576"
+     },
+     {
+      "surface": "에어컨을",
+      "lemma": "에어컨",
+      "vocab_id": "v_1194"
+     },
+     {
+      "surface": "켜요",
+      "lemma": "켜다",
+      "vocab_id": "v_1199"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "가을에는 하늘이 맑고 단풍이 아름다워요.",
+    "zh": "秋天天空晴朗，楓葉很美。",
+    "target_words": [
+     {
+      "surface": "가을에는",
+      "lemma": "가을",
+      "vocab_id": "v_1548"
+     },
+     {
+      "surface": "하늘이",
+      "lemma": "하늘",
+      "vocab_id": "v_1555"
+     },
+     {
+      "surface": "맑고",
+      "lemma": "맑다",
+      "vocab_id": "v_1559"
+     },
+     {
+      "surface": "단풍이",
+      "lemma": "단풍",
+      "vocab_id": "v_1569"
+     },
+     {
+      "surface": "아름다워요",
+      "lemma": "아름답다",
+      "vocab_id": "new_03"
+     }
+    ],
+    "grammar_ids": [
+     "g_133"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "겨울은 정말 추워요. 그래서 코트하고 장갑이 필요해요.",
+    "zh": "冬天真的很冷，所以需要大衣和手套。",
+    "target_words": [
+     {
+      "surface": "겨울은",
+      "lemma": "겨울",
+      "vocab_id": "v_1549"
+     },
+     {
+      "surface": "추워요",
+      "lemma": "춥다",
+      "vocab_id": "v_1562"
+     },
+     {
+      "surface": "코트하고",
+      "lemma": "코트",
+      "vocab_id": "v_1483"
+     },
+     {
+      "surface": "장갑이",
+      "lemma": "장갑",
+      "vocab_id": "v_1497"
+     },
+     {
+      "surface": "필요해요",
+      "lemma": "필요하다",
+      "vocab_id": "v_1470"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "저는 바람이 시원한 가을을 제일 좋아해요.",
+    "zh": "我最喜歡風很涼爽的秋天。",
+    "target_words": [
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "바람이",
+      "lemma": "바람",
+      "vocab_id": "v_1553"
+     },
+     {
+      "surface": "시원한",
+      "lemma": "시원하다",
+      "vocab_id": "v_1325"
+     },
+     {
+      "surface": "가을을",
+      "lemma": "가을",
+      "vocab_id": "v_1548"
+     },
+     {
+      "surface": "제일",
+      "lemma": "제일",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "좋아해요",
+      "lemma": "좋아하다",
+      "vocab_id": "v_1602"
+     }
+    ],
+    "grammar_ids": [
+     "g_134"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "피다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "（花）開"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "제일",
+    "pos": "副詞",
+    "hanja": "第一",
+    "meaning_zh": "最、第一"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "아름답다",
+    "pos": "形容詞",
+    "hanja": null,
+    "meaning_zh": "美麗、美"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_133",
+    "pattern": "時間名詞 + 에는",
+    "meaning": "在…的時候（對比不同時間）",
+    "explanation": "-에（在…時）加上主題助詞 -는，變成 -에는，用來對比不同的時間：봄에는 따뜻하고, 겨울에는 추워요（春天溫暖，冬天寒冷）。介紹季節、平日／週末的差別時很常用。",
+    "extra_example_ko": "평일에는 바쁘고 주말에는 한가해요.",
+    "extra_example_zh": "平日很忙，週末很閒。"
+   },
+   {
+    "grammar_id": "g_134",
+    "pattern": "제일 + 形容詞／動詞",
+    "meaning": "最…",
+    "explanation": "제일 放在形容詞或動詞前面表示「最」：제일 좋아해요（最喜歡）、제일 커요（最大）。口語也常說 가장，意思一樣、比較書面。",
+    "extra_example_ko": "저는 여름을 제일 싫어해요.",
+    "extra_example_zh": "我最討厭夏天。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_118",
+  "level": 1,
+  "topic": "週末休閒與基本興趣",
+  "title_ko": "취미가 뭐예요?",
+  "title_zh": "你的興趣是什麼？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "취미가 뭐예요?",
+    "zh": "你的興趣是什麼？",
+    "target_words": [
+     {
+      "surface": "취미가",
+      "lemma": "취미",
+      "vocab_id": "v_1579"
+     },
+     {
+      "surface": "뭐예요",
+      "lemma": "무엇",
+      "vocab_id": "v_1013"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "저는 영화하고 드라마를 좋아해요.",
+    "zh": "我喜歡電影和連續劇。",
+    "target_words": [
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "영화하고",
+      "lemma": "영화",
+      "vocab_id": "v_1580"
+     },
+     {
+      "surface": "드라마를",
+      "lemma": "드라마",
+      "vocab_id": "v_1594"
+     },
+     {
+      "surface": "좋아해요",
+      "lemma": "좋아하다",
+      "vocab_id": "v_1602"
+     }
+    ],
+    "grammar_ids": [
+     "g_135"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "B",
+    "ko": "주말에는 보통 혼자 영화관에서 영화를 봐요.",
+    "zh": "週末我通常一個人去電影院看電影。",
+    "target_words": [
+     {
+      "surface": "주말에는",
+      "lemma": "주말",
+      "vocab_id": "v_1095"
+     },
+     {
+      "surface": "보통",
+      "lemma": "보통",
+      "vocab_id": "v_1132"
+     },
+     {
+      "surface": "혼자",
+      "lemma": "혼자",
+      "vocab_id": "v_1608"
+     },
+     {
+      "surface": "영화관에서",
+      "lemma": "영화관",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "영화를",
+      "lemma": "영화",
+      "vocab_id": "v_1580"
+     },
+     {
+      "surface": "봐요",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     }
+    ],
+    "grammar_ids": [
+     "g_136"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "A",
+    "ko": "와, 저도 영화를 좋아해요! 저는 노래방에도 자주 가요.",
+    "zh": "哇，我也喜歡電影！我也常去 KTV。",
+    "target_words": [
+     {
+      "surface": "저도",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "영화를",
+      "lemma": "영화",
+      "vocab_id": "v_1580"
+     },
+     {
+      "surface": "좋아해요",
+      "lemma": "좋아하다",
+      "vocab_id": "v_1602"
+     },
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "노래방에도",
+      "lemma": "노래방",
+      "vocab_id": "v_1584"
+     },
+     {
+      "surface": "자주",
+      "lemma": "자주",
+      "vocab_id": "v_1611"
+     },
+     {
+      "surface": "가요",
+      "lemma": "가다",
+      "vocab_id": "v_1751"
+     }
+    ],
+    "grammar_ids": [
+     "g_135",
+     "g_136"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "B",
+    "ko": "노래를 잘 불러요? 저는 노래 실력이 없어요.",
+    "zh": "你很會唱歌嗎？我唱歌不行。",
+    "target_words": [
+     {
+      "surface": "노래를",
+      "lemma": "노래",
+      "vocab_id": "v_1582"
+     },
+     {
+      "surface": "불러요",
+      "lemma": "부르다",
+      "vocab_id": "v_1583"
+     },
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "노래",
+      "lemma": "노래",
+      "vocab_id": "v_1582"
+     },
+     {
+      "surface": "실력이",
+      "lemma": "실력",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "없어요",
+      "lemma": "없다",
+      "vocab_id": "v_1063"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "A",
+    "ko": "괜찮아요. 다음 주 토요일에 같이 연습해요!",
+    "zh": "沒關係，下週六一起練習吧！",
+    "target_words": [
+     {
+      "surface": "괜찮아요",
+      "lemma": "괜찮다",
+      "vocab_id": "v_1006"
+     },
+     {
+      "surface": "주",
+      "lemma": "주",
+      "vocab_id": "v_1096"
+     },
+     {
+      "surface": "토요일에",
+      "lemma": "토요일",
+      "vocab_id": "v_1093"
+     },
+     {
+      "surface": "같이",
+      "lemma": "같이",
+      "vocab_id": "v_1064"
+     },
+     {
+      "surface": "연습해요",
+      "lemma": "연습하다",
+      "vocab_id": "new_03"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "영화관",
+    "pos": "名詞",
+    "hanja": "映畫館",
+    "meaning_zh": "電影院"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "실력",
+    "pos": "名詞",
+    "hanja": "實力",
+    "meaning_zh": "實力、能力"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "연습하다",
+    "pos": "動詞",
+    "hanja": "練習",
+    "meaning_zh": "練習"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_135",
+    "pattern": "名詞 + 을/를 좋아하다",
+    "meaning": "喜歡…",
+    "explanation": "韓文的「喜歡」是動詞 좋아하다，喜歡的對象要加受詞助詞 -을/를：영화를 좋아해요、드라마를 좋아해요。注意不要和形容詞 좋다（好）混淆：영화가 좋아요 也可以說「喜歡電影」，但助詞是 -이/가。",
+    "extra_example_ko": "저는 한국 음식을 정말 좋아해요.",
+    "extra_example_zh": "我真的很喜歡韓國料理。"
+   },
+   {
+    "grammar_id": "g_136",
+    "pattern": "頻率副詞：자주／가끔／보통",
+    "meaning": "常常／偶爾／通常",
+    "explanation": "說明做某件事的頻率，副詞放在動詞前面（中間可以有受詞）：자주 가요（常去）、가끔 노래방에 가요（偶爾去 KTV）、보통 혼자 봐요（通常一個人看）。頻率從高到低：항상（總是）> 자주 > 보통 > 가끔 > 전혀 안（完全不）。",
+    "extra_example_ko": "저는 가끔 혼자 영화를 봐요.",
+    "extra_example_zh": "我偶爾一個人看電影。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_119",
+  "level": 1,
+  "topic": "基礎球類與常見運動",
+  "title_ko": "나는 운동이 좋아요",
+  "title_zh": "我愛運動",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "저는 운동을 아주 좋아해요.",
+    "zh": "我非常喜歡運動。",
+    "target_words": [
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "운동을",
+      "lemma": "운동",
+      "vocab_id": "v_1613"
+     },
+     {
+      "surface": "좋아해요",
+      "lemma": "좋아하다",
+      "vocab_id": "v_1602"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "평일에는 회사 근처 헬스장에서 운동해요.",
+    "zh": "平日在公司附近的健身房運動。",
+    "target_words": [
+     {
+      "surface": "평일에는",
+      "lemma": "평일",
+      "vocab_id": "v_1606"
+     },
+     {
+      "surface": "회사",
+      "lemma": "회사",
+      "vocab_id": "v_1033"
+     },
+     {
+      "surface": "근처",
+      "lemma": "근처",
+      "vocab_id": "v_1218"
+     },
+     {
+      "surface": "헬스장에서",
+      "lemma": "헬스장",
+      "vocab_id": "v_1644"
+     },
+     {
+      "surface": "운동해요",
+      "lemma": "운동하다",
+      "vocab_id": "v_1614"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "주말에는 친구들하고 공원에서 축구를 해요.",
+    "zh": "週末和朋友們在公園踢足球。",
+    "target_words": [
+     {
+      "surface": "주말에는",
+      "lemma": "주말",
+      "vocab_id": "v_1095"
+     },
+     {
+      "surface": "친구들하고",
+      "lemma": "친구",
+      "vocab_id": "v_1056"
+     },
+     {
+      "surface": "공원에서",
+      "lemma": "공원",
+      "vocab_id": "v_1279"
+     },
+     {
+      "surface": "축구를",
+      "lemma": "축구",
+      "vocab_id": "v_1615"
+     },
+     {
+      "surface": "해요",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     }
+    ],
+    "grammar_ids": [
+     "g_137"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "우리 팀은 축구를 잘해요. 지난 경기에서 삼 대 일로 이겼어요.",
+    "zh": "我們隊足球踢得很好，上一場比賽以三比一贏了。",
+    "target_words": [
+     {
+      "surface": "우리",
+      "lemma": "우리",
+      "vocab_id": "v_1059"
+     },
+     {
+      "surface": "팀은",
+      "lemma": "팀",
+      "vocab_id": "v_1634"
+     },
+     {
+      "surface": "축구를",
+      "lemma": "축구",
+      "vocab_id": "v_1615"
+     },
+     {
+      "surface": "잘해요",
+      "lemma": "잘하다",
+      "vocab_id": "v_1645"
+     },
+     {
+      "surface": "경기에서",
+      "lemma": "경기",
+      "vocab_id": "v_1632"
+     },
+     {
+      "surface": "삼",
+      "lemma": "삼",
+      "vocab_id": "v_1072"
+     },
+     {
+      "surface": "대",
+      "lemma": "대",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "일로",
+      "lemma": "일",
+      "vocab_id": "v_1070"
+     },
+     {
+      "surface": "이겼어요",
+      "lemma": "이기다",
+      "vocab_id": "v_1639"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "여름에는 수영장에서 수영을 하고, 겨울에는 스키를 타요.",
+    "zh": "夏天在游泳池游泳，冬天去滑雪。",
+    "target_words": [
+     {
+      "surface": "여름에는",
+      "lemma": "여름",
+      "vocab_id": "v_1547"
+     },
+     {
+      "surface": "수영장에서",
+      "lemma": "수영장",
+      "vocab_id": "v_1624"
+     },
+     {
+      "surface": "수영을",
+      "lemma": "수영",
+      "vocab_id": "v_1623"
+     },
+     {
+      "surface": "하고",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     },
+     {
+      "surface": "겨울에는",
+      "lemma": "겨울",
+      "vocab_id": "v_1549"
+     },
+     {
+      "surface": "스키를",
+      "lemma": "스키",
+      "vocab_id": "v_1629"
+     },
+     {
+      "surface": "타요",
+      "lemma": "타다",
+      "vocab_id": "v_1255"
+     }
+    ],
+    "grammar_ids": [
+     "g_137"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "운동을 하면 스트레스가 풀려요.",
+    "zh": "一運動，壓力就消除了。",
+    "target_words": [
+     {
+      "surface": "운동을",
+      "lemma": "운동",
+      "vocab_id": "v_1613"
+     },
+     {
+      "surface": "하면",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     },
+     {
+      "surface": "스트레스가",
+      "lemma": "스트레스",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "풀려요",
+      "lemma": "풀리다",
+      "vocab_id": "new_03"
+     }
+    ],
+    "grammar_ids": [
+     "g_138",
+     "g_137"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "대",
+    "pos": "名詞（依存）",
+    "hanja": "對",
+    "meaning_zh": "比（比分：삼 대 일＝三比一）"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "스트레스",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "壓力"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "풀리다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "（壓力、疲勞）消除、解開"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_137",
+    "pattern": "運動名稱 + 을/를 하다（球類也可用 치다／차다，滑雪用 타다）",
+    "meaning": "做（某種運動）",
+    "explanation": "大部分運動都用「名詞＋을/를 하다」：축구를 해요、수영을 해요、요가를 해요。有些運動有專用動詞：網球、桌球、高爾夫用 치다（테니스를 쳐요），踢球用 차다（공을 차요），滑雪、腳踏車用 타다（스키를 타요）。",
+    "extra_example_ko": "저는 주말마다 테니스를 쳐요.",
+    "extra_example_zh": "我每個週末都打網球。"
+   },
+   {
+    "grammar_id": "g_138",
+    "pattern": "動詞／形容詞語幹 + -(으)면",
+    "meaning": "如果…就…、一…就…",
+    "explanation": "表示條件。語幹沒有收音或收音是 ㄹ 接 -면（하다 → 하면、놀다 → 놀면），有收音接 -으면（먹다 → 먹으면）。後半句說結果：운동을 하면 스트레스가 풀려요（一運動壓力就消除了）。",
+    "extra_example_ko": "비가 오면 집에서 영화를 봐요.",
+    "extra_example_zh": "如果下雨，就在家看電影。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_120",
+  "level": 1,
+  "topic": "身體部位與基礎外觀",
+  "title_ko": "어디가 아파요?",
+  "title_zh": "哪裡不舒服？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "괜찮아요? 어디가 아파요?",
+    "zh": "你還好嗎？哪裡不舒服？",
+    "target_words": [
+     {
+      "surface": "괜찮아요",
+      "lemma": "괜찮다",
+      "vocab_id": "v_1006"
+     },
+     {
+      "surface": "어디가",
+      "lemma": "어디",
+      "vocab_id": "v_1225"
+     },
+     {
+      "surface": "아파요",
+      "lemma": "아프다",
+      "vocab_id": "v_1673"
+     }
+    ],
+    "grammar_ids": [
+     "g_139",
+     "g_140"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "머리가 아프고 목도 아파요.",
+    "zh": "頭痛，喉嚨也痛。",
+    "target_words": [
+     {
+      "surface": "머리가",
+      "lemma": "머리",
+      "vocab_id": "v_1648"
+     },
+     {
+      "surface": "아프고",
+      "lemma": "아프다",
+      "vocab_id": "v_1673"
+     },
+     {
+      "surface": "목도",
+      "lemma": "목",
+      "vocab_id": "v_1655"
+     },
+     {
+      "surface": "아파요",
+      "lemma": "아프다",
+      "vocab_id": "v_1673"
+     }
+    ],
+    "grammar_ids": [
+     "g_139",
+     "g_140"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "열도 있어요?",
+    "zh": "也有發燒嗎？",
+    "target_words": [
+     {
+      "surface": "열도",
+      "lemma": "열",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "네, 조금 있어요. 그리고 어깨하고 허리도 아파요.",
+    "zh": "有，一點點。還有肩膀和腰也痛。",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "조금",
+      "lemma": "조금",
+      "vocab_id": "v_1404"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     },
+     {
+      "surface": "어깨하고",
+      "lemma": "어깨",
+      "vocab_id": "v_1656"
+     },
+     {
+      "surface": "허리도",
+      "lemma": "허리",
+      "vocab_id": "v_1662"
+     },
+     {
+      "surface": "아파요",
+      "lemma": "아프다",
+      "vocab_id": "v_1673"
+     }
+    ],
+    "grammar_ids": [
+     "g_139"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "감기예요. 따뜻한 물을 많이 마시고 푹 자요.",
+    "zh": "是感冒。多喝溫水，好好睡一覺吧。",
+    "target_words": [
+     {
+      "surface": "감기예요",
+      "lemma": "감기",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "따뜻한",
+      "lemma": "따뜻하다",
+      "vocab_id": "v_1322"
+     },
+     {
+      "surface": "물을",
+      "lemma": "물",
+      "vocab_id": "v_1308"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "마시고",
+      "lemma": "마시다",
+      "vocab_id": "v_1750"
+     },
+     {
+      "surface": "푹",
+      "lemma": "푹",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "자요",
+      "lemma": "자다",
+      "vocab_id": "v_1126"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "고마워요. 일찍 집에 가요.",
+    "zh": "謝謝，我早點回家。",
+    "target_words": [
+     {
+      "surface": "고마워요",
+      "lemma": "고맙다",
+      "vocab_id": "v_1004"
+     },
+     {
+      "surface": "일찍",
+      "lemma": "일찍",
+      "vocab_id": "v_1134"
+     },
+     {
+      "surface": "집에",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "가요",
+      "lemma": "가다",
+      "vocab_id": "v_1751"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "열",
+    "pos": "名詞",
+    "hanja": "熱",
+    "meaning_zh": "發燒、熱度"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "감기",
+    "pos": "名詞",
+    "hanja": "感氣",
+    "meaning_zh": "感冒"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "푹",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "（睡、休息）得很好、充分地"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_139",
+    "pattern": "身體部位 + 이/가 아프다",
+    "meaning": "（某個部位）痛",
+    "explanation": "說哪裡痛：머리가 아파요（頭痛）、배가 아파요（肚子痛）。問別人哪裡不舒服說「어디가 아파요?」。兩個部位都痛可以用 -고 連接，第二個部位加 -도（也）：머리가 아프고 목도 아파요。",
+    "extra_example_ko": "어제부터 배가 아파요.",
+    "extra_example_zh": "從昨天開始肚子痛。"
+   },
+   {
+    "grammar_id": "g_140",
+    "pattern": "ㅡ 脫落：아프다 → 아파요",
+    "meaning": "語幹最後是 ㅡ 的字，ㅡ 會消失",
+    "explanation": "語幹以 ㅡ 結尾的字，接 -아요/어요 時 ㅡ 會掉：아프다 → 아파요、바쁘다 → 바빠요、크다 → 커요、예쁘다 → 예뻐요。要接 -아 還是 -어，看 ㅡ 前面那個字的母音（아 → 아파요、크 前面沒有字 → 커요）。",
+    "extra_example_ko": "요즘 너무 바빠요.",
+    "extra_example_zh": "最近太忙了。"
    }
   ]
  },

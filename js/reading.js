@@ -4,7 +4,7 @@
  * READ_ARTICLES：文章；target_words 的 surface 必須照順序出現在句子裡，vocab_id 指向 READ_VOCAB 或該篇的 challenge_vocab（+1 生字）。
  * VOCAB_ID_MAP：舊編號 → 新編號（2026-11 重新編號，migrate() 會把複習進度換過去）。
  * 檢查：tests/hangul.js 的 R1～R5。 */
-const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "art": "art_101", "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "art": "art_102", "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "art": "art_103", "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "art": "art_104", "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "art": "art_105", "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "art": "art_106", "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "art": "art_107", "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "art": "art_108", "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "art": "art_109", "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "art": "art_110", "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "art": "art_111", "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "art": "art_112", "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "art": "art_113", "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "art": "art_114", "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "art": "art_115", "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "art": "art_116", "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "art": "art_117", "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "art": "art_118", "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "art": "art_119", "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "art": "art_120", "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "art": "art_121", "ready": true}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "art": "art_122", "ready": true}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "art": "art_123", "ready": true}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "art": "art_124", "ready": true}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "art": "art_125", "ready": true}, {"no": 26, "level": 2, "title": "醫院看診與常見症狀", "desc": "內科/牙科、感冒、發燒、頭痛、肚子痛", "ids": ["v_2001", "v_2038"], "art": "art_201", "ready": true}, {"no": 27, "level": 2, "title": "藥局買藥與保健習慣", "desc": "吃藥、處方箋、休息、打針、維他命", "ids": ["v_2039", "v_2076"], "art": "art_202", "ready": true}, {"no": 28, "level": 2, "title": "銀行開戶與換匯業務", "desc": "存摺、提款卡、換錢、匯款、密碼", "ids": ["v_2077", "v_2114"], "art": "art_203", "ready": true}, {"no": 29, "level": 2, "title": "郵局寄信與宅配物流", "desc": "包裹、明信片、寄送、地址、郵票", "ids": ["v_2115", "v_2152"], "art": "art_204", "ready": true}, {"no": 30, "level": 2, "title": "美容院剪髮與造型需求", "desc": "剪頭髮、燙髮、染髮、短一點、劉海", "ids": ["v_2153", "v_2190"], "art": "art_205", "ready": true}, {"no": 31, "level": 2, "title": "服飾店試穿與退換貨", "desc": "試衣間、尺寸、太緊/太鬆、換貨、刷卡/付現", "ids": ["v_2191", "v_2228"], "art": "art_206", "ready": true}, {"no": 32, "level": 2, "title": "住宿訂房與飯店設施", "desc": "單人房/雙人房、預約、辦理入住、早餐、鑰匙", "ids": ["v_2229", "v_2266"], "art": "art_207", "ready": true}, {"no": 33, "level": 2, "title": "機場出入境與搭機流程", "desc": "護照、機票、行李託運、海關、免稅店", "ids": ["v_2267", "v_2304"], "art": "art_208", "ready": true}, {"no": 34, "level": 2, "title": "搭乘大眾運輸與轉乘", "desc": "交通卡、加值、首班車/末班車、塞車、迷路", "ids": ["v_2305", "v_2342"], "art": "art_209", "ready": true}, {"no": 35, "level": 2, "title": "租屋看房與生活水電費", "desc": "保證金、月租、管理費、水電費、搬家", "ids": ["v_2343", "v_2380"], "art": "art_210", "ready": true}, {"no": 36, "level": 2, "title": "家務分工與打掃清潔", "desc": "洗衣服、洗碗、掃地、丟垃圾、整理", "ids": ["v_2381", "v_2418"], "art": "art_211", "ready": true}, {"no": 37, "level": 2, "title": "料理步驟與廚房用具", "desc": "切菜、煮、炒、煎、鍋子、刀子", "ids": ["v_2419", "v_2456"], "art": "art_212", "ready": true}, {"no": 38, "level": 2, "title": "節日慶祝與送禮文化", "desc": "生日、過年、中秋節、禮物、卡片、祝福", "ids": ["v_2457", "v_2494"], "art": "art_213", "ready": true}, {"no": 39, "level": 2, "title": "邀請作客與餐桌禮儀", "desc": "邀請、拜訪、準備食物、乾杯、道謝", "ids": ["v_2495", "v_2532"], "art": "art_214", "ready": true}, {"no": 40, "level": 2, "title": "性格特質與人物評價", "desc": "親切、活潑、安靜、誠實、懶惰、聰明", "ids": ["v_2533", "v_2570"], "art": "art_215", "ready": true}, {"no": 41, "level": 2, "title": "人際關係與社交互動", "desc": "朋友、前輩/後輩、鄰居、吵架、和好", "ids": ["v_2571", "v_2608"], "art": "art_216", "ready": true}, {"no": 42, "level": 2, "title": "戀愛約會與情感表達", "desc": "告白、約會、喜歡、想念、分手、結婚", "ids": ["v_2609", "v_2646"], "art": "art_217", "ready": true}, {"no": 43, "level": 2, "title": "學校生活與考試準備", "desc": "學期、作業、考試、及格、成績、圖書館", "ids": ["v_2647", "v_2684"], "art": "art_218", "ready": true}, {"no": 44, "level": 2, "title": "社團活動與才藝學習", "desc": "吉他、鋼琴、畫畫、拍照、參加比賽", "ids": ["v_2685", "v_2722"], "art": "art_219", "ready": true}, {"no": 45, "level": 2, "title": "旅遊規劃與觀光景點", "desc": "地圖、導遊、博物館、遊樂園、紀念品", "ids": ["v_2723", "v_2760"], "art": "art_220", "ready": true}, {"no": 46, "level": 2, "title": "地理環境與自然景觀", "desc": "山、海、江、島嶼、公園、風景", "ids": ["v_2761", "v_2798"], "art": "art_221", "ready": false}, {"no": 47, "level": 2, "title": "動植物與寵物飼養", "desc": "小狗、小貓、養寵物、餵食、花、樹", "ids": ["v_2799", "v_2836"], "art": "art_222", "ready": false}, {"no": 48, "level": 2, "title": "電影院與表演藝術觀賞", "desc": "買票、座位、演員、主角、劇情、感動", "ids": ["v_2837", "v_2874"], "art": "art_223", "ready": false}, {"no": 49, "level": 2, "title": "手機通訊與網路使用", "desc": "智慧型手機、網路、下載、搜尋、充電", "ids": ["v_2875", "v_2912"], "art": "art_224", "ready": false}, {"no": 50, "level": 2, "title": "社群媒體與拍照分享", "desc": "上傳、留言、按讚、自拍、影片", "ids": ["v_2913", "v_2950"], "art": "art_225", "ready": false}, {"no": 51, "level": 2, "title": "氣候變化與季節災害", "desc": "颱風、梅雨、霧霾、溫度、乾燥/潮濕", "ids": ["v_2951", "v_2988"], "art": "art_226", "ready": false}, {"no": 52, "level": 2, "title": "交通安全與突發狀況", "desc": "紅綠燈、斑馬線、交通事故、警察局、遺失物品", "ids": ["v_2989", "v_3026"], "art": "art_227", "ready": false}, {"no": 53, "level": 2, "title": "個人習慣與生活改變", "desc": "早起、熬夜、減肥、戒菸、養成習慣", "ids": ["v_3027", "v_3064"], "art": "art_228", "ready": false}, {"no": 54, "level": 2, "title": "計畫安排與未來夢想", "desc": "決定、準備、希望、成功、失敗、努力", "ids": ["v_3065", "v_3102"], "art": "art_229", "ready": false}, {"no": 55, "level": 2, "title": "程度副詞與語氣轉折詞", "desc": "非常、稍微、完全、突然、所以、因此", "ids": ["v_3103", "v_3140"], "art": "art_230", "ready": false}];
+const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "art": "art_101", "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "art": "art_102", "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "art": "art_103", "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "art": "art_104", "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "art": "art_105", "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "art": "art_106", "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "art": "art_107", "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "art": "art_108", "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "art": "art_109", "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "art": "art_110", "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "art": "art_111", "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "art": "art_112", "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "art": "art_113", "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "art": "art_114", "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "art": "art_115", "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "art": "art_116", "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "art": "art_117", "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "art": "art_118", "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "art": "art_119", "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "art": "art_120", "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "art": "art_121", "ready": true}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "art": "art_122", "ready": true}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "art": "art_123", "ready": true}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "art": "art_124", "ready": true}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "art": "art_125", "ready": true}, {"no": 26, "level": 2, "title": "醫院看診與常見症狀", "desc": "內科/牙科、感冒、發燒、頭痛、肚子痛", "ids": ["v_2001", "v_2038"], "art": "art_201", "ready": true}, {"no": 27, "level": 2, "title": "藥局買藥與保健習慣", "desc": "吃藥、處方箋、休息、打針、維他命", "ids": ["v_2039", "v_2076"], "art": "art_202", "ready": true}, {"no": 28, "level": 2, "title": "銀行開戶與換匯業務", "desc": "存摺、提款卡、換錢、匯款、密碼", "ids": ["v_2077", "v_2114"], "art": "art_203", "ready": true}, {"no": 29, "level": 2, "title": "郵局寄信與宅配物流", "desc": "包裹、明信片、寄送、地址、郵票", "ids": ["v_2115", "v_2152"], "art": "art_204", "ready": true}, {"no": 30, "level": 2, "title": "美容院剪髮與造型需求", "desc": "剪頭髮、燙髮、染髮、短一點、劉海", "ids": ["v_2153", "v_2190"], "art": "art_205", "ready": true}, {"no": 31, "level": 2, "title": "服飾店試穿與退換貨", "desc": "試衣間、尺寸、太緊/太鬆、換貨、刷卡/付現", "ids": ["v_2191", "v_2228"], "art": "art_206", "ready": true}, {"no": 32, "level": 2, "title": "住宿訂房與飯店設施", "desc": "單人房/雙人房、預約、辦理入住、早餐、鑰匙", "ids": ["v_2229", "v_2266"], "art": "art_207", "ready": true}, {"no": 33, "level": 2, "title": "機場出入境與搭機流程", "desc": "護照、機票、行李託運、海關、免稅店", "ids": ["v_2267", "v_2304"], "art": "art_208", "ready": true}, {"no": 34, "level": 2, "title": "搭乘大眾運輸與轉乘", "desc": "交通卡、加值、首班車/末班車、塞車、迷路", "ids": ["v_2305", "v_2342"], "art": "art_209", "ready": true}, {"no": 35, "level": 2, "title": "租屋看房與生活水電費", "desc": "保證金、月租、管理費、水電費、搬家", "ids": ["v_2343", "v_2380"], "art": "art_210", "ready": true}, {"no": 36, "level": 2, "title": "家務分工與打掃清潔", "desc": "洗衣服、洗碗、掃地、丟垃圾、整理", "ids": ["v_2381", "v_2418"], "art": "art_211", "ready": true}, {"no": 37, "level": 2, "title": "料理步驟與廚房用具", "desc": "切菜、煮、炒、煎、鍋子、刀子", "ids": ["v_2419", "v_2456"], "art": "art_212", "ready": true}, {"no": 38, "level": 2, "title": "節日慶祝與送禮文化", "desc": "生日、過年、中秋節、禮物、卡片、祝福", "ids": ["v_2457", "v_2494"], "art": "art_213", "ready": true}, {"no": 39, "level": 2, "title": "邀請作客與餐桌禮儀", "desc": "邀請、拜訪、準備食物、乾杯、道謝", "ids": ["v_2495", "v_2532"], "art": "art_214", "ready": true}, {"no": 40, "level": 2, "title": "性格特質與人物評價", "desc": "親切、活潑、安靜、誠實、懶惰、聰明", "ids": ["v_2533", "v_2570"], "art": "art_215", "ready": true}, {"no": 41, "level": 2, "title": "人際關係與社交互動", "desc": "朋友、前輩/後輩、鄰居、吵架、和好", "ids": ["v_2571", "v_2608"], "art": "art_216", "ready": true}, {"no": 42, "level": 2, "title": "戀愛約會與情感表達", "desc": "告白、約會、喜歡、想念、分手、結婚", "ids": ["v_2609", "v_2646"], "art": "art_217", "ready": true}, {"no": 43, "level": 2, "title": "學校生活與考試準備", "desc": "學期、作業、考試、及格、成績、圖書館", "ids": ["v_2647", "v_2684"], "art": "art_218", "ready": true}, {"no": 44, "level": 2, "title": "社團活動與才藝學習", "desc": "吉他、鋼琴、畫畫、拍照、參加比賽", "ids": ["v_2685", "v_2722"], "art": "art_219", "ready": true}, {"no": 45, "level": 2, "title": "旅遊規劃與觀光景點", "desc": "地圖、導遊、博物館、遊樂園、紀念品", "ids": ["v_2723", "v_2760"], "art": "art_220", "ready": true}, {"no": 46, "level": 2, "title": "地理環境與自然景觀", "desc": "山、海、江、島嶼、公園、風景", "ids": ["v_2761", "v_2798"], "art": "art_221", "ready": true}, {"no": 47, "level": 2, "title": "動植物與寵物飼養", "desc": "小狗、小貓、養寵物、餵食、花、樹", "ids": ["v_2799", "v_2836"], "art": "art_222", "ready": true}, {"no": 48, "level": 2, "title": "電影院與表演藝術觀賞", "desc": "買票、座位、演員、主角、劇情、感動", "ids": ["v_2837", "v_2874"], "art": "art_223", "ready": true}, {"no": 49, "level": 2, "title": "手機通訊與網路使用", "desc": "智慧型手機、網路、下載、搜尋、充電", "ids": ["v_2875", "v_2912"], "art": "art_224", "ready": true}, {"no": 50, "level": 2, "title": "社群媒體與拍照分享", "desc": "上傳、留言、按讚、自拍、影片", "ids": ["v_2913", "v_2950"], "art": "art_225", "ready": true}, {"no": 51, "level": 2, "title": "氣候變化與季節災害", "desc": "颱風、梅雨、霧霾、溫度、乾燥/潮濕", "ids": ["v_2951", "v_2988"], "art": "art_226", "ready": false}, {"no": 52, "level": 2, "title": "交通安全與突發狀況", "desc": "紅綠燈、斑馬線、交通事故、警察局、遺失物品", "ids": ["v_2989", "v_3026"], "art": "art_227", "ready": false}, {"no": 53, "level": 2, "title": "個人習慣與生活改變", "desc": "早起、熬夜、減肥、戒菸、養成習慣", "ids": ["v_3027", "v_3064"], "art": "art_228", "ready": false}, {"no": 54, "level": 2, "title": "計畫安排與未來夢想", "desc": "決定、準備、希望、成功、失敗、努力", "ids": ["v_3065", "v_3102"], "art": "art_229", "ready": false}, {"no": 55, "level": 2, "title": "程度副詞與語氣轉折詞", "desc": "非常、稍微、完全、突然、所以、因此", "ids": ["v_3103", "v_3140"], "art": "art_230", "ready": false}];
 
 const VOCAB_ID_MAP = {"v_1029": "v_1118", "v_1011": "v_1307", "v_1003": "v_1308", "v_1022": "v_1309", "v_1001": "v_1341", "v_1002": "v_1342", "v_1013": "v_1343", "v_1014": "v_1344", "v_1015": "v_1345", "v_1016": "v_1346", "v_1004": "v_1375", "v_1005": "v_1376", "v_1017": "v_1377", "v_1018": "v_1378", "v_1019": "v_1379", "v_1023": "v_1380", "v_1024": "v_1381", "v_1025": "v_1382", "v_1026": "v_1383", "v_1027": "v_1384", "v_1028": "v_1385", "v_1030": "v_1386", "v_1006": "v_1409", "v_1007": "v_1410", "v_1008": "v_1411", "v_1009": "v_1412", "v_1010": "v_1413", "v_1012": "v_1414", "v_1020": "v_1749", "v_1021": "v_1750"};
 const ARTICLE_ID_MAP = { 'art_101:new_01': 'art_112:new_01', 'art_101:new_02': 'art_112:new_02' };
@@ -17719,6 +17719,2096 @@ const READ_VOCAB = [
   "meaning_zh": "旅行社",
   "example_ko": "여행사에서 항공권을 샀어요.",
   "example_zh": "在旅行社買了機票。"
+ },
+ {
+  "id": "v_2761",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "바다",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "海",
+  "example_ko": "여름에 바다에 가고 싶어요.",
+  "example_zh": "夏天想去海邊。"
+ },
+ {
+  "id": "v_2762",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "강",
+  "pos": "名詞",
+  "hanja": "江",
+  "meaning_zh": "江、河",
+  "example_ko": "한강에서 자전거를 탔어요.",
+  "example_zh": "在漢江騎了腳踏車。"
+ },
+ {
+  "id": "v_2763",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "호수",
+  "pos": "名詞",
+  "hanja": "湖水",
+  "meaning_zh": "湖",
+  "example_ko": "호수가 아주 맑아요.",
+  "example_zh": "湖水非常清澈。"
+ },
+ {
+  "id": "v_2764",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "섬",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "島",
+  "example_ko": "제주도는 한국에서 가장 큰 섬이에요.",
+  "example_zh": "濟州島是韓國最大的島。"
+ },
+ {
+  "id": "v_2765",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "바닷가",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "海邊",
+  "example_ko": "바닷가를 산책했어요.",
+  "example_zh": "在海邊散步了。"
+ },
+ {
+  "id": "v_2766",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "해변",
+  "pos": "名詞",
+  "hanja": "海邊",
+  "meaning_zh": "海灘",
+  "example_ko": "해변에서 수영했어요.",
+  "example_zh": "在海灘游泳。"
+ },
+ {
+  "id": "v_2767",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "계곡",
+  "pos": "名詞",
+  "hanja": "溪谷",
+  "meaning_zh": "溪谷",
+  "example_ko": "여름에 계곡에 놀러 가요.",
+  "example_zh": "夏天去溪谷玩。"
+ },
+ {
+  "id": "v_2768",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "폭포",
+  "pos": "名詞",
+  "hanja": "瀑布",
+  "meaning_zh": "瀑布",
+  "example_ko": "폭포 소리가 시원해요.",
+  "example_zh": "瀑布的聲音很涼爽。"
+ },
+ {
+  "id": "v_2769",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "숲",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "森林、樹林",
+  "example_ko": "숲에서 새소리를 들었어요.",
+  "example_zh": "在森林裡聽到鳥叫聲。"
+ },
+ {
+  "id": "v_2770",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "언덕",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "山丘、坡",
+  "example_ko": "언덕 위에 집이 있어요.",
+  "example_zh": "山丘上有一間房子。"
+ },
+ {
+  "id": "v_2771",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "정상",
+  "pos": "名詞",
+  "hanja": "頂上",
+  "meaning_zh": "山頂、頂峰",
+  "example_ko": "산 정상에 올라갔어요.",
+  "example_zh": "爬到了山頂。"
+ },
+ {
+  "id": "v_2772",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "동굴",
+  "pos": "名詞",
+  "hanja": "洞窟",
+  "meaning_zh": "洞窟、山洞",
+  "example_ko": "동굴 안은 시원해요.",
+  "example_zh": "洞窟裡很涼爽。"
+ },
+ {
+  "id": "v_2773",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "사막",
+  "pos": "名詞",
+  "hanja": "沙漠",
+  "meaning_zh": "沙漠",
+  "example_ko": "사막에는 비가 거의 안 와요.",
+  "example_zh": "沙漠幾乎不下雨。"
+ },
+ {
+  "id": "v_2774",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "들판",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "原野、田野",
+  "example_ko": "넓은 들판에 꽃이 피었어요.",
+  "example_zh": "廣闊的原野上開滿了花。"
+ },
+ {
+  "id": "v_2775",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "시골",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鄉下",
+  "example_ko": "할머니는 시골에 사세요.",
+  "example_zh": "奶奶住在鄉下。"
+ },
+ {
+  "id": "v_2776",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "자연",
+  "pos": "名詞",
+  "hanja": "自然",
+  "meaning_zh": "自然、大自然",
+  "example_ko": "자연 속에서 쉬고 싶어요.",
+  "example_zh": "想在大自然裡休息。"
+ },
+ {
+  "id": "v_2777",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "경치",
+  "pos": "名詞",
+  "hanja": "景致",
+  "meaning_zh": "景色",
+  "example_ko": "여기 경치가 정말 좋아요.",
+  "example_zh": "這裡的景色真好。"
+ },
+ {
+  "id": "v_2778",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "풍경",
+  "pos": "名詞",
+  "hanja": "風景",
+  "meaning_zh": "風景",
+  "example_ko": "창밖 풍경이 아름다워요.",
+  "example_zh": "窗外的風景很美。"
+ },
+ {
+  "id": "v_2779",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "땅",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "土地、地面",
+  "example_ko": "땅이 넓고 평평해요.",
+  "example_zh": "土地又寬又平。"
+ },
+ {
+  "id": "v_2780",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "흙",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "泥土",
+  "example_ko": "신발에 흙이 묻었어요.",
+  "example_zh": "鞋子沾到泥土了。"
+ },
+ {
+  "id": "v_2781",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "돌",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "石頭",
+  "example_ko": "길에 큰 돌이 있어요.",
+  "example_zh": "路上有塊大石頭。"
+ },
+ {
+  "id": "v_2782",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "바위",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "岩石",
+  "example_ko": "바위 위에 앉아서 쉬었어요.",
+  "example_zh": "坐在岩石上休息。"
+ },
+ {
+  "id": "v_2783",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "모래",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "沙子",
+  "example_ko": "아이들이 모래로 성을 만들어요.",
+  "example_zh": "孩子們用沙子堆城堡。"
+ },
+ {
+  "id": "v_2784",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "파도",
+  "pos": "名詞",
+  "hanja": "波濤",
+  "meaning_zh": "海浪",
+  "example_ko": "오늘은 파도가 높아요.",
+  "example_zh": "今天浪很高。"
+ },
+ {
+  "id": "v_2785",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "지구",
+  "pos": "名詞",
+  "hanja": "地球",
+  "meaning_zh": "地球",
+  "example_ko": "지구를 지켜야 해요.",
+  "example_zh": "我們要守護地球。"
+ },
+ {
+  "id": "v_2786",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "대륙",
+  "pos": "名詞",
+  "hanja": "大陸",
+  "meaning_zh": "大陸、洲",
+  "example_ko": "아시아는 가장 큰 대륙이에요.",
+  "example_zh": "亞洲是最大的洲。"
+ },
+ {
+  "id": "v_2787",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "반도",
+  "pos": "名詞",
+  "hanja": "半島",
+  "meaning_zh": "半島",
+  "example_ko": "한국은 반도 국가예요.",
+  "example_zh": "韓國是半島國家。"
+ },
+ {
+  "id": "v_2788",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "지역",
+  "pos": "名詞",
+  "hanja": "地域",
+  "meaning_zh": "地區、區域",
+  "example_ko": "이 지역은 겨울에 많이 추워요.",
+  "example_zh": "這個地區冬天很冷。"
+ },
+ {
+  "id": "v_2789",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "노을",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "晚霞",
+  "example_ko": "바다 위의 노을이 예뻐요.",
+  "example_zh": "海上的晚霞很美。"
+ },
+ {
+  "id": "v_2790",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "일출",
+  "pos": "名詞",
+  "hanja": "日出",
+  "meaning_zh": "日出",
+  "example_ko": "새해 첫날 일출을 봤어요.",
+  "example_zh": "新年第一天看了日出。"
+ },
+ {
+  "id": "v_2791",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "일몰",
+  "pos": "名詞",
+  "hanja": "日沒",
+  "meaning_zh": "日落",
+  "example_ko": "일몰 시간은 여섯 시쯤이에요.",
+  "example_zh": "日落時間大約六點。"
+ },
+ {
+  "id": "v_2792",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "아름답다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "美麗",
+  "example_ko": "가을 산이 아름다워요.",
+  "example_zh": "秋天的山很美。"
+ },
+ {
+  "id": "v_2793",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "웅장하다",
+  "pos": "形容詞",
+  "hanja": "雄壯",
+  "meaning_zh": "雄偉、壯觀",
+  "example_ko": "설악산은 정말 웅장해요.",
+  "example_zh": "雪嶽山真是壯觀。"
+ },
+ {
+  "id": "v_2794",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "높이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "高度",
+  "example_ko": "이 산의 높이는 천 미터예요.",
+  "example_zh": "這座山的高度是一千公尺。"
+ },
+ {
+  "id": "v_2795",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "오르다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "爬上、登上；上漲",
+  "example_ko": "산에 오르면 기분이 좋아요.",
+  "example_zh": "爬上山心情就很好。"
+ },
+ {
+  "id": "v_2796",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "흐르다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "流、流動",
+  "example_ko": "강물이 천천히 흘러요.",
+  "example_zh": "江水緩緩地流。"
+ },
+ {
+  "id": "v_2797",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "국립공원",
+  "pos": "名詞",
+  "hanja": "國立公園",
+  "meaning_zh": "國家公園",
+  "example_ko": "지리산은 국립공원이에요.",
+  "example_zh": "智異山是國家公園。"
+ },
+ {
+  "id": "v_2798",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "word": "지평선",
+  "pos": "名詞",
+  "hanja": "地平線",
+  "meaning_zh": "地平線",
+  "example_ko": "지평선 너머로 해가 졌어요.",
+  "example_zh": "太陽落到地平線的那一頭。"
+ },
+ {
+  "id": "v_2799",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "동물",
+  "pos": "名詞",
+  "hanja": "動物",
+  "meaning_zh": "動物",
+  "example_ko": "저는 동물을 좋아해요.",
+  "example_zh": "我喜歡動物。"
+ },
+ {
+  "id": "v_2800",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "식물",
+  "pos": "名詞",
+  "hanja": "植物",
+  "meaning_zh": "植物",
+  "example_ko": "방에 식물을 키우면 좋아요.",
+  "example_zh": "在房間裡養植物很好。"
+ },
+ {
+  "id": "v_2801",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "반려동물",
+  "pos": "名詞",
+  "hanja": "伴侶動物",
+  "meaning_zh": "寵物（同伴動物）",
+  "example_ko": "반려동물을 키우는 사람이 많아요.",
+  "example_zh": "養寵物的人很多。"
+ },
+ {
+  "id": "v_2802",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "강아지",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "小狗、狗狗",
+  "example_ko": "강아지가 꼬리를 흔들어요.",
+  "example_zh": "小狗在搖尾巴。"
+ },
+ {
+  "id": "v_2803",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "고양이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "貓",
+  "example_ko": "고양이가 소파에서 자요.",
+  "example_zh": "貓在沙發上睡覺。"
+ },
+ {
+  "id": "v_2804",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "토끼",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "兔子",
+  "example_ko": "토끼는 당근을 좋아해요.",
+  "example_zh": "兔子喜歡紅蘿蔔。"
+ },
+ {
+  "id": "v_2805",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "햄스터",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "倉鼠",
+  "example_ko": "햄스터가 아주 작아요.",
+  "example_zh": "倉鼠非常小。"
+ },
+ {
+  "id": "v_2806",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "새",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鳥",
+  "example_ko": "아침에 새가 울어요.",
+  "example_zh": "早上鳥在叫。"
+ },
+ {
+  "id": "v_2807",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "물고기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "魚（活的）",
+  "example_ko": "어항에 물고기가 있어요.",
+  "example_zh": "魚缸裡有魚。"
+ },
+ {
+  "id": "v_2808",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "거북이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "烏龜",
+  "example_ko": "거북이는 오래 살아요.",
+  "example_zh": "烏龜活很久。"
+ },
+ {
+  "id": "v_2809",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "키우다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "養、培養",
+  "example_ko": "고양이 두 마리를 키워요.",
+  "example_zh": "養了兩隻貓。"
+ },
+ {
+  "id": "v_2810",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "먹이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "（動物的）食物、飼料",
+  "example_ko": "물고기에게 먹이를 줬어요.",
+  "example_zh": "餵了魚。"
+ },
+ {
+  "id": "v_2811",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "사료",
+  "pos": "名詞",
+  "hanja": "飼料",
+  "meaning_zh": "（寵物）飼料",
+  "example_ko": "강아지 사료를 샀어요.",
+  "example_zh": "買了狗飼料。"
+ },
+ {
+  "id": "v_2812",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "목줄",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "牽繩、項圈",
+  "example_ko": "산책할 때는 목줄을 해야 해요.",
+  "example_zh": "散步時要繫牽繩。"
+ },
+ {
+  "id": "v_2813",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "털",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "毛",
+  "example_ko": "고양이 털이 옷에 붙었어요.",
+  "example_zh": "貓毛黏到衣服上了。"
+ },
+ {
+  "id": "v_2814",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "꼬리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "尾巴",
+  "example_ko": "강아지 꼬리가 짧아요.",
+  "example_zh": "小狗的尾巴很短。"
+ },
+ {
+  "id": "v_2815",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "짖다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "（狗）叫、吠",
+  "example_ko": "밤에 개가 짖어요.",
+  "example_zh": "晚上狗在叫。"
+ },
+ {
+  "id": "v_2816",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "물다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "咬",
+  "example_ko": "강아지가 제 손을 물었어요.",
+  "example_zh": "小狗咬了我的手。"
+ },
+ {
+  "id": "v_2817",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "동물병원",
+  "pos": "名詞",
+  "hanja": "動物病院",
+  "meaning_zh": "動物醫院",
+  "example_ko": "고양이가 아파서 동물병원에 갔어요.",
+  "example_zh": "貓生病了，去了動物醫院。"
+ },
+ {
+  "id": "v_2818",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "수의사",
+  "pos": "名詞",
+  "hanja": "獸醫師",
+  "meaning_zh": "獸醫",
+  "example_ko": "수의사 선생님이 친절해요.",
+  "example_zh": "獸醫很親切。"
+ },
+ {
+  "id": "v_2819",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "예방접종",
+  "pos": "名詞",
+  "hanja": "豫防接種",
+  "meaning_zh": "預防接種、打疫苗",
+  "example_ko": "강아지 예방접종을 했어요.",
+  "example_zh": "幫小狗打了預防針。"
+ },
+ {
+  "id": "v_2820",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "나무",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "樹、木頭",
+  "example_ko": "공원에 큰 나무가 있어요.",
+  "example_zh": "公園裡有棵大樹。"
+ },
+ {
+  "id": "v_2821",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "풀",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "草",
+  "example_ko": "소가 풀을 먹어요.",
+  "example_zh": "牛在吃草。"
+ },
+ {
+  "id": "v_2822",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "잎",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "葉子",
+  "example_ko": "나뭇잎이 빨갛게 변했어요.",
+  "example_zh": "樹葉變紅了。"
+ },
+ {
+  "id": "v_2823",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "뿌리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "根",
+  "example_ko": "이 나무는 뿌리가 깊어요.",
+  "example_zh": "這棵樹的根很深。"
+ },
+ {
+  "id": "v_2824",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "씨",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "種子",
+  "example_ko": "봄에 꽃씨를 심었어요.",
+  "example_zh": "春天種了花的種子。"
+ },
+ {
+  "id": "v_2825",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "화분",
+  "pos": "名詞",
+  "hanja": "花盆",
+  "meaning_zh": "盆栽、花盆",
+  "example_ko": "베란다에 화분이 많아요.",
+  "example_zh": "陽台上有很多盆栽。"
+ },
+ {
+  "id": "v_2826",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "심다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "種、栽",
+  "example_ko": "마당에 나무를 심었어요.",
+  "example_zh": "在院子裡種了樹。"
+ },
+ {
+  "id": "v_2827",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "자라다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "長大、生長",
+  "example_ko": "아이가 많이 자랐어요.",
+  "example_zh": "孩子長大了很多。"
+ },
+ {
+  "id": "v_2828",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "피다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "（花）開",
+  "example_ko": "봄에 벚꽃이 피어요.",
+  "example_zh": "春天櫻花盛開。"
+ },
+ {
+  "id": "v_2829",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "시들다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "枯萎",
+  "example_ko": "물을 안 줘서 꽃이 시들었어요.",
+  "example_zh": "沒澆水，花枯萎了。"
+ },
+ {
+  "id": "v_2830",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "장미",
+  "pos": "名詞",
+  "hanja": "薔薇",
+  "meaning_zh": "玫瑰",
+  "example_ko": "빨간 장미를 선물했어요.",
+  "example_zh": "送了紅玫瑰。"
+ },
+ {
+  "id": "v_2831",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "해바라기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "向日葵",
+  "example_ko": "해바라기는 해를 보고 자라요.",
+  "example_zh": "向日葵朝著太陽生長。"
+ },
+ {
+  "id": "v_2832",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "동물원",
+  "pos": "名詞",
+  "hanja": "動物園",
+  "meaning_zh": "動物園",
+  "example_ko": "동물원에서 사자를 봤어요.",
+  "example_zh": "在動物園看到了獅子。"
+ },
+ {
+  "id": "v_2833",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "순하다",
+  "pos": "形容詞",
+  "hanja": "順",
+  "meaning_zh": "溫馴、溫和",
+  "example_ko": "우리 강아지는 아주 순해요.",
+  "example_zh": "我們家的小狗很溫馴。"
+ },
+ {
+  "id": "v_2834",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "사납다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "兇猛、兇",
+  "example_ko": "그 개는 좀 사나워요.",
+  "example_zh": "那隻狗有點兇。"
+ },
+ {
+  "id": "v_2835",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "곤충",
+  "pos": "名詞",
+  "hanja": "昆蟲",
+  "meaning_zh": "昆蟲",
+  "example_ko": "아이들은 곤충을 좋아해요.",
+  "example_zh": "小孩喜歡昆蟲。"
+ },
+ {
+  "id": "v_2836",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "word": "입양하다",
+  "pos": "動詞",
+  "hanja": "入養",
+  "meaning_zh": "領養",
+  "example_ko": "유기견을 입양했어요.",
+  "example_zh": "領養了流浪狗。"
+ },
+ {
+  "id": "v_2837",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "영화관",
+  "pos": "名詞",
+  "hanja": "映畫館",
+  "meaning_zh": "電影院",
+  "example_ko": "주말에 영화관에 갔어요.",
+  "example_zh": "週末去了電影院。"
+ },
+ {
+  "id": "v_2838",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "극장",
+  "pos": "名詞",
+  "hanja": "劇場",
+  "meaning_zh": "劇場、電影院",
+  "example_ko": "극장 앞에서 만나요.",
+  "example_zh": "在劇場前面見。"
+ },
+ {
+  "id": "v_2839",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "매표소",
+  "pos": "名詞",
+  "hanja": "賣票所",
+  "meaning_zh": "售票處",
+  "example_ko": "매표소에서 표를 샀어요.",
+  "example_zh": "在售票處買了票。"
+ },
+ {
+  "id": "v_2840",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "상영",
+  "pos": "名詞",
+  "hanja": "上映",
+  "meaning_zh": "放映、上映",
+  "example_ko": "상영 시간은 두 시간이에요.",
+  "example_zh": "放映時間是兩個小時。"
+ },
+ {
+  "id": "v_2841",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "개봉하다",
+  "pos": "動詞",
+  "hanja": "開封",
+  "meaning_zh": "（電影）上映、首映",
+  "example_ko": "그 영화는 다음 주에 개봉해요.",
+  "example_zh": "那部電影下週上映。"
+ },
+ {
+  "id": "v_2842",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "관객",
+  "pos": "名詞",
+  "hanja": "觀客",
+  "meaning_zh": "觀眾",
+  "example_ko": "관객이 천만 명을 넘었어요.",
+  "example_zh": "觀眾超過了一千萬人。"
+ },
+ {
+  "id": "v_2843",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "배우",
+  "pos": "名詞",
+  "hanja": "俳優",
+  "meaning_zh": "演員",
+  "example_ko": "그 배우를 좋아해요.",
+  "example_zh": "我喜歡那個演員。"
+ },
+ {
+  "id": "v_2844",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "주인공",
+  "pos": "名詞",
+  "hanja": "主人公",
+  "meaning_zh": "主角",
+  "example_ko": "주인공이 정말 멋있어요.",
+  "example_zh": "主角真帥。"
+ },
+ {
+  "id": "v_2845",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "감독",
+  "pos": "名詞",
+  "hanja": "監督",
+  "meaning_zh": "導演；教練",
+  "example_ko": "이 영화 감독이 유명해요.",
+  "example_zh": "這部電影的導演很有名。"
+ },
+ {
+  "id": "v_2846",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "조연",
+  "pos": "名詞",
+  "hanja": "助演",
+  "meaning_zh": "配角",
+  "example_ko": "조연 배우의 연기가 좋았어요.",
+  "example_zh": "配角的演技很好。"
+ },
+ {
+  "id": "v_2847",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "줄거리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "劇情大綱",
+  "example_ko": "영화 줄거리를 간단히 말해 주세요.",
+  "example_zh": "請簡單說一下電影劇情。"
+ },
+ {
+  "id": "v_2848",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "장면",
+  "pos": "名詞",
+  "hanja": "場面",
+  "meaning_zh": "場面、場景",
+  "example_ko": "마지막 장면이 감동적이었어요.",
+  "example_zh": "最後一幕很感人。"
+ },
+ {
+  "id": "v_2849",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "결말",
+  "pos": "名詞",
+  "hanja": "結末",
+  "meaning_zh": "結局",
+  "example_ko": "결말이 너무 슬퍼요.",
+  "example_zh": "結局太悲傷了。"
+ },
+ {
+  "id": "v_2850",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "자막",
+  "pos": "名詞",
+  "hanja": "字幕",
+  "meaning_zh": "字幕",
+  "example_ko": "한국어 자막으로 봤어요.",
+  "example_zh": "用韓文字幕看的。"
+ },
+ {
+  "id": "v_2851",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "더빙",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "配音（版本）",
+  "example_ko": "이 영화는 더빙으로 봤어요.",
+  "example_zh": "這部電影看的是配音版。"
+ },
+ {
+  "id": "v_2852",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "팝콘",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "爆米花",
+  "example_ko": "영화 볼 때 팝콘을 먹어요.",
+  "example_zh": "看電影的時候吃爆米花。"
+ },
+ {
+  "id": "v_2853",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "공연",
+  "pos": "名詞",
+  "hanja": "公演",
+  "meaning_zh": "表演、演出",
+  "example_ko": "공연이 일곱 시에 시작해요.",
+  "example_zh": "表演七點開始。"
+ },
+ {
+  "id": "v_2854",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "연극",
+  "pos": "名詞",
+  "hanja": "演劇",
+  "meaning_zh": "話劇、舞台劇",
+  "example_ko": "대학로에서 연극을 봤어요.",
+  "example_zh": "在大學路看了舞台劇。"
+ },
+ {
+  "id": "v_2855",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "뮤지컬",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "音樂劇",
+  "example_ko": "뮤지컬 표가 비싸요.",
+  "example_zh": "音樂劇的票很貴。"
+ },
+ {
+  "id": "v_2856",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "콘서트",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "演唱會",
+  "example_ko": "좋아하는 가수의 콘서트에 갔어요.",
+  "example_zh": "去了喜歡的歌手的演唱會。"
+ },
+ {
+  "id": "v_2857",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "관람하다",
+  "pos": "動詞",
+  "hanja": "觀覽",
+  "meaning_zh": "觀賞、觀看",
+  "example_ko": "공연을 관람했어요.",
+  "example_zh": "觀賞了表演。"
+ },
+ {
+  "id": "v_2858",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "감동하다",
+  "pos": "動詞",
+  "hanja": "感動",
+  "meaning_zh": "感動",
+  "example_ko": "그 이야기에 감동했어요.",
+  "example_zh": "被那個故事感動了。"
+ },
+ {
+  "id": "v_2859",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "감동적",
+  "pos": "名詞",
+  "hanja": "感動的",
+  "meaning_zh": "感人的",
+  "example_ko": "정말 감동적인 영화예요.",
+  "example_zh": "真的是很感人的電影。"
+ },
+ {
+  "id": "v_2860",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "박수",
+  "pos": "名詞",
+  "hanja": "拍手",
+  "meaning_zh": "掌聲、鼓掌",
+  "example_ko": "관객들이 박수를 쳤어요.",
+  "example_zh": "觀眾們鼓掌了。"
+ },
+ {
+  "id": "v_2861",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "장르",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "類型（電影、音樂）",
+  "example_ko": "어떤 장르의 영화를 좋아해요?",
+  "example_zh": "你喜歡什麼類型的電影？"
+ },
+ {
+  "id": "v_2862",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "공포",
+  "pos": "名詞",
+  "hanja": "恐怖",
+  "meaning_zh": "恐怖",
+  "example_ko": "저는 공포 영화를 못 봐요.",
+  "example_zh": "我不敢看恐怖片。"
+ },
+ {
+  "id": "v_2863",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "코미디",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "喜劇",
+  "example_ko": "코미디 영화를 보면서 많이 웃었어요.",
+  "example_zh": "看喜劇片笑得很開心。"
+ },
+ {
+  "id": "v_2864",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "액션",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "動作（片）",
+  "example_ko": "액션 영화가 신나요.",
+  "example_zh": "動作片很刺激。"
+ },
+ {
+  "id": "v_2865",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "로맨스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "愛情（片）",
+  "example_ko": "로맨스 영화를 보고 울었어요.",
+  "example_zh": "看了愛情片哭了。"
+ },
+ {
+  "id": "v_2866",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "애니메이션",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "動畫",
+  "example_ko": "아이들과 애니메이션을 봤어요.",
+  "example_zh": "和孩子們看了動畫。"
+ },
+ {
+  "id": "v_2867",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "평점",
+  "pos": "名詞",
+  "hanja": "評點",
+  "meaning_zh": "評分",
+  "example_ko": "이 영화는 평점이 높아요.",
+  "example_zh": "這部電影評分很高。"
+ },
+ {
+  "id": "v_2868",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "후기",
+  "pos": "名詞",
+  "hanja": "後記",
+  "meaning_zh": "心得、評價",
+  "example_ko": "관람 후기를 썼어요.",
+  "example_zh": "寫了觀賞心得。"
+ },
+ {
+  "id": "v_2869",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "예고편",
+  "pos": "名詞",
+  "hanja": "豫告篇",
+  "meaning_zh": "預告片",
+  "example_ko": "예고편이 재미있어 보여요.",
+  "example_zh": "預告片看起來很有趣。"
+ },
+ {
+  "id": "v_2870",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "시사회",
+  "pos": "名詞",
+  "hanja": "試寫會",
+  "meaning_zh": "試映會",
+  "example_ko": "시사회에 초대받았어요.",
+  "example_zh": "受邀參加試映會。"
+ },
+ {
+  "id": "v_2871",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "매진",
+  "pos": "名詞",
+  "hanja": "賣盡",
+  "meaning_zh": "售罄、賣光",
+  "example_ko": "콘서트 표가 매진됐어요.",
+  "example_zh": "演唱會門票賣光了。"
+ },
+ {
+  "id": "v_2872",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "출연하다",
+  "pos": "動詞",
+  "hanja": "出演",
+  "meaning_zh": "演出、參演",
+  "example_ko": "그 배우가 드라마에 출연해요.",
+  "example_zh": "那個演員演出連續劇。"
+ },
+ {
+  "id": "v_2873",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "연기",
+  "pos": "名詞",
+  "hanja": "演技",
+  "meaning_zh": "演技",
+  "example_ko": "배우들의 연기가 훌륭했어요.",
+  "example_zh": "演員們的演技很棒。"
+ },
+ {
+  "id": "v_2874",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "word": "인상적",
+  "pos": "名詞",
+  "hanja": "印象的",
+  "meaning_zh": "令人印象深刻的",
+  "example_ko": "음악이 아주 인상적이었어요.",
+  "example_zh": "音樂令人印象非常深刻。"
+ },
+ {
+  "id": "v_2875",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "스마트폰",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "智慧型手機",
+  "example_ko": "새 스마트폰을 샀어요.",
+  "example_zh": "買了新的智慧型手機。"
+ },
+ {
+  "id": "v_2876",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "인터넷",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "網路",
+  "example_ko": "인터넷이 안 돼요.",
+  "example_zh": "網路連不上。"
+ },
+ {
+  "id": "v_2877",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "앱",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "App、應用程式",
+  "example_ko": "이 앱은 무료예요.",
+  "example_zh": "這個 App 是免費的。"
+ },
+ {
+  "id": "v_2878",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "설치하다",
+  "pos": "動詞",
+  "hanja": "設置",
+  "meaning_zh": "安裝、設置",
+  "example_ko": "휴대폰에 앱을 설치했어요.",
+  "example_zh": "在手機上安裝了 App。"
+ },
+ {
+  "id": "v_2879",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "다운로드하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "下載",
+  "example_ko": "음악을 다운로드했어요.",
+  "example_zh": "下載了音樂。"
+ },
+ {
+  "id": "v_2880",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "업데이트",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "更新",
+  "example_ko": "앱을 업데이트해야 해요.",
+  "example_zh": "App 要更新。"
+ },
+ {
+  "id": "v_2881",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "검색하다",
+  "pos": "動詞",
+  "hanja": "檢索",
+  "meaning_zh": "搜尋",
+  "example_ko": "인터넷으로 맛집을 검색했어요.",
+  "example_zh": "用網路搜尋了美食名店。"
+ },
+ {
+  "id": "v_2882",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "사이트",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "網站",
+  "example_ko": "이 사이트에서 표를 예매할 수 있어요.",
+  "example_zh": "可以在這個網站訂票。"
+ },
+ {
+  "id": "v_2883",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "홈페이지",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "官網、網站首頁",
+  "example_ko": "학교 홈페이지에 공지가 있어요.",
+  "example_zh": "學校官網上有公告。"
+ },
+ {
+  "id": "v_2884",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "로그인",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "登入",
+  "example_ko": "로그인을 해 주세요.",
+  "example_zh": "請登入。"
+ },
+ {
+  "id": "v_2885",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "회원가입",
+  "pos": "名詞",
+  "hanja": "會員加入",
+  "meaning_zh": "註冊會員",
+  "example_ko": "회원가입을 하면 할인돼요.",
+  "example_zh": "註冊會員可以打折。"
+ },
+ {
+  "id": "v_2886",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "아이디",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "帳號（ID）",
+  "example_ko": "아이디를 잊어버렸어요.",
+  "example_zh": "忘記帳號了。"
+ },
+ {
+  "id": "v_2887",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "배터리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "電池、電量",
+  "example_ko": "배터리가 다 됐어요.",
+  "example_zh": "沒電了。"
+ },
+ {
+  "id": "v_2888",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "충전기",
+  "pos": "名詞",
+  "hanja": "充電器",
+  "meaning_zh": "充電器",
+  "example_ko": "충전기 좀 빌려 주세요.",
+  "example_zh": "請借我充電器。"
+ },
+ {
+  "id": "v_2889",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "데이터",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "（行動）數據、流量",
+  "example_ko": "데이터를 다 썼어요.",
+  "example_zh": "流量用完了。"
+ },
+ {
+  "id": "v_2890",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "요금제",
+  "pos": "名詞",
+  "hanja": "料金制",
+  "meaning_zh": "（手機）資費方案",
+  "example_ko": "요금제를 바꿨어요.",
+  "example_zh": "換了資費方案。"
+ },
+ {
+  "id": "v_2891",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "화면",
+  "pos": "名詞",
+  "hanja": "畫面",
+  "meaning_zh": "螢幕、畫面",
+  "example_ko": "화면이 너무 작아요.",
+  "example_zh": "螢幕太小了。"
+ },
+ {
+  "id": "v_2892",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "저장하다",
+  "pos": "動詞",
+  "hanja": "貯藏",
+  "meaning_zh": "儲存",
+  "example_ko": "사진을 휴대폰에 저장했어요.",
+  "example_zh": "把照片存在手機裡。"
+ },
+ {
+  "id": "v_2893",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "삭제하다",
+  "pos": "動詞",
+  "hanja": "削除",
+  "meaning_zh": "刪除",
+  "example_ko": "필요 없는 앱을 삭제했어요.",
+  "example_zh": "刪除了不需要的 App。"
+ },
+ {
+  "id": "v_2894",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "파일",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "檔案",
+  "example_ko": "파일을 열 수 없어요.",
+  "example_zh": "打不開檔案。"
+ },
+ {
+  "id": "v_2895",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "첨부하다",
+  "pos": "動詞",
+  "hanja": "添附",
+  "meaning_zh": "附加（檔案）",
+  "example_ko": "이메일에 사진을 첨부했어요.",
+  "example_zh": "在電子郵件裡附上了照片。"
+ },
+ {
+  "id": "v_2896",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "전송하다",
+  "pos": "動詞",
+  "hanja": "傳送",
+  "meaning_zh": "傳送",
+  "example_ko": "파일을 친구에게 전송했어요.",
+  "example_zh": "把檔案傳給朋友了。"
+ },
+ {
+  "id": "v_2897",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "알림",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "通知（提醒）",
+  "example_ko": "알림이 너무 많이 와요.",
+  "example_zh": "通知太多了。"
+ },
+ {
+  "id": "v_2898",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "무음",
+  "pos": "名詞",
+  "hanja": "無音",
+  "meaning_zh": "靜音",
+  "example_ko": "수업 시간에는 무음으로 해 주세요.",
+  "example_zh": "上課時請調成靜音。"
+ },
+ {
+  "id": "v_2899",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "진동",
+  "pos": "名詞",
+  "hanja": "振動",
+  "meaning_zh": "震動",
+  "example_ko": "휴대폰을 진동으로 바꿨어요.",
+  "example_zh": "把手機改成震動了。"
+ },
+ {
+  "id": "v_2900",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "잠금",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鎖定（畫面）",
+  "example_ko": "잠금 화면을 바꿨어요.",
+  "example_zh": "換了鎖定畫面。"
+ },
+ {
+  "id": "v_2901",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "해제하다",
+  "pos": "動詞",
+  "hanja": "解除",
+  "meaning_zh": "解除",
+  "example_ko": "비밀번호로 잠금을 해제해요.",
+  "example_zh": "用密碼解鎖。"
+ },
+ {
+  "id": "v_2902",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "액정",
+  "pos": "名詞",
+  "hanja": "液晶",
+  "meaning_zh": "（手機）螢幕（液晶面板）",
+  "example_ko": "휴대폰 액정이 깨졌어요.",
+  "example_zh": "手機螢幕破了。"
+ },
+ {
+  "id": "v_2903",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "케이스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "手機殼、殼",
+  "example_ko": "귀여운 휴대폰 케이스를 샀어요.",
+  "example_zh": "買了可愛的手機殼。"
+ },
+ {
+  "id": "v_2904",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "이어폰",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "耳機（入耳式）",
+  "example_ko": "지하철에서 이어폰으로 음악을 들어요.",
+  "example_zh": "在地鐵上用耳機聽音樂。"
+ },
+ {
+  "id": "v_2905",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "블루투스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "藍牙",
+  "example_ko": "블루투스로 스피커에 연결했어요.",
+  "example_zh": "用藍牙連上了喇叭。"
+ },
+ {
+  "id": "v_2906",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "연결하다",
+  "pos": "動詞",
+  "hanja": "連結",
+  "meaning_zh": "連接",
+  "example_ko": "컴퓨터를 인터넷에 연결했어요.",
+  "example_zh": "把電腦連上網路。"
+ },
+ {
+  "id": "v_2907",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "끊기다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "（被）斷掉、中斷",
+  "example_ko": "통화가 자꾸 끊겨요.",
+  "example_zh": "通話一直斷掉。"
+ },
+ {
+  "id": "v_2908",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "속도",
+  "pos": "名詞",
+  "hanja": "速度",
+  "meaning_zh": "速度",
+  "example_ko": "인터넷 속도가 빨라요.",
+  "example_zh": "網速很快。"
+ },
+ {
+  "id": "v_2909",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "무선",
+  "pos": "名詞",
+  "hanja": "無線",
+  "meaning_zh": "無線",
+  "example_ko": "무선 이어폰이 편해요.",
+  "example_zh": "無線耳機很方便。"
+ },
+ {
+  "id": "v_2910",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "온라인",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "線上",
+  "example_ko": "온라인으로 수업을 들어요.",
+  "example_zh": "上線上課程。"
+ },
+ {
+  "id": "v_2911",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "접속하다",
+  "pos": "動詞",
+  "hanja": "接續",
+  "meaning_zh": "連線、登入（網站）",
+  "example_ko": "사람이 많아서 접속이 안 돼요.",
+  "example_zh": "人太多了，連不上。"
+ },
+ {
+  "id": "v_2912",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "word": "영상통화",
+  "pos": "名詞",
+  "hanja": "映像通話",
+  "meaning_zh": "視訊通話",
+  "example_ko": "부모님과 영상통화를 했어요.",
+  "example_zh": "和爸媽視訊通話了。"
+ },
+ {
+  "id": "v_2913",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "게시물",
+  "pos": "名詞",
+  "hanja": "揭示物",
+  "meaning_zh": "貼文",
+  "example_ko": "새 게시물을 올렸어요.",
+  "example_zh": "發了新貼文。"
+ },
+ {
+  "id": "v_2914",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "올리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "上傳、發（文）；提高",
+  "example_ko": "사진을 인스타그램에 올렸어요.",
+  "example_zh": "把照片上傳到 Instagram。"
+ },
+ {
+  "id": "v_2915",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "댓글",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "留言、回覆",
+  "example_ko": "친구가 댓글을 달았어요.",
+  "example_zh": "朋友留言了。"
+ },
+ {
+  "id": "v_2916",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "공감",
+  "pos": "名詞",
+  "hanja": "共感",
+  "meaning_zh": "共鳴、按讚（同感）",
+  "example_ko": "많은 사람이 공감을 눌렀어요.",
+  "example_zh": "很多人按了讚。"
+ },
+ {
+  "id": "v_2917",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "팔로우하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "追蹤（社群帳號）",
+  "example_ko": "좋아하는 배우를 팔로우했어요.",
+  "example_zh": "追蹤了喜歡的演員。"
+ },
+ {
+  "id": "v_2918",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "팔로워",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "追蹤者、粉絲",
+  "example_ko": "팔로워가 많이 늘었어요.",
+  "example_zh": "追蹤者增加了很多。"
+ },
+ {
+  "id": "v_2919",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "구독하다",
+  "pos": "動詞",
+  "hanja": "購讀",
+  "meaning_zh": "訂閱",
+  "example_ko": "그 유튜브 채널을 구독했어요.",
+  "example_zh": "訂閱了那個 YouTube 頻道。"
+ },
+ {
+  "id": "v_2920",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "구독자",
+  "pos": "名詞",
+  "hanja": "購讀者",
+  "meaning_zh": "訂閱者",
+  "example_ko": "구독자가 만 명이 됐어요.",
+  "example_zh": "訂閱者達到一萬人了。"
+ },
+ {
+  "id": "v_2921",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "셀카",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "自拍（照）",
+  "example_ko": "친구랑 셀카를 찍었어요.",
+  "example_zh": "和朋友拍了自拍。"
+ },
+ {
+  "id": "v_2922",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "셀카봉",
+  "pos": "名詞",
+  "hanja": "棒",
+  "meaning_zh": "自拍棒",
+  "example_ko": "셀카봉을 가지고 여행 갔어요.",
+  "example_zh": "帶著自拍棒去旅行。"
+ },
+ {
+  "id": "v_2923",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "앨범",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "相簿；專輯",
+  "example_ko": "휴대폰 앨범에 사진이 많아요.",
+  "example_zh": "手機相簿裡照片很多。"
+ },
+ {
+  "id": "v_2924",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "필터",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "濾鏡",
+  "example_ko": "필터를 쓰면 사진이 예뻐져요.",
+  "example_zh": "用濾鏡照片會變漂亮。"
+ },
+ {
+  "id": "v_2925",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "보정하다",
+  "pos": "動詞",
+  "hanja": "補正",
+  "meaning_zh": "修圖",
+  "example_ko": "사진을 조금 보정했어요.",
+  "example_zh": "稍微修了一下照片。"
+ },
+ {
+  "id": "v_2926",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "동영상",
+  "pos": "名詞",
+  "hanja": "動映像",
+  "meaning_zh": "影片",
+  "example_ko": "고양이 동영상을 봤어요.",
+  "example_zh": "看了貓咪影片。"
+ },
+ {
+  "id": "v_2927",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "방송",
+  "pos": "名詞",
+  "hanja": "放送",
+  "meaning_zh": "廣播、播出、直播",
+  "example_ko": "오늘 밤에 라이브 방송을 해요.",
+  "example_zh": "今晚要直播。"
+ },
+ {
+  "id": "v_2928",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "유튜버",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "YouTuber",
+  "example_ko": "요리 유튜버가 되고 싶어요.",
+  "example_zh": "我想成為料理 YouTuber。"
+ },
+ {
+  "id": "v_2929",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "인플루언서",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "網紅",
+  "example_ko": "그 인플루언서는 팔로워가 백만 명이에요.",
+  "example_zh": "那個網紅有一百萬追蹤者。"
+ },
+ {
+  "id": "v_2930",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "해시태그",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "主題標籤（#）",
+  "example_ko": "해시태그를 달아서 올렸어요.",
+  "example_zh": "加上主題標籤發文了。"
+ },
+ {
+  "id": "v_2931",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "프로필",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "個人檔案（頭像、簡介）",
+  "example_ko": "프로필 사진을 바꿨어요.",
+  "example_zh": "換了大頭貼。"
+ },
+ {
+  "id": "v_2932",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "계정",
+  "pos": "名詞",
+  "hanja": "計定",
+  "meaning_zh": "（社群）帳戶",
+  "example_ko": "새 계정을 만들었어요.",
+  "example_zh": "開了新帳戶。"
+ },
+ {
+  "id": "v_2933",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "공유하다",
+  "pos": "動詞",
+  "hanja": "共有",
+  "meaning_zh": "分享",
+  "example_ko": "좋은 정보를 공유해 주세요.",
+  "example_zh": "請分享好資訊。"
+ },
+ {
+  "id": "v_2934",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "태그하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "標記（人）",
+  "example_ko": "사진에 친구를 태그했어요.",
+  "example_zh": "在照片上標記了朋友。"
+ },
+ {
+  "id": "v_2935",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "사생활",
+  "pos": "名詞",
+  "hanja": "私生活",
+  "meaning_zh": "隱私、私生活",
+  "example_ko": "연예인도 사생활이 있어요.",
+  "example_zh": "藝人也有隱私。"
+ },
+ {
+  "id": "v_2936",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "악플",
+  "pos": "名詞",
+  "hanja": "惡",
+  "meaning_zh": "惡意留言",
+  "example_ko": "악플 때문에 상처를 받았어요.",
+  "example_zh": "因為惡意留言受到傷害。"
+ },
+ {
+  "id": "v_2937",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "조회수",
+  "pos": "名詞",
+  "hanja": "照會數",
+  "meaning_zh": "瀏覽數、觀看次數",
+  "example_ko": "동영상 조회수가 많이 올랐어요.",
+  "example_zh": "影片的觀看次數上升了很多。"
+ },
+ {
+  "id": "v_2938",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "인증샷",
+  "pos": "名詞",
+  "hanja": "認證",
+  "meaning_zh": "打卡照（證明照）",
+  "example_ko": "맛집에서 인증샷을 찍었어요.",
+  "example_zh": "在美食名店拍了打卡照。"
+ },
+ {
+  "id": "v_2939",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "화제",
+  "pos": "名詞",
+  "hanja": "話題",
+  "meaning_zh": "話題",
+  "example_ko": "그 영상이 화제가 됐어요.",
+  "example_zh": "那支影片成了話題。"
+ },
+ {
+  "id": "v_2940",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "소통하다",
+  "pos": "動詞",
+  "hanja": "疏通",
+  "meaning_zh": "溝通、互動",
+  "example_ko": "팬들과 소통하는 가수예요.",
+  "example_zh": "是會和粉絲互動的歌手。"
+ },
+ {
+  "id": "v_2941",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "이모티콘",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "表情符號、貼圖",
+  "example_ko": "귀여운 이모티콘을 보냈어요.",
+  "example_zh": "傳了可愛的貼圖。"
+ },
+ {
+  "id": "v_2942",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "리뷰",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "評論、評價",
+  "example_ko": "상품 리뷰를 읽고 샀어요.",
+  "example_zh": "看了商品評價才買的。"
+ },
+ {
+  "id": "v_2943",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "차단하다",
+  "pos": "動詞",
+  "hanja": "遮斷",
+  "meaning_zh": "封鎖、阻擋",
+  "example_ko": "이상한 계정을 차단했어요.",
+  "example_zh": "封鎖了奇怪的帳號。"
+ },
+ {
+  "id": "v_2944",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "게시판",
+  "pos": "名詞",
+  "hanja": "揭示板",
+  "meaning_zh": "佈告欄、留言板",
+  "example_ko": "학교 게시판에 공지가 있어요.",
+  "example_zh": "學校佈告欄上有公告。"
+ },
+ {
+  "id": "v_2945",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "캡처하다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "截圖",
+  "example_ko": "화면을 캡처해서 보냈어요.",
+  "example_zh": "把畫面截圖傳過去了。"
+ },
+ {
+  "id": "v_2946",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "실시간",
+  "pos": "名詞",
+  "hanja": "實時間",
+  "meaning_zh": "即時",
+  "example_ko": "실시간으로 뉴스를 봐요.",
+  "example_zh": "即時看新聞。"
+ },
+ {
+  "id": "v_2947",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "링크",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "連結",
+  "example_ko": "링크를 눌러 보세요.",
+  "example_zh": "請點一下連結。"
+ },
+ {
+  "id": "v_2948",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "피드",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "動態牆（貼文列表）",
+  "example_ko": "피드에 친구 사진이 올라왔어요.",
+  "example_zh": "動態牆上出現了朋友的照片。"
+ },
+ {
+  "id": "v_2949",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "스토리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "限時動態；故事",
+  "example_ko": "스토리에 여행 사진을 올렸어요.",
+  "example_zh": "在限時動態上傳了旅遊照片。"
+ },
+ {
+  "id": "v_2950",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "word": "유명인",
+  "pos": "名詞",
+  "hanja": "有名人",
+  "meaning_zh": "名人",
+  "example_ko": "유명인이 제 게시물에 댓글을 달았어요.",
+  "example_zh": "名人在我的貼文下留言了。"
  }
 ];
 
@@ -29254,6 +31344,1288 @@ const READ_ARTICLES = [
     "explanation": "表示移動的目的：야경을 보러 가요（去看夜景）。沒有收音接 -러（보다 → 보러），有收音接 -으러（먹다 → 먹으러）。後面只能接 가다、오다、다니다 這類移動動詞。",
     "extra_example_ko": "점심 먹으러 같이 가요.",
     "extra_example_zh": "一起去吃午餐吧。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_221",
+  "level": 2,
+  "topic": "地理環境與自然景觀",
+  "title_ko": "제주도의 자연",
+  "title_zh": "濟州島的大自然",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "지난 여름에 제주도에 다녀왔어요. 제주도는 한국에서 큰 섬이에요.",
+    "zh": "去年夏天去了一趟濟州島。濟州島是韓國的大島。",
+    "target_words": [
+     {
+      "surface": "지난",
+      "lemma": "지난",
+      "vocab_id": "v_1828"
+     },
+     {
+      "surface": "여름에",
+      "lemma": "여름",
+      "vocab_id": "v_1547"
+     },
+     {
+      "surface": "한국에서",
+      "lemma": "한국",
+      "vocab_id": "v_1018"
+     },
+     {
+      "surface": "큰",
+      "lemma": "크다",
+      "vocab_id": "v_1529"
+     },
+     {
+      "surface": "섬이에요",
+      "lemma": "섬",
+      "vocab_id": "v_2764"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "아침 일찍 한라산에 올라가서 정상에서 일출을 봤어요.",
+    "zh": "一大早爬上漢拏山，在山頂看了日出。",
+    "target_words": [
+     {
+      "surface": "아침",
+      "lemma": "아침",
+      "vocab_id": "v_1118"
+     },
+     {
+      "surface": "일찍",
+      "lemma": "일찍",
+      "vocab_id": "v_1134"
+     },
+     {
+      "surface": "올라가서",
+      "lemma": "올라가다",
+      "vocab_id": "v_1769"
+     },
+     {
+      "surface": "정상에서",
+      "lemma": "정상",
+      "vocab_id": "v_2771"
+     },
+     {
+      "surface": "일출을",
+      "lemma": "일출",
+      "vocab_id": "v_2790"
+     },
+     {
+      "surface": "봤어요",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "산 위에서 보니까 바다와 숲이 한눈에 보였어요.",
+    "zh": "從山上一看，大海和森林一覽無遺。",
+    "target_words": [
+     {
+      "surface": "산",
+      "lemma": "산",
+      "vocab_id": "v_1626"
+     },
+     {
+      "surface": "위에서",
+      "lemma": "위",
+      "vocab_id": "v_1205"
+     },
+     {
+      "surface": "보니까",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     },
+     {
+      "surface": "바다와",
+      "lemma": "바다",
+      "vocab_id": "v_2761"
+     },
+     {
+      "surface": "숲이",
+      "lemma": "숲",
+      "vocab_id": "v_2769"
+     },
+     {
+      "surface": "한눈에",
+      "lemma": "한눈",
+      "vocab_id": "new_01"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "오후에는 폭포를 구경하고 바닷가를 걸었어요.",
+    "zh": "下午去看了瀑布，在海邊散步。",
+    "target_words": [
+     {
+      "surface": "오후에는",
+      "lemma": "오후",
+      "vocab_id": "v_1123"
+     },
+     {
+      "surface": "폭포를",
+      "lemma": "폭포",
+      "vocab_id": "v_2768"
+     },
+     {
+      "surface": "구경하고",
+      "lemma": "구경하다",
+      "vocab_id": "v_2736"
+     },
+     {
+      "surface": "바닷가를",
+      "lemma": "바닷가",
+      "vocab_id": "v_2765"
+     },
+     {
+      "surface": "걸었어요",
+      "lemma": "걷다",
+      "vocab_id": "v_1257"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "해변에는 하얀 모래가 깔려 있었고 파도 소리가 들렸어요.",
+    "zh": "海灘上鋪滿白沙，聽得到海浪聲。",
+    "target_words": [
+     {
+      "surface": "해변에는",
+      "lemma": "해변",
+      "vocab_id": "v_2766"
+     },
+     {
+      "surface": "하얀",
+      "lemma": "하얗다",
+      "vocab_id": "v_1528"
+     },
+     {
+      "surface": "모래가",
+      "lemma": "모래",
+      "vocab_id": "v_2783"
+     },
+     {
+      "surface": "파도",
+      "lemma": "파도",
+      "vocab_id": "v_2784"
+     },
+     {
+      "surface": "소리가",
+      "lemma": "소리",
+      "vocab_id": "v_1741"
+     }
+    ],
+    "grammar_ids": [
+     "g_241"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "저녁에 본 노을이 정말 아름다웠어요. 자연은 참 신비롭네요.",
+    "zh": "傍晚看到的晚霞真的好美。大自然真是神奇啊。",
+    "target_words": [
+     {
+      "surface": "저녁에",
+      "lemma": "저녁",
+      "vocab_id": "v_1120"
+     },
+     {
+      "surface": "본",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     },
+     {
+      "surface": "노을이",
+      "lemma": "노을",
+      "vocab_id": "v_2789"
+     },
+     {
+      "surface": "아름다웠어요",
+      "lemma": "아름답다",
+      "vocab_id": "v_2792"
+     },
+     {
+      "surface": "자연은",
+      "lemma": "자연",
+      "vocab_id": "v_2776"
+     },
+     {
+      "surface": "신비롭네요",
+      "lemma": "신비롭다",
+      "vocab_id": "new_02"
+     }
+    ],
+    "grammar_ids": [
+     "g_242"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "한눈",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "一眼（한눈에：一眼就、一覽無遺）"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "신비롭다",
+    "pos": "形容詞",
+    "hanja": "神祕",
+    "meaning_zh": "神祕、奇妙"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_241",
+    "pattern": "動詞語幹 + -아/어 있다",
+    "meaning": "（動作完成後的狀態）…著",
+    "explanation": "表示某個動作完成後，結果一直保持著：깔려 있다（鋪著）、앉아 있다（坐著）、열려 있다（開著）。接法和 -아요/어요 一樣，多用在 앉다、서다、눕다、열리다 等不帶受詞的動詞。和「正在做」的 -고 있다 不同：입고 있다＝穿著（狀態）是例外。",
+    "extra_example_ko": "문이 열려 있어요.",
+    "extra_example_zh": "門開著。"
+   },
+   {
+    "grammar_id": "g_242",
+    "pattern": "動詞／形容詞語幹 + -네요",
+    "meaning": "（感嘆、新發現）…呢、…啊",
+    "explanation": "說出當下才發現、有感而發的事：신비롭네요（真神奇啊）、비가 오네요（下雨了呢）。不管有沒有收音都接 -네요；ㄹ 收音要脫落（멀다 → 머네요）。和 -아요/어요 相比，多了「剛剛才感受到」的語氣。",
+    "extra_example_ko": "와, 경치가 정말 좋네요!",
+    "extra_example_zh": "哇，景色真好啊！"
+   }
+  ]
+ },
+ {
+  "article_id": "art_222",
+  "level": 2,
+  "topic": "動植物與寵物飼養",
+  "title_ko": "우리 강아지",
+  "title_zh": "我家的狗狗",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "귀여운 강아지네요! 몇 살이에요?",
+    "zh": "好可愛的狗狗！幾歲了？",
+    "target_words": [
+     {
+      "surface": "귀여운",
+      "lemma": "귀엽다",
+      "vocab_id": "v_1534"
+     },
+     {
+      "surface": "강아지네요",
+      "lemma": "강아지",
+      "vocab_id": "v_2802"
+     },
+     {
+      "surface": "몇",
+      "lemma": "몇",
+      "vocab_id": "v_1101"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "두 살이에요. 작년에 동물보호소에서 입양했어요.",
+    "zh": "兩歲。去年從動物收容所領養的。",
+    "target_words": [
+     {
+      "surface": "두",
+      "lemma": "둘",
+      "vocab_id": "v_1104"
+     },
+     {
+      "surface": "작년에",
+      "lemma": "작년",
+      "vocab_id": "v_1830"
+     },
+     {
+      "surface": "동물",
+      "lemma": "동물",
+      "vocab_id": "v_2799"
+     },
+     {
+      "surface": "보호소에서",
+      "lemma": "보호소",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "입양했어요",
+      "lemma": "입양하다",
+      "vocab_id": "v_2836"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "강아지를 키우는 게 힘들지 않아요?",
+    "zh": "養狗不辛苦嗎？",
+    "target_words": [
+     {
+      "surface": "강아지를",
+      "lemma": "강아지",
+      "vocab_id": "v_2802"
+     },
+     {
+      "surface": "키우는",
+      "lemma": "키우다",
+      "vocab_id": "v_2809"
+     },
+     {
+      "surface": "힘들지",
+      "lemma": "힘들다",
+      "vocab_id": "v_1689"
+     }
+    ],
+    "grammar_ids": [
+     "g_244"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "매일 산책하고 먹이를 줘야 하니까 조금 힘들어요.",
+    "zh": "每天都要散步、餵食，所以有一點辛苦。",
+    "target_words": [
+     {
+      "surface": "매일",
+      "lemma": "매일",
+      "vocab_id": "v_1131"
+     },
+     {
+      "surface": "먹이를",
+      "lemma": "먹이",
+      "vocab_id": "v_2810"
+     },
+     {
+      "surface": "줘야",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
+     },
+     {
+      "surface": "조금",
+      "lemma": "조금",
+      "vocab_id": "v_1404"
+     },
+     {
+      "surface": "힘들어요",
+      "lemma": "힘들다",
+      "vocab_id": "v_1689"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "B",
+    "ko": "그래도 아침마다 꼬리를 흔들면서 저를 반겨 줘서 행복해요.",
+    "zh": "不過每天早上牠都搖著尾巴迎接我，很幸福。",
+    "target_words": [
+     {
+      "surface": "아침마다",
+      "lemma": "아침",
+      "vocab_id": "v_1118"
+     },
+     {
+      "surface": "꼬리를",
+      "lemma": "꼬리",
+      "vocab_id": "v_2814"
+     },
+     {
+      "surface": "저를",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "반겨",
+      "lemma": "반기다",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "행복해요",
+      "lemma": "행복하다",
+      "vocab_id": "v_1685"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "A",
+    "ko": "저도 고양이를 키우고 싶은데 집주인이 동물을 못 키우게 해요.",
+    "zh": "我也想養貓，可是房東不讓我養動物。",
+    "target_words": [
+     {
+      "surface": "저도",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "고양이를",
+      "lemma": "고양이",
+      "vocab_id": "v_2803"
+     },
+     {
+      "surface": "키우고",
+      "lemma": "키우다",
+      "vocab_id": "v_2809"
+     },
+     {
+      "surface": "집주인이",
+      "lemma": "집주인",
+      "vocab_id": "v_2348"
+     },
+     {
+      "surface": "동물을",
+      "lemma": "동물",
+      "vocab_id": "v_2799"
+     },
+     {
+      "surface": "키우게",
+      "lemma": "키우다",
+      "vocab_id": "v_2809"
+     }
+    ],
+    "grammar_ids": [
+     "g_243"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "보호소",
+    "pos": "名詞",
+    "hanja": "保護所",
+    "meaning_zh": "收容所、保護所"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "반기다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "（高興地）迎接、歡迎"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_243",
+    "pattern": "動詞語幹 + -게 하다",
+    "meaning": "讓（某人）…、使…",
+    "explanation": "表示讓別人去做某件事，或造成某種結果：못 키우게 해요（不讓我養）、아이를 일찍 자게 했어요（讓孩子早點睡）。不管有沒有收音都接 -게 하다。被要求的人用 -에게／-을/를 表示。",
+    "extra_example_ko": "엄마가 저에게 방을 청소하게 했어요.",
+    "extra_example_zh": "媽媽叫我打掃房間。"
+   },
+   {
+    "grammar_id": "g_244",
+    "pattern": "動詞／形容詞語幹 + -지 않다",
+    "meaning": "不…（長形否定）",
+    "explanation": "在語幹後加 -지 않다 表示否定，和在前面加 안 意思一樣：힘들지 않아요＝안 힘들어요。不管有沒有收音都接 -지 않다。「名詞＋하다」的動詞用 안 時要放中間（공부 안 해요），用 -지 않다 就不用拆開（공부하지 않아요），寫作和正式場合比較常用。",
+    "extra_example_ko": "이 강아지는 사람을 물지 않아요.",
+    "extra_example_zh": "這隻小狗不咬人。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_223",
+  "level": 2,
+  "topic": "電影院與表演藝術觀賞",
+  "title_ko": "새로 개봉한 영화",
+  "title_zh": "剛上映的電影",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "어제 새로 개봉한 영화를 봤어요?",
+    "zh": "你看了昨天剛上映的電影嗎？",
+    "target_words": [
+     {
+      "surface": "어제",
+      "lemma": "어제",
+      "vocab_id": "v_1819"
+     },
+     {
+      "surface": "개봉한",
+      "lemma": "개봉하다",
+      "vocab_id": "v_2841"
+     },
+     {
+      "surface": "영화를",
+      "lemma": "영화",
+      "vocab_id": "v_1580"
+     },
+     {
+      "surface": "봤어요",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "네, 그 영화를 보기 위해서 일주일 전에 예매했어요.",
+    "zh": "看了，為了看那部電影，一週前就訂好票了。",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "영화를",
+      "lemma": "영화",
+      "vocab_id": "v_1580"
+     },
+     {
+      "surface": "보기",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     },
+     {
+      "surface": "전에",
+      "lemma": "전",
+      "vocab_id": "v_1846"
+     },
+     {
+      "surface": "예매했어요",
+      "lemma": "예매하다",
+      "vocab_id": "v_2740"
+     }
+    ],
+    "grammar_ids": [
+     "g_245"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "B",
+    "ko": "주인공의 연기가 정말 인상적이었어요.",
+    "zh": "主角的演技令人印象非常深刻。",
+    "target_words": [
+     {
+      "surface": "주인공의",
+      "lemma": "주인공",
+      "vocab_id": "v_2844"
+     },
+     {
+      "surface": "연기가",
+      "lemma": "연기",
+      "vocab_id": "v_2873"
+     },
+     {
+      "surface": "인상적이었어요",
+      "lemma": "인상적",
+      "vocab_id": "v_2874"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "A",
+    "ko": "친구가 결말이 슬프다고 했어요. 많이 울었어요?",
+    "zh": "朋友說結局很悲傷。你哭得很慘嗎？",
+    "target_words": [
+     {
+      "surface": "친구가",
+      "lemma": "친구",
+      "vocab_id": "v_1056"
+     },
+     {
+      "surface": "결말이",
+      "lemma": "결말",
+      "vocab_id": "v_2849"
+     },
+     {
+      "surface": "슬프다고",
+      "lemma": "슬프다",
+      "vocab_id": "v_1683"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "울었어요",
+      "lemma": "울다",
+      "vocab_id": "v_1696"
+     }
+    ],
+    "grammar_ids": [
+     "g_246"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "B",
+    "ko": "네, 마지막 장면에서 관객들이 다 울었어요. 정말 감동적이었어요.",
+    "zh": "對，最後一幕觀眾都哭了。真的很感人。",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "마지막",
+      "lemma": "마지막",
+      "vocab_id": "v_1838"
+     },
+     {
+      "surface": "장면에서",
+      "lemma": "장면",
+      "vocab_id": "v_2848"
+     },
+     {
+      "surface": "관객들이",
+      "lemma": "관객",
+      "vocab_id": "v_2842"
+     },
+     {
+      "surface": "다",
+      "lemma": "다",
+      "vocab_id": "v_1472"
+     },
+     {
+      "surface": "울었어요",
+      "lemma": "울다",
+      "vocab_id": "v_1696"
+     },
+     {
+      "surface": "감동적이었어요",
+      "lemma": "감동적",
+      "vocab_id": "v_2859"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "A",
+    "ko": "평점도 높고 흥행도 잘 돼서 기대돼요. 저도 주말에 봐야겠어요.",
+    "zh": "評分高、票房也好，好期待。我週末也要去看。",
+    "target_words": [
+     {
+      "surface": "평점도",
+      "lemma": "평점",
+      "vocab_id": "v_2867"
+     },
+     {
+      "surface": "높고",
+      "lemma": "높다",
+      "vocab_id": "v_1535"
+     },
+     {
+      "surface": "흥행도",
+      "lemma": "흥행",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "기대돼요",
+      "lemma": "기대되다",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "저도",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "주말에",
+      "lemma": "주말",
+      "vocab_id": "v_1095"
+     },
+     {
+      "surface": "봐야겠어요",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "흥행",
+    "pos": "名詞",
+    "hanja": "興行",
+    "meaning_zh": "票房、賣座"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "기대되다",
+    "pos": "動詞",
+    "hanja": "期待",
+    "meaning_zh": "令人期待"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_245",
+    "pattern": "動詞語幹 + -기 위해(서)",
+    "meaning": "為了…",
+    "explanation": "說明做某件事的目的：영화를 보기 위해서 예매했어요（為了看電影而訂了票）。不管有沒有收音都接 -기 위해서，서 可以省略。名詞用「名詞 + 을/를 위해서」：건강을 위해서（為了健康）。比 -(으)려고 正式一點。",
+    "extra_example_ko": "한국 친구를 사귀기 위해서 한국어를 배워요.",
+    "extra_example_zh": "為了交韓國朋友而學韓文。"
+   },
+   {
+    "grammar_id": "g_246",
+    "pattern": "形容詞語幹 + -다고 하다／動詞語幹 + -ㄴ/는다고 하다",
+    "meaning": "（間接引用）聽說…、（某人）說…",
+    "explanation": "轉述別人說的話。形容詞直接接 -다고 하다（슬프다 → 슬프다고 했어요）；動詞現在式沒有收音接 -ㄴ다고、有收音接 -는다고（간다고、먹는다고）；過去式用 -았/었다고（봤다고）；名詞用 -(이)라고 하다。說話時常縮成 -대요：슬프대요（聽說很悲傷）。",
+    "extra_example_ko": "친구가 내일 비가 온다고 했어요.",
+    "extra_example_zh": "朋友說明天會下雨。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_224",
+  "level": 2,
+  "topic": "手機通訊與網路使用",
+  "title_ko": "할머니의 스마트폰",
+  "title_zh": "奶奶的智慧型手機",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "할머니",
+    "ko": "이 스마트폰으로 사진을 어떻게 보내는지 모르겠어.",
+    "zh": "我不知道怎麼用這支手機傳照片。",
+    "target_words": [
+     {
+      "surface": "스마트폰으로",
+      "lemma": "스마트폰",
+      "vocab_id": "v_2875"
+     },
+     {
+      "surface": "사진을",
+      "lemma": "사진",
+      "vocab_id": "v_1068"
+     },
+     {
+      "surface": "어떻게",
+      "lemma": "어떻게",
+      "vocab_id": "v_1745"
+     },
+     {
+      "surface": "보내는지",
+      "lemma": "보내다",
+      "vocab_id": "v_1720"
+     },
+     {
+      "surface": "모르겠어",
+      "lemma": "모르다",
+      "vocab_id": "v_1162"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "나",
+    "ko": "할머니, 메신저 앱을 설치할 줄 아세요?",
+    "zh": "奶奶，您會安裝通訊軟體嗎？",
+    "target_words": [
+     {
+      "surface": "앱을",
+      "lemma": "앱",
+      "vocab_id": "v_2877"
+     },
+     {
+      "surface": "설치할",
+      "lemma": "설치하다",
+      "vocab_id": "v_2878"
+     }
+    ],
+    "grammar_ids": [
+     "g_247"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "할머니",
+    "ko": "아니, 할 줄 몰라. 좀 도와줘.",
+    "zh": "不會，我不會弄。幫我一下。",
+    "target_words": [
+     {
+      "surface": "할",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     },
+     {
+      "surface": "몰라",
+      "lemma": "모르다",
+      "vocab_id": "v_1162"
+     },
+     {
+      "surface": "도와줘",
+      "lemma": "돕다",
+      "vocab_id": "v_1780"
+     }
+    ],
+    "grammar_ids": [
+     "g_247"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "나",
+    "ko": "먼저 와이파이에 연결하고 앱을 다운로드할게요.",
+    "zh": "我先連上 Wi-Fi，再下載 App。",
+    "target_words": [
+     {
+      "surface": "먼저",
+      "lemma": "먼저",
+      "vocab_id": "v_1826"
+     },
+     {
+      "surface": "와이파이에",
+      "lemma": "와이파이",
+      "vocab_id": "v_2249"
+     },
+     {
+      "surface": "연결하고",
+      "lemma": "연결하다",
+      "vocab_id": "v_2906"
+     },
+     {
+      "surface": "앱을",
+      "lemma": "앱",
+      "vocab_id": "v_2877"
+     },
+     {
+      "surface": "다운로드할게요",
+      "lemma": "다운로드하다",
+      "vocab_id": "v_2879"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "나",
+    "ko": "이제 사진을 고르고 이 버튼을 누르면 돼요. 배터리가 부족하니까 충전기도 꽂아 두세요.",
+    "zh": "現在選照片，按這個按鈕就好了。電量不夠，請把充電器也插上。",
+    "target_words": [
+     {
+      "surface": "사진을",
+      "lemma": "사진",
+      "vocab_id": "v_1068"
+     },
+     {
+      "surface": "고르고",
+      "lemma": "고르다",
+      "vocab_id": "v_1469"
+     },
+     {
+      "surface": "누르면",
+      "lemma": "누르다",
+      "vocab_id": "v_2113"
+     },
+     {
+      "surface": "배터리가",
+      "lemma": "배터리",
+      "vocab_id": "v_2887"
+     },
+     {
+      "surface": "부족하니까",
+      "lemma": "부족하다",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "충전기도",
+      "lemma": "충전기",
+      "vocab_id": "v_2888"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "할머니",
+    "ko": "생각보다 쉽네. 요즘 휴대폰은 점점 편리해지는구나!",
+    "zh": "比想像中簡單呢。最近的手機越來越方便了！",
+    "target_words": [
+     {
+      "surface": "쉽네",
+      "lemma": "쉽다",
+      "vocab_id": "v_1790"
+     },
+     {
+      "surface": "요즘",
+      "lemma": "요즘",
+      "vocab_id": "v_1833"
+     },
+     {
+      "surface": "휴대폰은",
+      "lemma": "휴대폰",
+      "vocab_id": "v_1717"
+     },
+     {
+      "surface": "점점",
+      "lemma": "점점",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "편리해지는구나",
+      "lemma": "편리하다",
+      "vocab_id": "v_1809"
+     }
+    ],
+    "grammar_ids": [
+     "g_248"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "부족하다",
+    "pos": "形容詞",
+    "hanja": "不足",
+    "meaning_zh": "不足、不夠"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "점점",
+    "pos": "副詞",
+    "hanja": "漸漸",
+    "meaning_zh": "漸漸地、越來越"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_247",
+    "pattern": "動詞語幹 + -(으)ㄹ 줄 알다／모르다",
+    "meaning": "會（懂得怎麼）…／不會…",
+    "explanation": "表示有沒有做某件事的方法或技能：설치할 줄 알아요?（你會安裝嗎？）、운전할 줄 몰라요（我不會開車）。沒有收音接 -ㄹ 줄，有收音接 -을 줄（읽다 → 읽을 줄）。和 -(으)ㄹ 수 있다 相比，更強調「會不會這個方法」。",
+    "extra_example_ko": "저는 한국 요리를 만들 줄 알아요.",
+    "extra_example_zh": "我會做韓國菜。"
+   },
+   {
+    "grammar_id": "g_248",
+    "pattern": "形容詞語幹 + -아/어지다",
+    "meaning": "變得…",
+    "explanation": "把形容詞變成「變化」：편리하다 → 편리해지다（變方便）、예쁘다 → 예뻐지다（變漂亮）、춥다 → 추워지다（變冷）。接法和 -아요/어요 一樣。常和 점점（漸漸）、많이 一起用。",
+    "extra_example_ko": "날씨가 점점 추워져요.",
+    "extra_example_zh": "天氣漸漸變冷了。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_225",
+  "level": 2,
+  "topic": "社群媒體與拍照分享",
+  "title_ko": "나의 인스타그램",
+  "title_zh": "我的 Instagram",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "저는 요즘 여행 사진을 인스타그램에 올리는 중이에요.",
+    "zh": "我最近正在把旅遊照片上傳到 Instagram。",
+    "target_words": [
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "요즘",
+      "lemma": "요즘",
+      "vocab_id": "v_1833"
+     },
+     {
+      "surface": "여행",
+      "lemma": "여행",
+      "vocab_id": "v_1592"
+     },
+     {
+      "surface": "사진을",
+      "lemma": "사진",
+      "vocab_id": "v_1068"
+     },
+     {
+      "surface": "올리는",
+      "lemma": "올리다",
+      "vocab_id": "v_2914"
+     }
+    ],
+    "grammar_ids": [
+     "g_250"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "사진을 올릴 때마다 필터를 써서 예쁘게 보정해요.",
+    "zh": "每次上傳照片，都會用濾鏡修得漂漂亮亮的。",
+    "target_words": [
+     {
+      "surface": "사진을",
+      "lemma": "사진",
+      "vocab_id": "v_1068"
+     },
+     {
+      "surface": "올릴",
+      "lemma": "올리다",
+      "vocab_id": "v_2914"
+     },
+     {
+      "surface": "필터를",
+      "lemma": "필터",
+      "vocab_id": "v_2924"
+     },
+     {
+      "surface": "예쁘게",
+      "lemma": "예쁘다",
+      "vocab_id": "v_1533"
+     },
+     {
+      "surface": "보정해요",
+      "lemma": "보정하다",
+      "vocab_id": "v_2925"
+     }
+    ],
+    "grammar_ids": [
+     "g_249"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "팔로워가 천 명이 넘어서 요즘은 댓글도 많이 달려요.",
+    "zh": "追蹤者超過一千人，最近留言也變多了。",
+    "target_words": [
+     {
+      "surface": "팔로워가",
+      "lemma": "팔로워",
+      "vocab_id": "v_2918"
+     },
+     {
+      "surface": "천",
+      "lemma": "천",
+      "vocab_id": "v_1081"
+     },
+     {
+      "surface": "명이",
+      "lemma": "명",
+      "vocab_id": "v_1060"
+     },
+     {
+      "surface": "요즘은",
+      "lemma": "요즘",
+      "vocab_id": "v_1833"
+     },
+     {
+      "surface": "댓글도",
+      "lemma": "댓글",
+      "vocab_id": "v_2915"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "사람들과 소통하는 것이 즐겁지만 가끔 악플 때문에 속상할 때도 있어요.",
+    "zh": "和大家互動很開心，但偶爾也會因為惡意留言而難過。",
+    "target_words": [
+     {
+      "surface": "사람들과",
+      "lemma": "사람",
+      "vocab_id": "v_1015"
+     },
+     {
+      "surface": "소통하는",
+      "lemma": "소통하다",
+      "vocab_id": "v_2940"
+     },
+     {
+      "surface": "즐겁지만",
+      "lemma": "즐겁다",
+      "vocab_id": "v_1686"
+     },
+     {
+      "surface": "가끔",
+      "lemma": "가끔",
+      "vocab_id": "v_1610"
+     },
+     {
+      "surface": "악플",
+      "lemma": "악플",
+      "vocab_id": "v_2936"
+     },
+     {
+      "surface": "속상할",
+      "lemma": "속상하다",
+      "vocab_id": "v_1707"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "그리고 사생활을 지키기 위해서 집 주소나 얼굴이 나온 사진은 공유하지 않아요.",
+    "zh": "還有，為了保護隱私，我不分享家裡地址或拍到臉的照片。",
+    "target_words": [
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
+     {
+      "surface": "사생활을",
+      "lemma": "사생활",
+      "vocab_id": "v_2935"
+     },
+     {
+      "surface": "지키기",
+      "lemma": "지키다",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "집",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "주소나",
+      "lemma": "주소",
+      "vocab_id": "v_2120"
+     },
+     {
+      "surface": "얼굴이",
+      "lemma": "얼굴",
+      "vocab_id": "v_1649"
+     },
+     {
+      "surface": "사진은",
+      "lemma": "사진",
+      "vocab_id": "v_1068"
+     },
+     {
+      "surface": "공유하지",
+      "lemma": "공유하다",
+      "vocab_id": "v_2933"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "앞으로도 좋은 게시물로 많은 사람에게 즐거움을 주고 싶어요.",
+    "zh": "以後也想用好的貼文帶給很多人快樂。",
+    "target_words": [
+     {
+      "surface": "좋은",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
+     {
+      "surface": "게시물로",
+      "lemma": "게시물",
+      "vocab_id": "v_2913"
+     },
+     {
+      "surface": "많은",
+      "lemma": "많다",
+      "vocab_id": "v_1785"
+     },
+     {
+      "surface": "사람에게",
+      "lemma": "사람",
+      "vocab_id": "v_1015"
+     },
+     {
+      "surface": "즐거움을",
+      "lemma": "즐거움",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "주고",
+      "lemma": "주다",
+      "vocab_id": "v_1447"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "지키다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "守護、保護；遵守"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "즐거움",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "快樂、樂趣"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_249",
+    "pattern": "動詞語幹 + -(으)ㄹ 때마다",
+    "meaning": "每當…的時候",
+    "explanation": "-(으)ㄹ 때（…的時候）加上 마다（每），表示每次做某件事時都會發生後面的事：올릴 때마다 보정해요（每次上傳都修圖）。沒有收音接 -ㄹ 때마다，有收音接 -을 때마다（먹을 때마다）。",
+    "extra_example_ko": "이 노래를 들을 때마다 고향 생각이 나요.",
+    "extra_example_zh": "每次聽到這首歌就會想起故鄉。"
+   },
+   {
+    "grammar_id": "g_250",
+    "pattern": "動詞語幹 + -는 중이다",
+    "meaning": "正在…中",
+    "explanation": "表示某件事正在進行：올리는 중이에요（正在上傳）、회의하는 중이에요（正在開會）。不管有沒有收音都接 -는 중이다；「名詞＋하다」可以直接說 名詞 + 중이다（회의 중이에요、통화 중이에요）。比 -고 있다 更強調「此刻正忙著這件事」。",
+    "extra_example_ko": "지금 숙제하는 중이니까 나중에 전화할게요.",
+    "extra_example_zh": "我現在正在寫作業，等一下再打給你。"
    }
   ]
  },

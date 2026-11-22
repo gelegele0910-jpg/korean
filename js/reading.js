@@ -4,7 +4,7 @@
  * READ_ARTICLES：文章；target_words 的 surface 必須照順序出現在句子裡，vocab_id 指向 READ_VOCAB 或該篇的 challenge_vocab（+1 生字）。
  * VOCAB_ID_MAP：舊編號 → 新編號（2026-11 重新編號，migrate() 會把複習進度換過去）。
  * 檢查：tests/hangul.js 的 R1～R5。 */
-const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": true}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": true}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": true}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": true}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": true}];
+const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "art": "art_101", "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "art": "art_102", "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "art": "art_103", "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "art": "art_104", "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "art": "art_105", "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "art": "art_106", "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "art": "art_107", "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "art": "art_108", "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "art": "art_109", "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "art": "art_110", "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "art": "art_111", "ready": true}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "art": "art_112", "ready": true}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "art": "art_113", "ready": true}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "art": "art_114", "ready": true}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "art": "art_115", "ready": true}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "art": "art_116", "ready": true}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "art": "art_117", "ready": true}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "art": "art_118", "ready": true}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "art": "art_119", "ready": true}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "art": "art_120", "ready": true}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "art": "art_121", "ready": true}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "art": "art_122", "ready": true}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "art": "art_123", "ready": true}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "art": "art_124", "ready": true}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "art": "art_125", "ready": true}, {"no": 26, "level": 2, "title": "醫院看診與常見症狀", "desc": "內科/牙科、感冒、發燒、頭痛、肚子痛", "ids": ["v_2001", "v_2038"], "art": "art_201", "ready": true}, {"no": 27, "level": 2, "title": "藥局買藥與保健習慣", "desc": "吃藥、處方箋、休息、打針、維他命", "ids": ["v_2039", "v_2076"], "art": "art_202", "ready": true}, {"no": 28, "level": 2, "title": "銀行開戶與換匯業務", "desc": "存摺、提款卡、換錢、匯款、密碼", "ids": ["v_2077", "v_2114"], "art": "art_203", "ready": true}, {"no": 29, "level": 2, "title": "郵局寄信與宅配物流", "desc": "包裹、明信片、寄送、地址、郵票", "ids": ["v_2115", "v_2152"], "art": "art_204", "ready": true}, {"no": 30, "level": 2, "title": "美容院剪髮與造型需求", "desc": "剪頭髮、燙髮、染髮、短一點、劉海", "ids": ["v_2153", "v_2190"], "art": "art_205", "ready": true}, {"no": 31, "level": 2, "title": "服飾店試穿與退換貨", "desc": "試衣間、尺寸、太緊/太鬆、換貨、刷卡/付現", "ids": ["v_2191", "v_2228"], "art": "art_206", "ready": false}, {"no": 32, "level": 2, "title": "住宿訂房與飯店設施", "desc": "單人房/雙人房、預約、辦理入住、早餐、鑰匙", "ids": ["v_2229", "v_2266"], "art": "art_207", "ready": false}, {"no": 33, "level": 2, "title": "機場出入境與搭機流程", "desc": "護照、機票、行李託運、海關、免稅店", "ids": ["v_2267", "v_2304"], "art": "art_208", "ready": false}, {"no": 34, "level": 2, "title": "搭乘大眾運輸與轉乘", "desc": "交通卡、加值、首班車/末班車、塞車、迷路", "ids": ["v_2305", "v_2342"], "art": "art_209", "ready": false}, {"no": 35, "level": 2, "title": "租屋看房與生活水電費", "desc": "保證金、月租、管理費、水電費、搬家", "ids": ["v_2343", "v_2380"], "art": "art_210", "ready": false}, {"no": 36, "level": 2, "title": "家務分工與打掃清潔", "desc": "洗衣服、洗碗、掃地、丟垃圾、整理", "ids": ["v_2381", "v_2418"], "art": "art_211", "ready": false}, {"no": 37, "level": 2, "title": "料理步驟與廚房用具", "desc": "切菜、煮、炒、煎、鍋子、刀子", "ids": ["v_2419", "v_2456"], "art": "art_212", "ready": false}, {"no": 38, "level": 2, "title": "節日慶祝與送禮文化", "desc": "生日、過年、中秋節、禮物、卡片、祝福", "ids": ["v_2457", "v_2494"], "art": "art_213", "ready": false}, {"no": 39, "level": 2, "title": "邀請作客與餐桌禮儀", "desc": "邀請、拜訪、準備食物、乾杯、道謝", "ids": ["v_2495", "v_2532"], "art": "art_214", "ready": false}, {"no": 40, "level": 2, "title": "性格特質與人物評價", "desc": "親切、活潑、安靜、誠實、懶惰、聰明", "ids": ["v_2533", "v_2570"], "art": "art_215", "ready": false}, {"no": 41, "level": 2, "title": "人際關係與社交互動", "desc": "朋友、前輩/後輩、鄰居、吵架、和好", "ids": ["v_2571", "v_2608"], "art": "art_216", "ready": false}, {"no": 42, "level": 2, "title": "戀愛約會與情感表達", "desc": "告白、約會、喜歡、想念、分手、結婚", "ids": ["v_2609", "v_2646"], "art": "art_217", "ready": false}, {"no": 43, "level": 2, "title": "學校生活與考試準備", "desc": "學期、作業、考試、及格、成績、圖書館", "ids": ["v_2647", "v_2684"], "art": "art_218", "ready": false}, {"no": 44, "level": 2, "title": "社團活動與才藝學習", "desc": "吉他、鋼琴、畫畫、拍照、參加比賽", "ids": ["v_2685", "v_2722"], "art": "art_219", "ready": false}, {"no": 45, "level": 2, "title": "旅遊規劃與觀光景點", "desc": "地圖、導遊、博物館、遊樂園、紀念品", "ids": ["v_2723", "v_2760"], "art": "art_220", "ready": false}, {"no": 46, "level": 2, "title": "地理環境與自然景觀", "desc": "山、海、江、島嶼、公園、風景", "ids": ["v_2761", "v_2798"], "art": "art_221", "ready": false}, {"no": 47, "level": 2, "title": "動植物與寵物飼養", "desc": "小狗、小貓、養寵物、餵食、花、樹", "ids": ["v_2799", "v_2836"], "art": "art_222", "ready": false}, {"no": 48, "level": 2, "title": "電影院與表演藝術觀賞", "desc": "買票、座位、演員、主角、劇情、感動", "ids": ["v_2837", "v_2874"], "art": "art_223", "ready": false}, {"no": 49, "level": 2, "title": "手機通訊與網路使用", "desc": "智慧型手機、網路、下載、搜尋、充電", "ids": ["v_2875", "v_2912"], "art": "art_224", "ready": false}, {"no": 50, "level": 2, "title": "社群媒體與拍照分享", "desc": "上傳、留言、按讚、自拍、影片", "ids": ["v_2913", "v_2950"], "art": "art_225", "ready": false}, {"no": 51, "level": 2, "title": "氣候變化與季節災害", "desc": "颱風、梅雨、霧霾、溫度、乾燥/潮濕", "ids": ["v_2951", "v_2988"], "art": "art_226", "ready": false}, {"no": 52, "level": 2, "title": "交通安全與突發狀況", "desc": "紅綠燈、斑馬線、交通事故、警察局、遺失物品", "ids": ["v_2989", "v_3026"], "art": "art_227", "ready": false}, {"no": 53, "level": 2, "title": "個人習慣與生活改變", "desc": "早起、熬夜、減肥、戒菸、養成習慣", "ids": ["v_3027", "v_3064"], "art": "art_228", "ready": false}, {"no": 54, "level": 2, "title": "計畫安排與未來夢想", "desc": "決定、準備、希望、成功、失敗、努力", "ids": ["v_3065", "v_3102"], "art": "art_229", "ready": false}, {"no": 55, "level": 2, "title": "程度副詞與語氣轉折詞", "desc": "非常、稍微、完全、突然、所以、因此", "ids": ["v_3103", "v_3140"], "art": "art_230", "ready": false}];
 
 const VOCAB_ID_MAP = {"v_1029": "v_1118", "v_1011": "v_1307", "v_1003": "v_1308", "v_1022": "v_1309", "v_1001": "v_1341", "v_1002": "v_1342", "v_1013": "v_1343", "v_1014": "v_1344", "v_1015": "v_1345", "v_1016": "v_1346", "v_1004": "v_1375", "v_1005": "v_1376", "v_1017": "v_1377", "v_1018": "v_1378", "v_1019": "v_1379", "v_1023": "v_1380", "v_1024": "v_1381", "v_1025": "v_1382", "v_1026": "v_1383", "v_1027": "v_1384", "v_1028": "v_1385", "v_1030": "v_1386", "v_1006": "v_1409", "v_1007": "v_1410", "v_1008": "v_1411", "v_1009": "v_1412", "v_1010": "v_1413", "v_1012": "v_1414", "v_1020": "v_1749", "v_1021": "v_1750"};
 const ARTICLE_ID_MAP = { 'art_101:new_01': 'art_112:new_01', 'art_101:new_02': 'art_112:new_02' };
@@ -9359,6 +9359,2096 @@ const READ_VOCAB = [
   "meaning_zh": "每週",
   "example_ko": "매주 토요일에 등산해요.",
   "example_zh": "每週六去爬山。"
+ },
+ {
+  "id": "v_2001",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "내과",
+  "pos": "名詞",
+  "hanja": "內科",
+  "meaning_zh": "內科",
+  "example_ko": "감기에 걸려서 내과에 갔어요.",
+  "example_zh": "感冒了，所以去看內科。"
+ },
+ {
+  "id": "v_2002",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "치과",
+  "pos": "名詞",
+  "hanja": "齒科",
+  "meaning_zh": "牙科",
+  "example_ko": "이가 아파서 치과에 가요.",
+  "example_zh": "牙齒痛，所以要去牙科。"
+ },
+ {
+  "id": "v_2003",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "안과",
+  "pos": "名詞",
+  "hanja": "眼科",
+  "meaning_zh": "眼科",
+  "example_ko": "눈이 빨개서 안과에 가 봤어요.",
+  "example_zh": "眼睛紅紅的，所以去看了眼科。"
+ },
+ {
+  "id": "v_2004",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "피부과",
+  "pos": "名詞",
+  "hanja": "皮膚科",
+  "meaning_zh": "皮膚科",
+  "example_ko": "얼굴에 뭐가 나서 피부과에 갔어요.",
+  "example_zh": "臉上長了東西，所以去了皮膚科。"
+ },
+ {
+  "id": "v_2005",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "소아과",
+  "pos": "名詞",
+  "hanja": "小兒科",
+  "meaning_zh": "小兒科",
+  "example_ko": "아이가 열이 나서 소아과에 갔어요.",
+  "example_zh": "小孩發燒了，所以去了小兒科。"
+ },
+ {
+  "id": "v_2006",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "이비인후과",
+  "pos": "名詞",
+  "hanja": "耳鼻咽喉科",
+  "meaning_zh": "耳鼻喉科",
+  "example_ko": "목이 아프면 이비인후과에 가세요.",
+  "example_zh": "喉嚨痛的話請去耳鼻喉科。"
+ },
+ {
+  "id": "v_2007",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "진료",
+  "pos": "名詞",
+  "hanja": "診療",
+  "meaning_zh": "看診、診療",
+  "example_ko": "오늘 진료는 여섯 시까지예요.",
+  "example_zh": "今天看診到六點。"
+ },
+ {
+  "id": "v_2008",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "예약하다",
+  "pos": "動詞",
+  "hanja": "豫約",
+  "meaning_zh": "預約",
+  "example_ko": "병원에 전화해서 예약했어요.",
+  "example_zh": "打電話到醫院預約了。"
+ },
+ {
+  "id": "v_2009",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "접수하다",
+  "pos": "動詞",
+  "hanja": "接受",
+  "meaning_zh": "掛號、受理",
+  "example_ko": "먼저 일 층에서 접수하세요.",
+  "example_zh": "請先在一樓掛號。"
+ },
+ {
+  "id": "v_2010",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "환자",
+  "pos": "名詞",
+  "hanja": "患者",
+  "meaning_zh": "病人、患者",
+  "example_ko": "오늘 병원에 환자가 많아요.",
+  "example_zh": "今天醫院病人很多。"
+ },
+ {
+  "id": "v_2011",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "증상",
+  "pos": "名詞",
+  "hanja": "症狀",
+  "meaning_zh": "症狀",
+  "example_ko": "어떤 증상이 있어요?",
+  "example_zh": "有什麼症狀？"
+ },
+ {
+  "id": "v_2012",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "감기",
+  "pos": "名詞",
+  "hanja": "感氣",
+  "meaning_zh": "感冒",
+  "example_ko": "감기에 걸려서 학교에 못 갔어요.",
+  "example_zh": "感冒了，所以沒辦法去學校。"
+ },
+ {
+  "id": "v_2013",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "열",
+  "pos": "名詞",
+  "hanja": "熱",
+  "meaning_zh": "發燒、熱度",
+  "example_ko": "어제부터 열이 나요.",
+  "example_zh": "從昨天開始發燒。"
+ },
+ {
+  "id": "v_2014",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "기침",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "咳嗽",
+  "example_ko": "밤에 기침을 많이 해요.",
+  "example_zh": "晚上咳得很厲害。"
+ },
+ {
+  "id": "v_2015",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "콧물",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鼻水",
+  "example_ko": "콧물이 계속 나요.",
+  "example_zh": "一直流鼻水。"
+ },
+ {
+  "id": "v_2016",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "두통",
+  "pos": "名詞",
+  "hanja": "頭痛",
+  "meaning_zh": "頭痛",
+  "example_ko": "두통이 심해서 일찍 잤어요.",
+  "example_zh": "頭痛得很厲害，所以早早就睡了。"
+ },
+ {
+  "id": "v_2017",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "복통",
+  "pos": "名詞",
+  "hanja": "腹痛",
+  "meaning_zh": "腹痛、肚子痛",
+  "example_ko": "점심을 먹고 복통이 생겼어요.",
+  "example_zh": "吃完午餐開始肚子痛。"
+ },
+ {
+  "id": "v_2018",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "배탈",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "吃壞肚子、腸胃不適",
+  "example_ko": "찬 음식을 많이 먹어서 배탈이 났어요.",
+  "example_zh": "吃了太多冰冷的食物，吃壞肚子了。"
+ },
+ {
+  "id": "v_2019",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "설사",
+  "pos": "名詞",
+  "hanja": "泄瀉",
+  "meaning_zh": "腹瀉、拉肚子",
+  "example_ko": "설사를 해서 화장실에 자주 가요.",
+  "example_zh": "拉肚子，所以常常跑廁所。"
+ },
+ {
+  "id": "v_2020",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "어지럽다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "頭暈",
+  "example_ko": "갑자기 일어나서 어지러워요.",
+  "example_zh": "突然站起來，頭好暈。"
+ },
+ {
+  "id": "v_2021",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "토하다",
+  "pos": "動詞",
+  "hanja": "吐",
+  "meaning_zh": "吐、嘔吐",
+  "example_ko": "버스에서 토할 것 같아요.",
+  "example_zh": "在公車上好像快吐了。"
+ },
+ {
+  "id": "v_2022",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "다치다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "受傷",
+  "example_ko": "축구를 하다가 다리를 다쳤어요.",
+  "example_zh": "踢足球的時候腿受傷了。"
+ },
+ {
+  "id": "v_2023",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "상처",
+  "pos": "名詞",
+  "hanja": "傷處",
+  "meaning_zh": "傷口",
+  "example_ko": "상처에 약을 발라요.",
+  "example_zh": "在傷口上擦藥。"
+ },
+ {
+  "id": "v_2024",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "붓다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "腫",
+  "example_ko": "발목이 많이 부었어요.",
+  "example_zh": "腳踝腫得很厲害。"
+ },
+ {
+  "id": "v_2025",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "가렵다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "癢",
+  "example_ko": "모기에 물려서 너무 가려워요.",
+  "example_zh": "被蚊子咬了，好癢。"
+ },
+ {
+  "id": "v_2026",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "검사",
+  "pos": "名詞",
+  "hanja": "檢査",
+  "meaning_zh": "檢查",
+  "example_ko": "피 검사를 받았어요.",
+  "example_zh": "做了抽血檢查。"
+ },
+ {
+  "id": "v_2027",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "진찰하다",
+  "pos": "動詞",
+  "hanja": "診察",
+  "meaning_zh": "看診、診察",
+  "example_ko": "의사 선생님이 진찰해 주셨어요.",
+  "example_zh": "醫生幫我看了診。"
+ },
+ {
+  "id": "v_2028",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "주사",
+  "pos": "名詞",
+  "hanja": "注射",
+  "meaning_zh": "打針、注射",
+  "example_ko": "주사가 무서워요.",
+  "example_zh": "我怕打針。"
+ },
+ {
+  "id": "v_2029",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "입원하다",
+  "pos": "動詞",
+  "hanja": "入院",
+  "meaning_zh": "住院",
+  "example_ko": "할머니가 병원에 입원하셨어요.",
+  "example_zh": "奶奶住院了。"
+ },
+ {
+  "id": "v_2030",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "퇴원하다",
+  "pos": "動詞",
+  "hanja": "退院",
+  "meaning_zh": "出院",
+  "example_ko": "다음 주에 퇴원할 수 있어요.",
+  "example_zh": "下週可以出院。"
+ },
+ {
+  "id": "v_2031",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "수술",
+  "pos": "名詞",
+  "hanja": "手術",
+  "meaning_zh": "手術",
+  "example_ko": "수술이 잘 끝났어요.",
+  "example_zh": "手術順利結束了。"
+ },
+ {
+  "id": "v_2032",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "낫다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "（病）好、痊癒",
+  "example_ko": "약을 먹고 감기가 다 나았어요.",
+  "example_zh": "吃了藥，感冒都好了。"
+ },
+ {
+  "id": "v_2033",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "건강하다",
+  "pos": "形容詞",
+  "hanja": "健康",
+  "meaning_zh": "健康",
+  "example_ko": "할아버지는 아직 건강하세요.",
+  "example_zh": "爺爺還很健康。"
+ },
+ {
+  "id": "v_2034",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "몸살",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "全身痠痛（累到生病）",
+  "example_ko": "일이 많아서 몸살이 났어요.",
+  "example_zh": "工作太多，累到全身痠痛。"
+ },
+ {
+  "id": "v_2035",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "독감",
+  "pos": "名詞",
+  "hanja": "毒感",
+  "meaning_zh": "流感",
+  "example_ko": "독감 때문에 일주일 동안 쉬었어요.",
+  "example_zh": "因為流感休息了一個星期。"
+ },
+ {
+  "id": "v_2036",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "체온",
+  "pos": "名詞",
+  "hanja": "體溫",
+  "meaning_zh": "體溫",
+  "example_ko": "먼저 체온을 재 볼게요.",
+  "example_zh": "先量一下體溫。"
+ },
+ {
+  "id": "v_2037",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "응급실",
+  "pos": "名詞",
+  "hanja": "應急室",
+  "meaning_zh": "急診室",
+  "example_ko": "밤에 배가 너무 아파서 응급실에 갔어요.",
+  "example_zh": "晚上肚子太痛，去了急診室。"
+ },
+ {
+  "id": "v_2038",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "word": "구급차",
+  "pos": "名詞",
+  "hanja": "救急車",
+  "meaning_zh": "救護車",
+  "example_ko": "구급차를 불러 주세요!",
+  "example_zh": "請叫救護車！"
+ },
+ {
+  "id": "v_2039",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "약",
+  "pos": "名詞",
+  "hanja": "藥",
+  "meaning_zh": "藥",
+  "example_ko": "이 약은 하루에 세 번 드세요.",
+  "example_zh": "這個藥一天吃三次。"
+ },
+ {
+  "id": "v_2040",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "약사",
+  "pos": "名詞",
+  "hanja": "藥師",
+  "meaning_zh": "藥師",
+  "example_ko": "약사에게 물어보세요.",
+  "example_zh": "請問藥師。"
+ },
+ {
+  "id": "v_2041",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "처방전",
+  "pos": "名詞",
+  "hanja": "處方箋",
+  "meaning_zh": "處方箋",
+  "example_ko": "처방전을 약국에 가져가세요.",
+  "example_zh": "請把處方箋拿到藥局。"
+ },
+ {
+  "id": "v_2042",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "감기약",
+  "pos": "名詞",
+  "hanja": "感氣藥",
+  "meaning_zh": "感冒藥",
+  "example_ko": "감기약을 먹으면 졸려요.",
+  "example_zh": "吃了感冒藥會想睡覺。"
+ },
+ {
+  "id": "v_2043",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "소화제",
+  "pos": "名詞",
+  "hanja": "消化劑",
+  "meaning_zh": "胃腸藥、消化藥",
+  "example_ko": "많이 먹어서 소화제를 먹었어요.",
+  "example_zh": "吃太多了，所以吃了胃腸藥。"
+ },
+ {
+  "id": "v_2044",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "진통제",
+  "pos": "名詞",
+  "hanja": "鎭痛劑",
+  "meaning_zh": "止痛藥",
+  "example_ko": "머리가 아파서 진통제를 먹었어요.",
+  "example_zh": "頭痛，所以吃了止痛藥。"
+ },
+ {
+  "id": "v_2045",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "해열제",
+  "pos": "名詞",
+  "hanja": "解熱劑",
+  "meaning_zh": "退燒藥",
+  "example_ko": "열이 나면 해열제를 드세요.",
+  "example_zh": "發燒的話請吃退燒藥。"
+ },
+ {
+  "id": "v_2046",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "연고",
+  "pos": "名詞",
+  "hanja": "軟膏",
+  "meaning_zh": "藥膏",
+  "example_ko": "상처에 연고를 바르세요.",
+  "example_zh": "請在傷口上擦藥膏。"
+ },
+ {
+  "id": "v_2047",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "파스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "痠痛貼布",
+  "example_ko": "어깨에 파스를 붙였어요.",
+  "example_zh": "在肩膀上貼了痠痛貼布。"
+ },
+ {
+  "id": "v_2048",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "밴드",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "OK 繃",
+  "example_ko": "손가락에 밴드를 붙여요.",
+  "example_zh": "在手指上貼 OK 繃。"
+ },
+ {
+  "id": "v_2049",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "알약",
+  "pos": "名詞",
+  "hanja": "藥",
+  "meaning_zh": "藥丸、藥片",
+  "example_ko": "알약을 삼키기가 힘들어요.",
+  "example_zh": "藥丸很難吞。"
+ },
+ {
+  "id": "v_2050",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "가루약",
+  "pos": "名詞",
+  "hanja": "藥",
+  "meaning_zh": "藥粉",
+  "example_ko": "아이는 가루약을 먹어요.",
+  "example_zh": "小孩吃藥粉。"
+ },
+ {
+  "id": "v_2051",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "물약",
+  "pos": "名詞",
+  "hanja": "藥",
+  "meaning_zh": "藥水",
+  "example_ko": "이 물약은 맛이 달아요.",
+  "example_zh": "這個藥水味道甜甜的。"
+ },
+ {
+  "id": "v_2052",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "비타민",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "維他命",
+  "example_ko": "매일 아침 비타민을 먹어요.",
+  "example_zh": "每天早上吃維他命。"
+ },
+ {
+  "id": "v_2053",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "영양제",
+  "pos": "名詞",
+  "hanja": "營養劑",
+  "meaning_zh": "營養補充品、保健食品",
+  "example_ko": "어머니께 영양제를 사 드렸어요.",
+  "example_zh": "買了保健食品給媽媽。"
+ },
+ {
+  "id": "v_2054",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "부작용",
+  "pos": "名詞",
+  "hanja": "副作用",
+  "meaning_zh": "副作用",
+  "example_ko": "이 약은 부작용이 있어요?",
+  "example_zh": "這個藥有副作用嗎？"
+ },
+ {
+  "id": "v_2055",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "식후",
+  "pos": "名詞",
+  "hanja": "食後",
+  "meaning_zh": "飯後",
+  "example_ko": "약은 식후 삼십 분에 드세요.",
+  "example_zh": "藥請在飯後三十分鐘吃。"
+ },
+ {
+  "id": "v_2056",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "식전",
+  "pos": "名詞",
+  "hanja": "食前",
+  "meaning_zh": "飯前",
+  "example_ko": "이 약은 식전에 먹어야 해요.",
+  "example_zh": "這個藥要在飯前吃。"
+ },
+ {
+  "id": "v_2057",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "복용하다",
+  "pos": "動詞",
+  "hanja": "服用",
+  "meaning_zh": "服用（藥）",
+  "example_ko": "하루에 두 번 복용하세요.",
+  "example_zh": "請一天服用兩次。"
+ },
+ {
+  "id": "v_2058",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "바르다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "擦、塗",
+  "example_ko": "얼굴에 크림을 발라요.",
+  "example_zh": "在臉上擦乳霜。"
+ },
+ {
+  "id": "v_2059",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "붙이다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "貼",
+  "example_ko": "편지에 우표를 붙였어요.",
+  "example_zh": "在信上貼了郵票。"
+ },
+ {
+  "id": "v_2060",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "쉬다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "休息",
+  "example_ko": "주말에는 집에서 쉬어요.",
+  "example_zh": "週末在家休息。"
+ },
+ {
+  "id": "v_2061",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "휴식",
+  "pos": "名詞",
+  "hanja": "休息",
+  "meaning_zh": "休養、休息（名詞）",
+  "example_ko": "충분한 휴식이 필요해요.",
+  "example_zh": "需要充分的休養。"
+ },
+ {
+  "id": "v_2062",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "습관",
+  "pos": "名詞",
+  "hanja": "習慣",
+  "meaning_zh": "習慣",
+  "example_ko": "좋은 습관을 만들고 싶어요.",
+  "example_zh": "我想養成好習慣。"
+ },
+ {
+  "id": "v_2063",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "규칙적",
+  "pos": "名詞",
+  "hanja": "規則的",
+  "meaning_zh": "規律的",
+  "example_ko": "규칙적으로 운동하세요.",
+  "example_zh": "請規律地運動。"
+ },
+ {
+  "id": "v_2064",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "수면",
+  "pos": "名詞",
+  "hanja": "睡眠",
+  "meaning_zh": "睡眠",
+  "example_ko": "수면 시간이 부족해요.",
+  "example_zh": "睡眠時間不夠。"
+ },
+ {
+  "id": "v_2065",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "영양",
+  "pos": "名詞",
+  "hanja": "營養",
+  "meaning_zh": "營養",
+  "example_ko": "영양이 많은 음식을 드세요.",
+  "example_zh": "請吃營養豐富的食物。"
+ },
+ {
+  "id": "v_2066",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "스트레스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "壓力",
+  "example_ko": "요즘 스트레스를 많이 받아요.",
+  "example_zh": "最近壓力很大。"
+ },
+ {
+  "id": "v_2067",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "예방",
+  "pos": "名詞",
+  "hanja": "豫防",
+  "meaning_zh": "預防",
+  "example_ko": "손을 자주 씻는 것이 감기 예방에 좋아요.",
+  "example_zh": "常洗手對預防感冒很好。"
+ },
+ {
+  "id": "v_2068",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "마스크",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "口罩",
+  "example_ko": "감기에 걸리면 마스크를 쓰세요.",
+  "example_zh": "感冒的話請戴口罩。"
+ },
+ {
+  "id": "v_2069",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "체중",
+  "pos": "名詞",
+  "hanja": "體重",
+  "meaning_zh": "體重",
+  "example_ko": "요즘 체중이 늘었어요.",
+  "example_zh": "最近體重增加了。"
+ },
+ {
+  "id": "v_2070",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "줄이다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "減少、縮小",
+  "example_ko": "커피를 줄이려고 해요.",
+  "example_zh": "我打算少喝咖啡。"
+ },
+ {
+  "id": "v_2071",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "늘리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "增加、延長",
+  "example_ko": "운동 시간을 늘렸어요.",
+  "example_zh": "增加了運動時間。"
+ },
+ {
+  "id": "v_2072",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "조심하다",
+  "pos": "動詞",
+  "hanja": "操心",
+  "meaning_zh": "小心、注意",
+  "example_ko": "감기 조심하세요.",
+  "example_zh": "小心別感冒了。"
+ },
+ {
+  "id": "v_2073",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "챙기다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "照顧、記得帶",
+  "example_ko": "아침을 꼭 챙겨 드세요.",
+  "example_zh": "早餐一定要記得吃。"
+ },
+ {
+  "id": "v_2074",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "건강검진",
+  "pos": "名詞",
+  "hanja": "健康檢診",
+  "meaning_zh": "健康檢查",
+  "example_ko": "일 년에 한 번 건강검진을 받아요.",
+  "example_zh": "一年做一次健康檢查。"
+ },
+ {
+  "id": "v_2075",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "효과",
+  "pos": "名詞",
+  "hanja": "效果",
+  "meaning_zh": "效果",
+  "example_ko": "이 약은 효과가 좋아요.",
+  "example_zh": "這個藥效果很好。"
+ },
+ {
+  "id": "v_2076",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "word": "알레르기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "過敏",
+  "example_ko": "저는 땅콩 알레르기가 있어요.",
+  "example_zh": "我對花生過敏。"
+ },
+ {
+  "id": "v_2077",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "통장",
+  "pos": "名詞",
+  "hanja": "通帳",
+  "meaning_zh": "存摺",
+  "example_ko": "은행에서 통장을 만들었어요.",
+  "example_zh": "在銀行辦了存摺。"
+ },
+ {
+  "id": "v_2078",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "계좌",
+  "pos": "名詞",
+  "hanja": "計座",
+  "meaning_zh": "帳戶",
+  "example_ko": "계좌 번호를 알려 주세요.",
+  "example_zh": "請告訴我帳號。"
+ },
+ {
+  "id": "v_2079",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "현금카드",
+  "pos": "名詞",
+  "hanja": "現金",
+  "meaning_zh": "提款卡",
+  "example_ko": "현금카드를 잃어버렸어요.",
+  "example_zh": "提款卡弄丟了。"
+ },
+ {
+  "id": "v_2080",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "체크카드",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "簽帳金融卡",
+  "example_ko": "저는 체크카드를 자주 써요.",
+  "example_zh": "我常用簽帳金融卡。"
+ },
+ {
+  "id": "v_2081",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "신용카드",
+  "pos": "名詞",
+  "hanja": "信用",
+  "meaning_zh": "信用卡",
+  "example_ko": "신용카드로 계산해도 돼요?",
+  "example_zh": "可以用信用卡結帳嗎？"
+ },
+ {
+  "id": "v_2082",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "비밀번호",
+  "pos": "名詞",
+  "hanja": "祕密番號",
+  "meaning_zh": "密碼",
+  "example_ko": "비밀번호 네 자리를 누르세요.",
+  "example_zh": "請按四位數密碼。"
+ },
+ {
+  "id": "v_2083",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "신분증",
+  "pos": "名詞",
+  "hanja": "身分證",
+  "meaning_zh": "身分證件",
+  "example_ko": "신분증을 보여 주세요.",
+  "example_zh": "請出示身分證件。"
+ },
+ {
+  "id": "v_2084",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "외국인등록증",
+  "pos": "名詞",
+  "hanja": "外國人登錄證",
+  "meaning_zh": "外國人登錄證",
+  "example_ko": "외국인등록증이 있어야 통장을 만들 수 있어요.",
+  "example_zh": "要有外國人登錄證才能辦存摺。"
+ },
+ {
+  "id": "v_2085",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "도장",
+  "pos": "名詞",
+  "hanja": "圖章",
+  "meaning_zh": "印章",
+  "example_ko": "도장 대신 서명해도 돼요.",
+  "example_zh": "可以用簽名代替印章。"
+ },
+ {
+  "id": "v_2086",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "서명",
+  "pos": "名詞",
+  "hanja": "署名",
+  "meaning_zh": "簽名",
+  "example_ko": "여기에 서명해 주세요.",
+  "example_zh": "請在這裡簽名。"
+ },
+ {
+  "id": "v_2087",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "환전",
+  "pos": "名詞",
+  "hanja": "換錢",
+  "meaning_zh": "換錢、換匯",
+  "example_ko": "공항에서 환전했어요.",
+  "example_zh": "在機場換了錢。"
+ },
+ {
+  "id": "v_2088",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "환율",
+  "pos": "名詞",
+  "hanja": "換率",
+  "meaning_zh": "匯率",
+  "example_ko": "오늘 환율이 어때요?",
+  "example_zh": "今天匯率怎麼樣？"
+ },
+ {
+  "id": "v_2089",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "송금",
+  "pos": "名詞",
+  "hanja": "送金",
+  "meaning_zh": "匯款",
+  "example_ko": "대만으로 송금하고 싶어요.",
+  "example_zh": "我想匯款到台灣。"
+ },
+ {
+  "id": "v_2090",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "입금",
+  "pos": "名詞",
+  "hanja": "入金",
+  "meaning_zh": "存款、入帳",
+  "example_ko": "월급이 입금됐어요.",
+  "example_zh": "薪水入帳了。"
+ },
+ {
+  "id": "v_2091",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "출금",
+  "pos": "名詞",
+  "hanja": "出金",
+  "meaning_zh": "提款",
+  "example_ko": "출금은 기계에서 하세요.",
+  "example_zh": "提款請用機器。"
+ },
+ {
+  "id": "v_2092",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "이체",
+  "pos": "名詞",
+  "hanja": "移替",
+  "meaning_zh": "轉帳",
+  "example_ko": "휴대폰으로 이체했어요.",
+  "example_zh": "用手機轉帳了。"
+ },
+ {
+  "id": "v_2093",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "수수료",
+  "pos": "名詞",
+  "hanja": "手數料",
+  "meaning_zh": "手續費",
+  "example_ko": "수수료가 얼마예요?",
+  "example_zh": "手續費多少？"
+ },
+ {
+  "id": "v_2094",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "잔액",
+  "pos": "名詞",
+  "hanja": "殘額",
+  "meaning_zh": "餘額",
+  "example_ko": "통장 잔액을 확인했어요.",
+  "example_zh": "確認了存摺餘額。"
+ },
+ {
+  "id": "v_2095",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "이자",
+  "pos": "名詞",
+  "hanja": "利子",
+  "meaning_zh": "利息",
+  "example_ko": "이 통장은 이자가 높아요.",
+  "example_zh": "這個帳戶利息很高。"
+ },
+ {
+  "id": "v_2096",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "저금하다",
+  "pos": "動詞",
+  "hanja": "貯金",
+  "meaning_zh": "存錢",
+  "example_ko": "매달 십만 원씩 저금해요.",
+  "example_zh": "每個月存十萬韓元。"
+ },
+ {
+  "id": "v_2097",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "뽑다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "抽、提（錢）、拔",
+  "example_ko": "현금인출기에서 돈을 뽑았어요.",
+  "example_zh": "在提款機領了錢。"
+ },
+ {
+  "id": "v_2098",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "현금인출기",
+  "pos": "名詞",
+  "hanja": "現金引出機",
+  "meaning_zh": "提款機（ATM）",
+  "example_ko": "현금인출기가 어디에 있어요?",
+  "example_zh": "提款機在哪裡？"
+ },
+ {
+  "id": "v_2099",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "번호표",
+  "pos": "名詞",
+  "hanja": "番號票",
+  "meaning_zh": "號碼牌",
+  "example_ko": "먼저 번호표를 뽑으세요.",
+  "example_zh": "請先抽號碼牌。"
+ },
+ {
+  "id": "v_2100",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "창구",
+  "pos": "名詞",
+  "hanja": "窓口",
+  "meaning_zh": "窗口、櫃檯",
+  "example_ko": "삼 번 창구로 오세요.",
+  "example_zh": "請到三號窗口。"
+ },
+ {
+  "id": "v_2101",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "은행원",
+  "pos": "名詞",
+  "hanja": "銀行員",
+  "meaning_zh": "銀行行員",
+  "example_ko": "은행원이 친절하게 설명해 줬어요.",
+  "example_zh": "行員很親切地說明了。"
+ },
+ {
+  "id": "v_2102",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "개설하다",
+  "pos": "動詞",
+  "hanja": "開設",
+  "meaning_zh": "開設（帳戶）",
+  "example_ko": "계좌를 개설하고 싶어요.",
+  "example_zh": "我想開戶。"
+ },
+ {
+  "id": "v_2103",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "신청서",
+  "pos": "名詞",
+  "hanja": "申請書",
+  "meaning_zh": "申請書",
+  "example_ko": "이 신청서를 작성해 주세요.",
+  "example_zh": "請填寫這張申請書。"
+ },
+ {
+  "id": "v_2104",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "작성하다",
+  "pos": "動詞",
+  "hanja": "作成",
+  "meaning_zh": "填寫、寫",
+  "example_ko": "이름과 주소를 작성하세요.",
+  "example_zh": "請填寫姓名和地址。"
+ },
+ {
+  "id": "v_2105",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "확인하다",
+  "pos": "動詞",
+  "hanja": "確認",
+  "meaning_zh": "確認",
+  "example_ko": "금액을 다시 확인하세요.",
+  "example_zh": "請再確認一次金額。"
+ },
+ {
+  "id": "v_2106",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "엔화",
+  "pos": "名詞",
+  "hanja": "円貨",
+  "meaning_zh": "日圓",
+  "example_ko": "엔화로 바꿔 주세요.",
+  "example_zh": "請幫我換成日圓。"
+ },
+ {
+  "id": "v_2107",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "외화",
+  "pos": "名詞",
+  "hanja": "外貨",
+  "meaning_zh": "外幣",
+  "example_ko": "외화 통장을 만들었어요.",
+  "example_zh": "開了外幣帳戶。"
+ },
+ {
+  "id": "v_2108",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "지점",
+  "pos": "名詞",
+  "hanja": "支店",
+  "meaning_zh": "分行、分店",
+  "example_ko": "가까운 지점을 찾아 주세요.",
+  "example_zh": "請幫我找最近的分行。"
+ },
+ {
+  "id": "v_2109",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "영업시간",
+  "pos": "名詞",
+  "hanja": "營業時間",
+  "meaning_zh": "營業時間",
+  "example_ko": "은행 영업시간은 네 시까지예요.",
+  "example_zh": "銀行營業時間到四點。"
+ },
+ {
+  "id": "v_2110",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "대출",
+  "pos": "名詞",
+  "hanja": "貸出",
+  "meaning_zh": "貸款",
+  "example_ko": "집을 사려고 대출을 받았어요.",
+  "example_zh": "為了買房子貸了款。"
+ },
+ {
+  "id": "v_2111",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "금액",
+  "pos": "名詞",
+  "hanja": "金額",
+  "meaning_zh": "金額",
+  "example_ko": "보낼 금액을 입력하세요.",
+  "example_zh": "請輸入要匯的金額。"
+ },
+ {
+  "id": "v_2112",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "입력하다",
+  "pos": "動詞",
+  "hanja": "入力",
+  "meaning_zh": "輸入",
+  "example_ko": "비밀번호를 입력해 주세요.",
+  "example_zh": "請輸入密碼。"
+ },
+ {
+  "id": "v_2113",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "누르다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "按、壓",
+  "example_ko": "확인 버튼을 누르세요.",
+  "example_zh": "請按確認鍵。"
+ },
+ {
+  "id": "v_2114",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "word": "모으다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "收集、存（錢）",
+  "example_ko": "여행 가려고 돈을 모으고 있어요.",
+  "example_zh": "為了去旅行正在存錢。"
+ },
+ {
+  "id": "v_2115",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "편지",
+  "pos": "名詞",
+  "hanja": "便紙",
+  "meaning_zh": "信",
+  "example_ko": "친구에게 편지를 썼어요.",
+  "example_zh": "寫了信給朋友。"
+ },
+ {
+  "id": "v_2116",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "엽서",
+  "pos": "名詞",
+  "hanja": "葉書",
+  "meaning_zh": "明信片",
+  "example_ko": "여행지에서 엽서를 보냈어요.",
+  "example_zh": "在旅遊地寄了明信片。"
+ },
+ {
+  "id": "v_2117",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "소포",
+  "pos": "名詞",
+  "hanja": "小包",
+  "meaning_zh": "包裹（郵局）",
+  "example_ko": "어머니께 소포를 보냈어요.",
+  "example_zh": "寄了包裹給媽媽。"
+ },
+ {
+  "id": "v_2118",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "택배",
+  "pos": "名詞",
+  "hanja": "宅配",
+  "meaning_zh": "宅配、快遞",
+  "example_ko": "택배가 도착했어요.",
+  "example_zh": "宅配到了。"
+ },
+ {
+  "id": "v_2119",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "우표",
+  "pos": "名詞",
+  "hanja": "郵票",
+  "meaning_zh": "郵票",
+  "example_ko": "우표를 몇 장 사야 해요?",
+  "example_zh": "要買幾張郵票？"
+ },
+ {
+  "id": "v_2120",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "주소",
+  "pos": "名詞",
+  "hanja": "住所",
+  "meaning_zh": "地址",
+  "example_ko": "받는 사람 주소를 써 주세요.",
+  "example_zh": "請寫收件人地址。"
+ },
+ {
+  "id": "v_2121",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "우편번호",
+  "pos": "名詞",
+  "hanja": "郵便番號",
+  "meaning_zh": "郵遞區號",
+  "example_ko": "우편번호를 모르겠어요.",
+  "example_zh": "我不知道郵遞區號。"
+ },
+ {
+  "id": "v_2122",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "등기",
+  "pos": "名詞",
+  "hanja": "登記",
+  "meaning_zh": "掛號（郵件）",
+  "example_ko": "중요한 서류는 등기로 보내세요.",
+  "example_zh": "重要文件請用掛號寄。"
+ },
+ {
+  "id": "v_2123",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "국제우편",
+  "pos": "名詞",
+  "hanja": "國際郵便",
+  "meaning_zh": "國際郵件",
+  "example_ko": "대만으로 국제우편을 보내려고 해요.",
+  "example_zh": "我想寄國際郵件到台灣。"
+ },
+ {
+  "id": "v_2124",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "항공편",
+  "pos": "名詞",
+  "hanja": "航空便",
+  "meaning_zh": "航空（郵件）、班機",
+  "example_ko": "항공편으로 보내면 빨라요.",
+  "example_zh": "用航空寄比較快。"
+ },
+ {
+  "id": "v_2125",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "배편",
+  "pos": "名詞",
+  "hanja": "便",
+  "meaning_zh": "船運",
+  "example_ko": "배편은 싸지만 오래 걸려요.",
+  "example_zh": "船運便宜但是要很久。"
+ },
+ {
+  "id": "v_2126",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "무게",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "重量",
+  "example_ko": "소포 무게가 얼마예요?",
+  "example_zh": "包裹重量多少？"
+ },
+ {
+  "id": "v_2127",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "저울",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "秤",
+  "example_ko": "저울에 올려 주세요.",
+  "example_zh": "請放到秤上。"
+ },
+ {
+  "id": "v_2128",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "박스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "紙箱",
+  "example_ko": "큰 박스가 필요해요.",
+  "example_zh": "需要大紙箱。"
+ },
+ {
+  "id": "v_2129",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "포장하다",
+  "pos": "動詞",
+  "hanja": "包裝",
+  "meaning_zh": "包裝",
+  "example_ko": "선물을 예쁘게 포장했어요.",
+  "example_zh": "把禮物包得很漂亮。"
+ },
+ {
+  "id": "v_2130",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "테이프",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "膠帶",
+  "example_ko": "박스에 테이프를 붙였어요.",
+  "example_zh": "在紙箱上貼了膠帶。"
+ },
+ {
+  "id": "v_2131",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "깨지다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "破、碎",
+  "example_ko": "컵이 깨졌어요.",
+  "example_zh": "杯子破了。"
+ },
+ {
+  "id": "v_2132",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "배송",
+  "pos": "名詞",
+  "hanja": "配送",
+  "meaning_zh": "配送、運送",
+  "example_ko": "배송은 이틀 걸려요.",
+  "example_zh": "配送要兩天。"
+ },
+ {
+  "id": "v_2133",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "배달",
+  "pos": "名詞",
+  "hanja": "配達",
+  "meaning_zh": "外送、送貨",
+  "example_ko": "치킨을 배달시켰어요.",
+  "example_zh": "叫了炸雞外送。"
+ },
+ {
+  "id": "v_2134",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "요금",
+  "pos": "名詞",
+  "hanja": "料金",
+  "meaning_zh": "費用",
+  "example_ko": "택배 요금은 오천 원이에요.",
+  "example_zh": "宅配費用是五千韓元。"
+ },
+ {
+  "id": "v_2135",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "특급",
+  "pos": "名詞",
+  "hanja": "特急",
+  "meaning_zh": "特快（郵件）",
+  "example_ko": "특급으로 보내면 내일 도착해요.",
+  "example_zh": "用特快寄的話明天到。"
+ },
+ {
+  "id": "v_2136",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "일반",
+  "pos": "名詞",
+  "hanja": "一般",
+  "meaning_zh": "一般、普通",
+  "example_ko": "일반 우편으로 보내 주세요.",
+  "example_zh": "請用普通郵件寄。"
+ },
+ {
+  "id": "v_2137",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "부치다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "寄",
+  "example_ko": "고향에 짐을 부쳤어요.",
+  "example_zh": "把行李寄回老家了。"
+ },
+ {
+  "id": "v_2138",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "반송",
+  "pos": "名詞",
+  "hanja": "返送",
+  "meaning_zh": "退回（郵件）",
+  "example_ko": "주소가 틀려서 반송됐어요.",
+  "example_zh": "地址寫錯，被退回了。"
+ },
+ {
+  "id": "v_2139",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "파손",
+  "pos": "名詞",
+  "hanja": "破損",
+  "meaning_zh": "破損",
+  "example_ko": "파손 주의!",
+  "example_zh": "小心易碎！"
+ },
+ {
+  "id": "v_2140",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "보관하다",
+  "pos": "動詞",
+  "hanja": "保管",
+  "meaning_zh": "保管、存放",
+  "example_ko": "택배를 경비실에 보관했어요.",
+  "example_zh": "把宅配放在警衛室保管。"
+ },
+ {
+  "id": "v_2141",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "경비실",
+  "pos": "名詞",
+  "hanja": "警備室",
+  "meaning_zh": "警衛室",
+  "example_ko": "택배는 경비실에서 찾으세요.",
+  "example_zh": "宅配請到警衛室領取。"
+ },
+ {
+  "id": "v_2142",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "직접",
+  "pos": "副詞",
+  "hanja": "直接",
+  "meaning_zh": "親自、直接",
+  "example_ko": "제가 직접 갈게요.",
+  "example_zh": "我親自去。"
+ },
+ {
+  "id": "v_2143",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "부재중",
+  "pos": "名詞",
+  "hanja": "不在中",
+  "meaning_zh": "不在（家）",
+  "example_ko": "부재중이라서 택배를 못 받았어요.",
+  "example_zh": "因為不在家，沒收到宅配。"
+ },
+ {
+  "id": "v_2144",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "송장",
+  "pos": "名詞",
+  "hanja": "送狀",
+  "meaning_zh": "託運單",
+  "example_ko": "송장 번호로 조회할 수 있어요.",
+  "example_zh": "可以用託運單號查詢。"
+ },
+ {
+  "id": "v_2145",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "조회하다",
+  "pos": "動詞",
+  "hanja": "照會",
+  "meaning_zh": "查詢",
+  "example_ko": "배송 상태를 조회해 보세요.",
+  "example_zh": "請查詢一下配送狀態。"
+ },
+ {
+  "id": "v_2146",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "내용물",
+  "pos": "名詞",
+  "hanja": "內容物",
+  "meaning_zh": "內容物",
+  "example_ko": "내용물이 뭐예요?",
+  "example_zh": "內容物是什麼？"
+ },
+ {
+  "id": "v_2147",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "크기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "大小、尺寸",
+  "example_ko": "박스 크기를 재 주세요.",
+  "example_zh": "請量一下紙箱大小。"
+ },
+ {
+  "id": "v_2148",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "우편함",
+  "pos": "名詞",
+  "hanja": "郵便函",
+  "meaning_zh": "信箱",
+  "example_ko": "우편함에 편지가 있어요.",
+  "example_zh": "信箱裡有信。"
+ },
+ {
+  "id": "v_2149",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "우체부",
+  "pos": "名詞",
+  "hanja": "郵遞夫",
+  "meaning_zh": "郵差",
+  "example_ko": "우체부 아저씨가 편지를 가져왔어요.",
+  "example_zh": "郵差叔叔送信來了。"
+ },
+ {
+  "id": "v_2150",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "해외",
+  "pos": "名詞",
+  "hanja": "海外",
+  "meaning_zh": "海外、國外",
+  "example_ko": "해외로 택배를 보내고 싶어요.",
+  "example_zh": "我想寄宅配到國外。"
+ },
+ {
+  "id": "v_2151",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "무료",
+  "pos": "名詞",
+  "hanja": "無料",
+  "meaning_zh": "免費",
+  "example_ko": "배송비는 무료예요.",
+  "example_zh": "運費免費。"
+ },
+ {
+  "id": "v_2152",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "word": "유료",
+  "pos": "名詞",
+  "hanja": "有料",
+  "meaning_zh": "付費",
+  "example_ko": "주말 배송은 유료예요.",
+  "example_zh": "週末配送要付費。"
+ },
+ {
+  "id": "v_2153",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "미용실",
+  "pos": "名詞",
+  "hanja": "美容室",
+  "meaning_zh": "美容院、髮廊",
+  "example_ko": "주말에 미용실에 갔어요.",
+  "example_zh": "週末去了美容院。"
+ },
+ {
+  "id": "v_2154",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "미용사",
+  "pos": "名詞",
+  "hanja": "美容師",
+  "meaning_zh": "美髮師",
+  "example_ko": "미용사가 머리를 잘라 줬어요.",
+  "example_zh": "美髮師幫我剪了頭髮。"
+ },
+ {
+  "id": "v_2155",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "헤어스타일",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "髮型",
+  "example_ko": "새 헤어스타일이 잘 어울려요.",
+  "example_zh": "新髮型很適合你。"
+ },
+ {
+  "id": "v_2156",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "자르다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "剪、切",
+  "example_ko": "머리를 짧게 잘랐어요.",
+  "example_zh": "把頭髮剪短了。"
+ },
+ {
+  "id": "v_2157",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "파마",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "燙髮",
+  "example_ko": "파마를 하고 싶어요.",
+  "example_zh": "我想燙頭髮。"
+ },
+ {
+  "id": "v_2158",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "염색",
+  "pos": "名詞",
+  "hanja": "染色",
+  "meaning_zh": "染髮",
+  "example_ko": "머리를 갈색으로 염색했어요.",
+  "example_zh": "把頭髮染成咖啡色。"
+ },
+ {
+  "id": "v_2159",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "커트",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "剪髮",
+  "example_ko": "커트는 이만 원이에요.",
+  "example_zh": "剪髮兩萬韓元。"
+ },
+ {
+  "id": "v_2160",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "앞머리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "瀏海",
+  "example_ko": "앞머리를 조금만 잘라 주세요.",
+  "example_zh": "瀏海請剪一點點就好。"
+ },
+ {
+  "id": "v_2161",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "단발머리",
+  "pos": "名詞",
+  "hanja": "短髮",
+  "meaning_zh": "（齊耳）短髮",
+  "example_ko": "단발머리로 해 주세요.",
+  "example_zh": "請幫我剪成短髮。"
+ },
+ {
+  "id": "v_2162",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "생머리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "直髮",
+  "example_ko": "저는 생머리가 좋아요.",
+  "example_zh": "我喜歡直髮。"
+ },
+ {
+  "id": "v_2163",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "곱슬머리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "捲髮、自然捲",
+  "example_ko": "제 동생은 곱슬머리예요.",
+  "example_zh": "我弟弟是自然捲。"
+ },
+ {
+  "id": "v_2164",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "다듬다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "修剪、修整",
+  "example_ko": "끝만 조금 다듬어 주세요.",
+  "example_zh": "請只修一下髮尾。"
+ },
+ {
+  "id": "v_2165",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "감다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "洗（頭髮）",
+  "example_ko": "아침마다 머리를 감아요.",
+  "example_zh": "每天早上洗頭。"
+ },
+ {
+  "id": "v_2166",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "말리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "弄乾、吹乾",
+  "example_ko": "머리를 말리고 나갔어요.",
+  "example_zh": "把頭髮吹乾才出門。"
+ },
+ {
+  "id": "v_2167",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "드라이기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "吹風機",
+  "example_ko": "드라이기 좀 빌려 주세요.",
+  "example_zh": "請借我吹風機。"
+ },
+ {
+  "id": "v_2168",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "빗",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "梳子",
+  "example_ko": "가방에 빗이 있어요.",
+  "example_zh": "包包裡有梳子。"
+ },
+ {
+  "id": "v_2169",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "빗다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "梳（頭髮）",
+  "example_ko": "머리를 빗어 주세요.",
+  "example_zh": "請幫我梳頭髮。"
+ },
+ {
+  "id": "v_2170",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "묶다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "綁",
+  "example_ko": "더워서 머리를 묶었어요.",
+  "example_zh": "太熱了，所以把頭髮綁起來。"
+ },
+ {
+  "id": "v_2171",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "풀다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "解開、放下",
+  "example_ko": "머리를 풀면 더 예뻐요.",
+  "example_zh": "頭髮放下來更漂亮。"
+ },
+ {
+  "id": "v_2172",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "기르다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "留（頭髮）、養",
+  "example_ko": "머리를 길게 기르고 있어요.",
+  "example_zh": "我正在把頭髮留長。"
+ },
+ {
+  "id": "v_2173",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "숱",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "髮量",
+  "example_ko": "머리숱이 많아서 좀 쳐 주세요.",
+  "example_zh": "髮量很多，請幫我打薄一點。"
+ },
+ {
+  "id": "v_2174",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "가르마",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "頭髮分線",
+  "example_ko": "가르마를 오른쪽으로 타 주세요.",
+  "example_zh": "請幫我往右邊分線。"
+ },
+ {
+  "id": "v_2175",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "길이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "長度",
+  "example_ko": "이 길이로 잘라 주세요.",
+  "example_zh": "請剪到這個長度。"
+ },
+ {
+  "id": "v_2176",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "어울리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "適合、相配",
+  "example_ko": "이 색깔이 저한테 어울려요?",
+  "example_zh": "這個顏色適合我嗎？"
+ },
+ {
+  "id": "v_2177",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "손질",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "整理、打理",
+  "example_ko": "이 머리는 손질하기 쉬워요.",
+  "example_zh": "這個髮型很好整理。"
+ },
+ {
+  "id": "v_2178",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "샴푸",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "洗髮精",
+  "example_ko": "샴푸가 다 떨어졌어요.",
+  "example_zh": "洗髮精用完了。"
+ },
+ {
+  "id": "v_2179",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "린스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "潤髮乳",
+  "example_ko": "샴푸 후에 린스를 해요.",
+  "example_zh": "洗完頭後用潤髮乳。"
+ },
+ {
+  "id": "v_2180",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "왁스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "髮蠟",
+  "example_ko": "왁스를 조금만 발라 주세요.",
+  "example_zh": "請幫我抹一點髮蠟就好。"
+ },
+ {
+  "id": "v_2181",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "고데기",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "電棒、離子夾",
+  "example_ko": "고데기로 머리를 말았어요.",
+  "example_zh": "用電棒捲了頭髮。"
+ },
+ {
+  "id": "v_2182",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "유행",
+  "pos": "名詞",
+  "hanja": "流行",
+  "meaning_zh": "流行",
+  "example_ko": "요즘 이 머리가 유행이에요.",
+  "example_zh": "最近流行這個髮型。"
+ },
+ {
+  "id": "v_2183",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "스타일",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "風格、樣式",
+  "example_ko": "제 스타일이 아니에요.",
+  "example_zh": "不是我的風格。"
+ },
+ {
+  "id": "v_2184",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "남기다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "留下",
+  "example_ko": "앞머리는 길게 남겨 주세요.",
+  "example_zh": "瀏海請留長一點。"
+ },
+ {
+  "id": "v_2185",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "머릿결",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "髮質",
+  "example_ko": "염색을 많이 해서 머릿결이 안 좋아요.",
+  "example_zh": "染了很多次，髮質不太好。"
+ },
+ {
+  "id": "v_2186",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "상하다",
+  "pos": "動詞",
+  "hanja": "傷",
+  "meaning_zh": "受損、（食物）壞掉",
+  "example_ko": "파마를 해서 머리가 상했어요.",
+  "example_zh": "燙了頭髮，頭髮受損了。"
+ },
+ {
+  "id": "v_2187",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "탈모",
+  "pos": "名詞",
+  "hanja": "脫毛",
+  "meaning_zh": "掉髮",
+  "example_ko": "스트레스 때문에 탈모가 생겼어요.",
+  "example_zh": "因為壓力開始掉髮。"
+ },
+ {
+  "id": "v_2188",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "두피",
+  "pos": "名詞",
+  "hanja": "頭皮",
+  "meaning_zh": "頭皮",
+  "example_ko": "두피가 가려워요.",
+  "example_zh": "頭皮很癢。"
+ },
+ {
+  "id": "v_2189",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "뒷머리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "後面的頭髮",
+  "example_ko": "뒷머리는 짧게 해 주세요.",
+  "example_zh": "後面的頭髮請剪短。"
+ },
+ {
+  "id": "v_2190",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "word": "옆머리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "兩側的頭髮",
+  "example_ko": "옆머리를 귀 뒤로 넘겼어요.",
+  "example_zh": "把兩側的頭髮撥到耳後。"
  }
 ];
 
@@ -15779,6 +17869,1126 @@ const READ_ARTICLES = [
     "explanation": "表達自己的願望：만나고 싶어요（想見面）、가고 싶어요（想去）。不管有沒有收音都接 -고 싶다。說第三人稱「他想…」要用 -고 싶어하다（친구가 가고 싶어해요）。",
     "extra_example_ko": "한국 음식을 만들어 보고 싶어요.",
     "extra_example_zh": "我想試著做韓國料理。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_201",
+  "level": 2,
+  "topic": "醫院看診與常見症狀",
+  "title_ko": "감기에 걸렸어요",
+  "title_zh": "我感冒了",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "의사",
+    "ko": "어디가 아프세요?",
+    "zh": "哪裡不舒服？",
+    "target_words": [
+     {
+      "surface": "어디가",
+      "lemma": "어디",
+      "vocab_id": "v_1225"
+     },
+     {
+      "surface": "아프세요",
+      "lemma": "아프다",
+      "vocab_id": "v_1673"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "환자",
+    "ko": "어제부터 열이 나고 기침을 많이 해요.",
+    "zh": "從昨天開始發燒，而且咳得很厲害。",
+    "target_words": [
+     {
+      "surface": "어제부터",
+      "lemma": "어제",
+      "vocab_id": "v_1819"
+     },
+     {
+      "surface": "열이",
+      "lemma": "열",
+      "vocab_id": "v_2013"
+     },
+     {
+      "surface": "기침을",
+      "lemma": "기침",
+      "vocab_id": "v_2014"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "해요",
+      "lemma": "하다",
+      "vocab_id": "v_1755"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "의사",
+    "ko": "콧물도 나요? 체온을 먼저 재 볼게요.",
+    "zh": "也有流鼻水嗎？先量一下體溫。",
+    "target_words": [
+     {
+      "surface": "콧물도",
+      "lemma": "콧물",
+      "vocab_id": "v_2015"
+     },
+     {
+      "surface": "체온을",
+      "lemma": "체온",
+      "vocab_id": "v_2036"
+     },
+     {
+      "surface": "먼저",
+      "lemma": "먼저",
+      "vocab_id": "v_1826"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "환자",
+    "ko": "네, 콧물도 나고 머리도 아파요. 독감이에요?",
+    "zh": "有，也流鼻水，頭也痛。是流感嗎？",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "콧물도",
+      "lemma": "콧물",
+      "vocab_id": "v_2015"
+     },
+     {
+      "surface": "머리도",
+      "lemma": "머리",
+      "vocab_id": "v_1648"
+     },
+     {
+      "surface": "아파요",
+      "lemma": "아프다",
+      "vocab_id": "v_1673"
+     },
+     {
+      "surface": "독감이에요",
+      "lemma": "독감",
+      "vocab_id": "v_2035"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "의사",
+    "ko": "검사를 해 보니까 독감은 아니에요. 그냥 감기예요.",
+    "zh": "檢查之後發現不是流感，只是感冒。",
+    "target_words": [
+     {
+      "surface": "검사를",
+      "lemma": "검사",
+      "vocab_id": "v_2026"
+     },
+     {
+      "surface": "독감은",
+      "lemma": "독감",
+      "vocab_id": "v_2035"
+     },
+     {
+      "surface": "감기예요",
+      "lemma": "감기",
+      "vocab_id": "v_2012"
+     }
+    ],
+    "grammar_ids": [
+     "g_202"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "의사",
+    "ko": "무리하지 말고 집에서 반드시 쉬어야 해요. 약은 식후에 드세요.",
+    "zh": "不要太勉強，一定要在家休息。藥請飯後吃。",
+    "target_words": [
+     {
+      "surface": "무리하지",
+      "lemma": "무리하다",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "집에서",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "반드시",
+      "lemma": "반드시",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "쉬어야",
+      "lemma": "쉬다",
+      "vocab_id": "v_2060"
+     },
+     {
+      "surface": "약은",
+      "lemma": "약",
+      "vocab_id": "v_2039"
+     },
+     {
+      "surface": "식후에",
+      "lemma": "식후",
+      "vocab_id": "v_2055"
+     }
+    ],
+    "grammar_ids": [
+     "g_201"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "무리하다",
+    "pos": "動詞",
+    "hanja": "無理",
+    "meaning_zh": "勉強、過度（做超過能力的事）"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "반드시",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "一定、務必"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_201",
+    "pattern": "動詞語幹 + -아야/어야 하다",
+    "meaning": "必須…、應該…",
+    "explanation": "表示一定要做的事。接法和 -아요/어요 一樣：쉬다 → 쉬어야 해요、먹다 → 먹어야 해요、하다 → 해야 해요。口語也常說 -아야/어야 돼요，意思一樣。否定「不用…」要說 -지 않아도 돼요。",
+    "extra_example_ko": "내일 아침 일찍 병원에 가야 해요.",
+    "extra_example_zh": "明天一大早要去醫院。"
+   },
+   {
+    "grammar_id": "g_202",
+    "pattern": "動詞語幹 + -(으)니까（發現）",
+    "meaning": "（做了某事）之後才發現…",
+    "explanation": "-(으)니까 除了「因為」，還能表示「做了前面的動作，結果發現後面的事」：검사를 해 보니까 감기예요（檢查之後發現是感冒）。沒有收音接 -니까，有收音接 -으니까（먹어 보니까、가 보니까）。常和 -아/어 보다 一起用。",
+    "extra_example_ko": "집에 와 보니까 택배가 있었어요.",
+    "extra_example_zh": "回到家一看，宅配已經到了。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_202",
+  "level": 2,
+  "topic": "藥局買藥與保健習慣",
+  "title_ko": "약국에서",
+  "title_zh": "在藥局",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "약사",
+    "ko": "처방전 있으세요?",
+    "zh": "有處方箋嗎？",
+    "target_words": [
+     {
+      "surface": "처방전",
+      "lemma": "처방전",
+      "vocab_id": "v_2041"
+     },
+     {
+      "surface": "있으세요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "손님",
+    "ko": "아니요. 감기약하고 진통제를 사고 싶어요.",
+    "zh": "沒有。我想買感冒藥和止痛藥。",
+    "target_words": [
+     {
+      "surface": "아니요",
+      "lemma": "아니요",
+      "vocab_id": "v_1008"
+     },
+     {
+      "surface": "감기약하고",
+      "lemma": "감기약",
+      "vocab_id": "v_2042"
+     },
+     {
+      "surface": "진통제를",
+      "lemma": "진통제",
+      "vocab_id": "v_2044"
+     },
+     {
+      "surface": "사고",
+      "lemma": "사다",
+      "vocab_id": "v_1445"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "약사",
+    "ko": "이 감기약은 하루에 세 번, 식사한 후에 드세요.",
+    "zh": "這個感冒藥一天三次，請在吃完飯後吃。",
+    "target_words": [
+     {
+      "surface": "감기약은",
+      "lemma": "감기약",
+      "vocab_id": "v_2042"
+     },
+     {
+      "surface": "하루에",
+      "lemma": "하루",
+      "vocab_id": "v_1136"
+     },
+     {
+      "surface": "번",
+      "lemma": "번",
+      "vocab_id": "v_1099"
+     },
+     {
+      "surface": "식사한",
+      "lemma": "식사",
+      "vocab_id": "v_1407"
+     }
+    ],
+    "grammar_ids": [
+     "g_203"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "손님",
+    "ko": "혹시 부작용은 없어요? 오늘 운전해야 해요.",
+    "zh": "請問有沒有副作用？我今天要開車。",
+    "target_words": [
+     {
+      "surface": "혹시",
+      "lemma": "혹시",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "부작용은",
+      "lemma": "부작용",
+      "vocab_id": "v_2054"
+     },
+     {
+      "surface": "없어요",
+      "lemma": "없다",
+      "vocab_id": "v_1063"
+     },
+     {
+      "surface": "오늘",
+      "lemma": "오늘",
+      "vocab_id": "v_1817"
+     },
+     {
+      "surface": "운전해야",
+      "lemma": "운전하다",
+      "vocab_id": "v_1254"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "약사",
+    "ko": "조금 졸릴 수 있으니까 운전하기 전에는 드시지 마세요.",
+    "zh": "可能會有點想睡，所以開車前請不要吃。",
+    "target_words": [
+     {
+      "surface": "조금",
+      "lemma": "조금",
+      "vocab_id": "v_1404"
+     },
+     {
+      "surface": "졸릴",
+      "lemma": "졸리다",
+      "vocab_id": "v_1703"
+     },
+     {
+      "surface": "운전하기",
+      "lemma": "운전하다",
+      "vocab_id": "v_1254"
+     }
+    ],
+    "grammar_ids": [
+     "g_204"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "약사",
+    "ko": "그리고 물을 많이 마시고 충분히 쉬세요. 감기 조심하세요!",
+    "zh": "還有，請多喝水、好好休息。小心感冒！",
+    "target_words": [
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
+     {
+      "surface": "물을",
+      "lemma": "물",
+      "vocab_id": "v_1308"
+     },
+     {
+      "surface": "많이",
+      "lemma": "많이",
+      "vocab_id": "v_1386"
+     },
+     {
+      "surface": "마시고",
+      "lemma": "마시다",
+      "vocab_id": "v_1750"
+     },
+     {
+      "surface": "충분히",
+      "lemma": "충분히",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "쉬세요",
+      "lemma": "쉬다",
+      "vocab_id": "v_2060"
+     },
+     {
+      "surface": "감기",
+      "lemma": "감기",
+      "vocab_id": "v_2012"
+     },
+     {
+      "surface": "조심하세요",
+      "lemma": "조심하다",
+      "vocab_id": "v_2072"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "충분히",
+    "pos": "副詞",
+    "hanja": "充分",
+    "meaning_zh": "充分地、足夠地"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "혹시",
+    "pos": "副詞",
+    "hanja": "或是",
+    "meaning_zh": "請問、或許（委婉詢問）"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_203",
+    "pattern": "動詞語幹 + -(으)ㄴ 후에",
+    "meaning": "…之後",
+    "explanation": "表示做完前面的事以後再做後面的事。沒有收音接 -ㄴ 후에（식사하다 → 식사한 후에），有收音接 -은 후에（먹다 → 먹은 후에）。名詞可以直接接 후에：식사 후에、수업 후에。-(으)ㄴ 다음에 意思一樣。",
+    "extra_example_ko": "샤워한 후에 이 크림을 바르세요.",
+    "extra_example_zh": "洗完澡後請擦這個乳霜。"
+   },
+   {
+    "grammar_id": "g_204",
+    "pattern": "動詞語幹 + -기 전에",
+    "meaning": "…之前",
+    "explanation": "表示在做某件事之前。不管有沒有收音都接 -기 전에：자다 → 자기 전에、먹다 → 먹기 전에。名詞直接接 전에：식사 전에、수업 전에。和 -(으)ㄴ 후에 是一組相反的說法。",
+    "extra_example_ko": "자기 전에 이를 꼭 닦으세요.",
+    "extra_example_zh": "睡覺前一定要刷牙。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_203",
+  "level": 2,
+  "topic": "銀行開戶與換匯業務",
+  "title_ko": "은행에서 통장 만들기",
+  "title_zh": "在銀行辦存摺",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "은행원",
+    "ko": "어서 오세요. 번호표를 뽑으셨어요?",
+    "zh": "歡迎光臨。抽號碼牌了嗎？",
+    "target_words": [
+     {
+      "surface": "번호표를",
+      "lemma": "번호표",
+      "vocab_id": "v_2099"
+     },
+     {
+      "surface": "뽑으셨어요",
+      "lemma": "뽑다",
+      "vocab_id": "v_2097"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "손님",
+    "ko": "네. 통장을 만들고 체크카드도 신청하고 싶은데요.",
+    "zh": "抽了。我想辦存摺，也想申請簽帳金融卡。",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "통장을",
+      "lemma": "통장",
+      "vocab_id": "v_2077"
+     },
+     {
+      "surface": "만들고",
+      "lemma": "만들다",
+      "vocab_id": "v_1760"
+     },
+     {
+      "surface": "체크카드도",
+      "lemma": "체크카드",
+      "vocab_id": "v_2080"
+     }
+    ],
+    "grammar_ids": [
+     "g_205"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "은행원",
+    "ko": "외국인등록증하고 여권을 보여 주세요.",
+    "zh": "請出示外國人登錄證和護照。",
+    "target_words": [
+     {
+      "surface": "외국인등록증하고",
+      "lemma": "외국인등록증",
+      "vocab_id": "v_2084"
+     },
+     {
+      "surface": "여권을",
+      "lemma": "여권",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "보여",
+      "lemma": "보다",
+      "vocab_id": "v_1753"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "은행원",
+    "ko": "이 신청서를 작성한 다음에 여기에 서명해 주세요.",
+    "zh": "填好這張申請書後，請在這裡簽名。",
+    "target_words": [
+     {
+      "surface": "신청서를",
+      "lemma": "신청서",
+      "vocab_id": "v_2103"
+     },
+     {
+      "surface": "작성한",
+      "lemma": "작성하다",
+      "vocab_id": "v_2104"
+     },
+     {
+      "surface": "여기에",
+      "lemma": "여기",
+      "vocab_id": "v_1222"
+     },
+     {
+      "surface": "서명해",
+      "lemma": "서명",
+      "vocab_id": "v_2086"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "손님",
+    "ko": "대만으로 송금할 때 수수료가 얼마예요?",
+    "zh": "匯款到台灣的時候，手續費是多少？",
+    "target_words": [
+     {
+      "surface": "대만으로",
+      "lemma": "대만",
+      "vocab_id": "v_1019"
+     },
+     {
+      "surface": "송금할",
+      "lemma": "송금",
+      "vocab_id": "v_2089"
+     },
+     {
+      "surface": "수수료가",
+      "lemma": "수수료",
+      "vocab_id": "v_2093"
+     },
+     {
+      "surface": "얼마예요",
+      "lemma": "얼마",
+      "vocab_id": "v_1448"
+     }
+    ],
+    "grammar_ids": [
+     "g_206"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "은행원",
+    "ko": "금액에 따라 달라요. 환율도 매일 바뀌니까 앱에서 확인하세요.",
+    "zh": "依金額而不同。匯率也每天變動，請在 App 上確認。",
+    "target_words": [
+     {
+      "surface": "금액에",
+      "lemma": "금액",
+      "vocab_id": "v_2111"
+     },
+     {
+      "surface": "따라",
+      "lemma": "따르다",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "달라요",
+      "lemma": "다르다",
+      "vocab_id": "v_1794"
+     },
+     {
+      "surface": "환율도",
+      "lemma": "환율",
+      "vocab_id": "v_2088"
+     },
+     {
+      "surface": "매일",
+      "lemma": "매일",
+      "vocab_id": "v_1131"
+     },
+     {
+      "surface": "확인하세요",
+      "lemma": "확인하다",
+      "vocab_id": "v_2105"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "여권",
+    "pos": "名詞",
+    "hanja": "旅券",
+    "meaning_zh": "護照"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "따르다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "依照、跟隨（-에 따라：依…而定）"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_205",
+    "pattern": "動詞／形容詞語幹 + -(으)ㄴ데요／-는데요",
+    "meaning": "（委婉地說明情況，等對方回應）",
+    "explanation": "句尾用 -는데요 會讓話聽起來比較客氣，好像話還沒說完，等對方接話：만들고 싶은데요（我想辦…）。動詞接 -는데요，形容詞沒有收音接 -ㄴ데요、有收音接 -은데요；-고 싶다 當形容詞用，所以是 싶은데요。在店裡、銀行開口詢問時很常用。",
+    "extra_example_ko": "이 옷을 바꾸고 싶은데요.",
+    "extra_example_zh": "我想換這件衣服……"
+   },
+   {
+    "grammar_id": "g_206",
+    "pattern": "動詞語幹 + -(으)ㄹ 때",
+    "meaning": "…的時候",
+    "explanation": "表示做某件事的時間點。沒有收音接 -ㄹ 때（송금하다 → 송금할 때），有收音接 -을 때（먹다 → 먹을 때）。過去的事可以用 -았/었을 때（어렸을 때＝小時候）。名詞直接接 때：방학 때、점심 때。",
+    "extra_example_ko": "돈을 뽑을 때 비밀번호를 조심하세요.",
+    "extra_example_zh": "領錢的時候要小心密碼。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_204",
+  "level": 2,
+  "topic": "郵局寄信與宅配物流",
+  "title_ko": "대만으로 소포 보내기",
+  "title_zh": "寄包裹到台灣",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "직원",
+    "ko": "어디로 보내실 거예요?",
+    "zh": "要寄到哪裡？",
+    "target_words": [
+     {
+      "surface": "어디로",
+      "lemma": "어디",
+      "vocab_id": "v_1225"
+     },
+     {
+      "surface": "보내실",
+      "lemma": "보내다",
+      "vocab_id": "v_1720"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "손님",
+    "ko": "대만으로 소포를 보내려고 해요. 안에 옷하고 과자가 있어요.",
+    "zh": "我打算寄包裹到台灣。裡面有衣服和餅乾。",
+    "target_words": [
+     {
+      "surface": "대만으로",
+      "lemma": "대만",
+      "vocab_id": "v_1019"
+     },
+     {
+      "surface": "소포를",
+      "lemma": "소포",
+      "vocab_id": "v_2117"
+     },
+     {
+      "surface": "보내려고",
+      "lemma": "보내다",
+      "vocab_id": "v_1720"
+     },
+     {
+      "surface": "옷하고",
+      "lemma": "옷",
+      "vocab_id": "v_1477"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_207"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "직원",
+    "ko": "저울에 올려 주세요. 무게가 삼 킬로그램이네요.",
+    "zh": "請放到秤上。重量是三公斤呢。",
+    "target_words": [
+     {
+      "surface": "저울에",
+      "lemma": "저울",
+      "vocab_id": "v_2127"
+     },
+     {
+      "surface": "무게가",
+      "lemma": "무게",
+      "vocab_id": "v_2126"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "직원",
+    "ko": "항공편은 일주일, 배편은 한 달쯤 걸려요.",
+    "zh": "航空大約一週，船運大約要一個月。",
+    "target_words": [
+     {
+      "surface": "항공편은",
+      "lemma": "항공편",
+      "vocab_id": "v_2124"
+     },
+     {
+      "surface": "배편은",
+      "lemma": "배편",
+      "vocab_id": "v_2125"
+     },
+     {
+      "surface": "달",
+      "lemma": "달",
+      "vocab_id": "v_1558"
+     },
+     {
+      "surface": "걸려요",
+      "lemma": "걸리다",
+      "vocab_id": "v_1264"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "손님",
+    "ko": "좀 급하니까 항공편으로 해 주세요.",
+    "zh": "有點急，請幫我用航空寄。",
+    "target_words": [
+     {
+      "surface": "급하니까",
+      "lemma": "급하다",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "항공편으로",
+      "lemma": "항공편",
+      "vocab_id": "v_2124"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "직원",
+    "ko": "그럼 여기에 받는 사람 주소와 전화번호를 영어로 정확하게 써 주세요.",
+    "zh": "那請在這裡用英文正確地寫上收件人的地址和電話。",
+    "target_words": [
+     {
+      "surface": "그럼",
+      "lemma": "그럼",
+      "vocab_id": "v_1843"
+     },
+     {
+      "surface": "여기에",
+      "lemma": "여기",
+      "vocab_id": "v_1222"
+     },
+     {
+      "surface": "받는",
+      "lemma": "받다",
+      "vocab_id": "v_1721"
+     },
+     {
+      "surface": "사람",
+      "lemma": "사람",
+      "vocab_id": "v_1015"
+     },
+     {
+      "surface": "주소와",
+      "lemma": "주소",
+      "vocab_id": "v_2120"
+     },
+     {
+      "surface": "전화번호를",
+      "lemma": "전화번호",
+      "vocab_id": "v_1098"
+     },
+     {
+      "surface": "영어로",
+      "lemma": "영어",
+      "vocab_id": "v_1166"
+     },
+     {
+      "surface": "정확하게",
+      "lemma": "정확하다",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "써",
+      "lemma": "쓰다",
+      "vocab_id": "v_1756"
+     }
+    ],
+    "grammar_ids": [
+     "g_208"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "급하다",
+    "pos": "形容詞",
+    "hanja": "急",
+    "meaning_zh": "急、緊急"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "정확하다",
+    "pos": "形容詞",
+    "hanja": "正確",
+    "meaning_zh": "正確、準確"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_207",
+    "pattern": "動詞語幹 + -(으)려고 하다",
+    "meaning": "打算…、想要…",
+    "explanation": "表示心裡的打算或計畫。沒有收音接 -려고 해요（보내다 → 보내려고 해요），有收音接 -으려고 해요（먹다 → 먹으려고 해요）。說過去的打算用 -(으)려고 했어요（本來想…）。比 -고 싶다 更像「已經決定要做」。",
+    "extra_example_ko": "주말에 머리를 자르려고 해요.",
+    "extra_example_zh": "我打算週末去剪頭髮。"
+   },
+   {
+    "grammar_id": "g_208",
+    "pattern": "動詞語幹 + -는 + 名詞（現在）",
+    "meaning": "正在／會做…的（名詞）",
+    "explanation": "動詞放在名詞前面修飾名詞時，現在式接 -는：받다 → 받는 사람（收的人＝收件人）、보내다 → 보내는 사람（寄件人）。不管有沒有收音都接 -는。過去式用 -(으)ㄴ：보낸 편지（寄出的信）。",
+    "extra_example_ko": "제가 자주 가는 우체국은 학교 앞에 있어요.",
+    "extra_example_zh": "我常去的郵局在學校前面。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_205",
+  "level": 2,
+  "topic": "美容院剪髮與造型需求",
+  "title_ko": "미용실에서",
+  "title_zh": "在美容院",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "미용사",
+    "ko": "어떤 스타일로 해 드릴까요?",
+    "zh": "要幫您弄什麼樣的髮型？",
+    "target_words": [
+     {
+      "surface": "스타일로",
+      "lemma": "스타일",
+      "vocab_id": "v_2183"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "손님",
+    "ko": "머리가 너무 길어서 단발머리로 자르고 싶어요.",
+    "zh": "頭髮太長了，我想剪成短髮。",
+    "target_words": [
+     {
+      "surface": "머리가",
+      "lemma": "머리",
+      "vocab_id": "v_1648"
+     },
+     {
+      "surface": "너무",
+      "lemma": "너무",
+      "vocab_id": "v_1403"
+     },
+     {
+      "surface": "길어서",
+      "lemma": "길다",
+      "vocab_id": "v_1531"
+     },
+     {
+      "surface": "단발머리로",
+      "lemma": "단발머리",
+      "vocab_id": "v_2161"
+     },
+     {
+      "surface": "자르고",
+      "lemma": "자르다",
+      "vocab_id": "v_2156"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "미용사",
+    "ko": "앞머리도 자를까요?",
+    "zh": "瀏海也要剪嗎？",
+    "target_words": [
+     {
+      "surface": "앞머리도",
+      "lemma": "앞머리",
+      "vocab_id": "v_2160"
+     },
+     {
+      "surface": "자를까요",
+      "lemma": "자르다",
+      "vocab_id": "v_2156"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "손님",
+    "ko": "앞머리는 길게 남겨 주세요. 그리고 갈색으로 염색도 해 보고 싶어요.",
+    "zh": "瀏海請留長一點。還有，我也想試試染成咖啡色。",
+    "target_words": [
+     {
+      "surface": "앞머리는",
+      "lemma": "앞머리",
+      "vocab_id": "v_2160"
+     },
+     {
+      "surface": "남겨",
+      "lemma": "남기다",
+      "vocab_id": "v_2184"
+     },
+     {
+      "surface": "그리고",
+      "lemma": "그리고",
+      "vocab_id": "v_1839"
+     },
+     {
+      "surface": "갈색으로",
+      "lemma": "갈색",
+      "vocab_id": "v_1521"
+     },
+     {
+      "surface": "염색도",
+      "lemma": "염색",
+      "vocab_id": "v_2158"
+     }
+    ],
+    "grammar_ids": [
+     "g_209"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "미용사",
+    "ko": "염색하면 머릿결이 조금 상할 수 있어요. 오늘은 커트만 하는 게 어때요?",
+    "zh": "染的話髮質可能會有點受損。今天只剪頭髮怎麼樣？",
+    "target_words": [
+     {
+      "surface": "머릿결이",
+      "lemma": "머릿결",
+      "vocab_id": "v_2185"
+     },
+     {
+      "surface": "조금",
+      "lemma": "조금",
+      "vocab_id": "v_1404"
+     },
+     {
+      "surface": "상할",
+      "lemma": "상하다",
+      "vocab_id": "v_2186"
+     },
+     {
+      "surface": "오늘은",
+      "lemma": "오늘",
+      "vocab_id": "v_1817"
+     },
+     {
+      "surface": "커트만",
+      "lemma": "커트",
+      "vocab_id": "v_2159"
+     }
+    ],
+    "grammar_ids": [
+     "g_210"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "손님",
+    "ko": "좋아요. 염색은 다음에 할게요. 역시 전문가는 달라요!",
+    "zh": "好啊，染髮下次再說。果然專家就是不一樣！",
+    "target_words": [
+     {
+      "surface": "좋아요",
+      "lemma": "좋다",
+      "vocab_id": "v_1783"
+     },
+     {
+      "surface": "염색은",
+      "lemma": "염색",
+      "vocab_id": "v_2158"
+     },
+     {
+      "surface": "다음에",
+      "lemma": "다음",
+      "vocab_id": "v_1827"
+     },
+     {
+      "surface": "역시",
+      "lemma": "역시",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "전문가는",
+      "lemma": "전문가",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "달라요",
+      "lemma": "다르다",
+      "vocab_id": "v_1794"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 3,
+    "word": "역시",
+    "pos": "副詞",
+    "hanja": "亦是",
+    "meaning_zh": "果然、還是"
+   },
+   {
+    "id": "new_02",
+    "level": 3,
+    "word": "전문가",
+    "pos": "名詞",
+    "hanja": "專門家",
+    "meaning_zh": "專家"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_209",
+    "pattern": "動詞語幹 + -아/어 보다",
+    "meaning": "試試看…",
+    "explanation": "表示嘗試做某件事。接法和 -아요/어요 一樣：하다 → 해 보다、먹다 → 먹어 보다、입다 → 입어 보다。-아/어 보고 싶어요＝想試試看；-아/어 봤어요＝做過（經驗）。請別人試試看說 -아/어 보세요。",
+    "extra_example_ko": "이 샴푸를 한번 써 보세요.",
+    "extra_example_zh": "請試用看看這個洗髮精。"
+   },
+   {
+    "grammar_id": "g_210",
+    "pattern": "動詞語幹 + -는 게 어때요?",
+    "meaning": "…怎麼樣？（提出建議）",
+    "explanation": "用來委婉地提出建議。게 是 것이（…的事）的縮略：커트만 하는 게 어때요?（只剪頭髮怎麼樣？）。不管有沒有收音都接 -는 게 어때요。比 -(으)세요（請…）更客氣，給對方選擇的空間。",
+    "extra_example_ko": "오늘은 일찍 쉬는 게 어때요?",
+    "extra_example_zh": "今天早點休息怎麼樣？"
    }
   ]
  },

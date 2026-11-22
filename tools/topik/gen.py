@@ -32,9 +32,51 @@ TOPICS = [
  (24,'常用高頻基礎形容詞（狀態篇）','好、壞、多、少、快、慢、難、簡單'),
  (25,'基礎時間副詞與連接詞','今天、明天、昨天、現在、然後、但是'),
 ]
-TITLE = {n: t for n, t, _ in TOPICS}
+TOPICS2 = [  # TOPIK 2 級：日常生活與公共服務（主題 26～55，每個主題 38 個字，v_2001 起）
+ (26,'醫院看診與常見症狀','內科/牙科、感冒、發燒、頭痛、肚子痛'),
+ (27,'藥局買藥與保健習慣','吃藥、處方箋、休息、打針、維他命'),
+ (28,'銀行開戶與換匯業務','存摺、提款卡、換錢、匯款、密碼'),
+ (29,'郵局寄信與宅配物流','包裹、明信片、寄送、地址、郵票'),
+ (30,'美容院剪髮與造型需求','剪頭髮、燙髮、染髮、短一點、劉海'),
+ (31,'服飾店試穿與退換貨','試衣間、尺寸、太緊/太鬆、換貨、刷卡/付現'),
+ (32,'住宿訂房與飯店設施','單人房/雙人房、預約、辦理入住、早餐、鑰匙'),
+ (33,'機場出入境與搭機流程','護照、機票、行李託運、海關、免稅店'),
+ (34,'搭乘大眾運輸與轉乘','交通卡、加值、首班車/末班車、塞車、迷路'),
+ (35,'租屋看房與生活水電費','保證金、月租、管理費、水電費、搬家'),
+ (36,'家務分工與打掃清潔','洗衣服、洗碗、掃地、丟垃圾、整理'),
+ (37,'料理步驟與廚房用具','切菜、煮、炒、煎、鍋子、刀子'),
+ (38,'節日慶祝與送禮文化','生日、過年、中秋節、禮物、卡片、祝福'),
+ (39,'邀請作客與餐桌禮儀','邀請、拜訪、準備食物、乾杯、道謝'),
+ (40,'性格特質與人物評價','親切、活潑、安靜、誠實、懶惰、聰明'),
+ (41,'人際關係與社交互動','朋友、前輩/後輩、鄰居、吵架、和好'),
+ (42,'戀愛約會與情感表達','告白、約會、喜歡、想念、分手、結婚'),
+ (43,'學校生活與考試準備','學期、作業、考試、及格、成績、圖書館'),
+ (44,'社團活動與才藝學習','吉他、鋼琴、畫畫、拍照、參加比賽'),
+ (45,'旅遊規劃與觀光景點','地圖、導遊、博物館、遊樂園、紀念品'),
+ (46,'地理環境與自然景觀','山、海、江、島嶼、公園、風景'),
+ (47,'動植物與寵物飼養','小狗、小貓、養寵物、餵食、花、樹'),
+ (48,'電影院與表演藝術觀賞','買票、座位、演員、主角、劇情、感動'),
+ (49,'手機通訊與網路使用','智慧型手機、網路、下載、搜尋、充電'),
+ (50,'社群媒體與拍照分享','上傳、留言、按讚、自拍、影片'),
+ (51,'氣候變化與季節災害','颱風、梅雨、霧霾、溫度、乾燥/潮濕'),
+ (52,'交通安全與突發狀況','紅綠燈、斑馬線、交通事故、警察局、遺失物品'),
+ (53,'個人習慣與生活改變','早起、熬夜、減肥、戒菸、養成習慣'),
+ (54,'計畫安排與未來夢想','決定、準備、希望、成功、失敗、努力'),
+ (55,'程度副詞與語氣轉折詞','非常、稍微、完全、突然、所以、因此'),
+]
+TITLE = {n: t for n, t, _ in TOPICS + TOPICS2}
+# 各級：(第一個主題, 起始編號, 每個主題的字數)。主題 n 的區段＝起始 + (n−第一個主題)×字數 起算
+LEVELS = {1: (1, 1001, 34), 2: (26, 2001, 38)}
+def lvl(topic): return 1 if topic <= 25 else 2
 PER = 34
-def vid(topic, slot): return 'v_%d' % (1001 + (topic - 1) * PER + slot - 1)
+def per(topic): return LEVELS[lvl(topic)][2]
+def vid(topic, slot):
+    first, base, n = LEVELS[lvl(topic)]
+    return 'v_%d' % (base + (topic - first) * n + slot - 1)
+def aid(topic):  # 文章 id：art_<級><該級第幾個主題>（1 級 art_101～125，2 級 art_201～230）
+    return 'art_%d%02d' % (lvl(topic), topic - LEVELS[lvl(topic)][0] + 1)
+def gid(topic, j):  # 文法 id：g_<級><該級第幾個主題×2−1／×2>
+    return 'g_%d%02d' % (lvl(topic), (topic - LEVELS[lvl(topic)][0]) * 2 + j)
 
 # (word, pos, hanja, meaning, example_ko, example_zh)
 W = {}
@@ -219,11 +261,12 @@ W[5] = [
  ('끝나다','動詞',None,'結束','수업이 세 시에 끝나요.','課三點結束。'),
 ]
 sys.path.insert(0, HERE)
-import batch2, batch3, batch4, batch5
+import batch2, batch3, batch4, batch5, batch6
 W[6], W[7], W[8], W[9], W[10] = batch2.W6, batch2.W7, batch2.W8, batch2.W9, batch2.W10
 W[11], W[12], W[13], W[14], W[15] = batch3.W11, batch3.W12, batch3.W13, batch3.W14, batch3.W15
 W[16], W[17], W[18], W[19], W[20] = batch4.W16, batch4.W17, batch4.W18, batch4.W19, batch4.W20
 W[21], W[22], W[23], W[24], W[25] = batch5.W21, batch5.W22, batch5.W23, batch5.W24, batch5.W25
+W[26], W[27], W[28], W[29], W[30] = batch6.W26, batch6.W27, batch6.W28, batch6.W29, batch6.W30
 START = {10: 4, 11: 7, 12: 13, 13: 7, 23: 8}  # 這些主題的區段開頭已有先前的飲食單字
 # 先前「飲食與餐廳」的單字：放進它們所屬主題的區段（舊 id → 新 id，複習進度會跟著換）
 OLD = [  # 舊 id, 主題, 區段內位置, (資料)
@@ -262,9 +305,9 @@ OLD_AC = 'v_1029'  # 아침 → 主題 04 第 16 個
 V = []
 for t in sorted(W):
     st = START.get(t, 1)
-    assert len(W[t]) == PER - st + 1, (t, len(W[t]))
+    assert len(W[t]) == per(t) - st + 1, (t, len(W[t]))
     for i, (w, p, hj, m, ek, ez) in enumerate(W[t], st):
-        V.append(dict(id=vid(t, i), level=1, topic=TITLE[t], word=w, pos=p, hanja=hj, meaning_zh=m, example_ko=ek, example_zh=ez))
+        V.append(dict(id=vid(t, i), level=lvl(t), topic=TITLE[t], word=w, pos=p, hanja=hj, meaning_zh=m, example_ko=ek, example_zh=ez))
 idmap = {OLD_AC: vid(4, 16)}
 assert W[4][15][0] == '아침'
 for old, t, slot, (w, p, hj, m, ek, ez) in OLD:
@@ -278,7 +321,7 @@ byid = {v['id']: v for v in V}
 assert len(byid) == len(V)
 
 def ID(word, t=None, meaning=None):
-    c = [v for v in V if v['word'] == word and (t is None or v['id'] in [vid(t, i) for i in range(1, PER + 1)]) and (meaning is None or meaning in v['meaning_zh'])]
+    c = [v for v in V if v['word'] == word and (t is None or v['id'] in [vid(t, i) for i in range(1, per(t) + 1)]) and (meaning is None or meaning in v['meaning_zh'])]
     assert len(c) == 1, (word, t, meaning, [x['id'] for x in c])
     return c[0]['id']
 
@@ -360,9 +403,9 @@ ARTS.append(dict(article_id='art_104', level=1, topic=TITLE[4], title_ko='나의
  S(1, None, '저는 매일 아침 여섯 시 반에 일어나요.', '我每天早上六點半起床。', [('저는','저',1),('매일','매일'),('아침','아침'),('여섯','여섯'),('시','시'),('반에','반',4),('일어나요','일어나다')], ['g_107']),
  S(2, None, '일어나서 세수하고 아침을 먹어요.', '起床後洗臉，然後吃早餐。', [('일어나서','일어나다'),('세수하고','세수하다'),('아침을','아침'),('먹어요','먹다')], ['g_108']),
  S(3, None, '여덟 시쯤 회사에 출근해요.', '八點左右去公司上班。', [('여덟','여덟'),('시','시'),('쯤','쯤'),('회사에','회사'),('출근해요','출근하다')], ['g_107']),
- S(4, None, '점심은 열두 시에 회사 식당에서 먹어요.', '午餐在十二點，在公司餐廳吃。', [('점심은','점심'),('열','열'),('두','둘'),('시에','시'),('회사','회사'),('식당에서','식당'),('먹어요','먹다')], ['g_107']),
+ S(4, None, '점심은 열두 시에 회사 식당에서 먹어요.', '午餐在十二點，在公司餐廳吃。', [('점심은','점심'),('열','열',4),('두','둘'),('시에','시'),('회사','회사'),('식당에서','식당'),('먹어요','먹다')], ['g_107']),
  S(5, None, '저녁 여섯 시에 퇴근해요. 그런데 금요일에는 야근해요.', '晚上六點下班。不過星期五要加班。', [('저녁','저녁'),('여섯','여섯'),('시에','시'),('퇴근해요','퇴근하다'),('금요일에는','금요일'),('야근해요','new_01','야근하다')], ['g_107']),
- S(6, None, '밤에 샤워하고 보통 열한 시에 자요. 주말에는 푹 쉬어요.', '晚上洗完澡，通常十一點睡覺。週末就好好休息。', [('밤에','밤'),('샤워하고','샤워하다'),('보통','보통'),('열','열'),('한','하나'),('시에','시'),('자요','자다'),('주말에는','주말'),('푹','new_02','푹'),('쉬어요','new_03','쉬다')], ['g_108','g_107']),
+ S(6, None, '밤에 샤워하고 보통 열한 시에 자요. 주말에는 푹 쉬어요.', '晚上洗完澡，通常十一點睡覺。週末就好好休息。', [('밤에','밤'),('샤워하고','샤워하다'),('보통','보통'),('열','열',4),('한','하나'),('시에','시'),('자요','자다'),('주말에는','주말'),('푹','new_02','푹'),('쉬어요','new_03','쉬다')], ['g_108','g_107']),
 ], challenge_vocab=[
  dict(id='new_01', level=2, word='야근하다', pos='動詞', hanja='夜勤', meaning_zh='加班（到晚上）'),
  dict(id='new_02', level=2, word='푹', pos='副詞', hanja=None, meaning_zh='（睡、休息）得很好、充分地'),
@@ -399,6 +442,7 @@ ARTS.extend(batch2.articles(S, TITLE))
 ARTS.extend(batch3.articles(S, TITLE))
 ARTS.extend(batch4.articles(S, TITLE))
 ARTS.extend(batch5.articles(S, TITLE))
+ARTS.extend(batch6.articles(S, TITLE, gid))
 # ---------- art_112：餐廳（原本的 art_101，改到主題 12） ----------
 ARTS.append(dict(article_id='art_112', level=1, topic=TITLE[12], title_ko='식당에서', title_zh='在餐廳', sentences=[
  S(1,'A','배고파요. 이 식당 음식이 맛있어요?','我餓了。這家餐廳的菜好吃嗎？',[('배고파요','배고프다'),('식당','식당'),('음식이','음식'),('맛있어요','맛있다')],['g_123']),
@@ -442,7 +486,8 @@ def autolink(sen):
 for a in ARTS:
     for sen in a['sentences']: autolink(sen)
 
-topics_js = [dict(no=n, level=1, title=t, desc=d, ids=[vid(n, 1), vid(n, PER)], ready=n <= 25) for n, t, d in TOPICS]
+READY = 30  # 已完成到第幾個主題
+topics_js = [dict(no=n, level=lvl(n), title=t, desc=d, ids=[vid(n, 1), vid(n, per(n))], art=aid(n), ready=n <= READY) for n, t, d in TOPICS + TOPICS2]
 V.sort(key=lambda v: v['id'])
 out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入） =================\n"
  " * TOPIK_TOPICS：主題（1 級 25 個，每個主題固定 34 個字的編號區段：主題 n＝v_(1001+(n-1)×34)～+33）。ready＝已完成。\n"
@@ -458,8 +503,8 @@ out = ("/* ================= TOPIK 單字與閱讀文章（i+1 可理解輸入�
 open(os.path.join(ROOT, 'js', 'reading.js'), 'w', encoding='utf8').write(out)
 D = os.path.join(HERE, 'out') + os.sep
 os.makedirs(D, exist_ok=True)
-json.dump([v for v in V if 1681 <= int(v['id'][2:]) <= 1850], open(D + 'topik1_vocab_21-25.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
-json.dump(sorted([a for a in ARTS if 'art_121' <= a['article_id'] <= 'art_125'], key=lambda a: a['article_id']), open(D + 'topik1_articles_21-25.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump([v for v in V if 2001 <= int(v['id'][2:]) <= 2190], open(D + 'topik2_vocab_26-30.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
+json.dump(sorted([a for a in ARTS if 'art_201' <= a['article_id'] <= 'art_205'], key=lambda a: a['article_id']), open(D + 'topik2_articles_26-30.json', 'w', encoding='utf8'), ensure_ascii=False, indent=2)
 print('vocab', len(V), 'articles', len(ARTS))
 for a in ARTS:
     tws = [t for s in a['sentences'] for t in s['target_words']]

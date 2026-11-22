@@ -357,7 +357,7 @@ function vTopik() {
   const lv = U.tlv, left = pronLeft();
   const tip = left ? `<div class="tip" style="text-align:left">💡 建議先完成「基礎發音」（還有 ${left} 課），看文章和文法會輕鬆很多。</div>` : '';
   if (!lv) return `<div class="step-top"><button class="x" data-act="go" data-v="learn" aria-label="返回">←</button><h2 style="margin:0">TOPIK 專欄</h2></div>
-    <div class="sub mb">每個主題約 34 個單字＋一篇 i+1 閱讀文章（大部分是學過的字，加上 2～3 個高一級的挑戰單字）。</div>${tip}
+    <div class="sub mb">每個主題 34～38 個單字＋一篇 i+1 閱讀文章（大部分是學過的字，加上 2～3 個高一級的挑戰單字）。</div>${tip}
     ${TOPIK_LV.map(([n, d]) => { const st = tpStat(n);
       return st.ready ? `<button class="lesson" data-act="tk-lv" data-lv="${n}"><div class="ic">${n}</div><div class="tx"><b>TOPIK ${n} 級</b>
         <span class="sub small">${d}・${st.ready} 個主題・${st.words} 字${st.inR ? `・複習中 ${st.inR}` : ''}</span></div><span class="ok">▶</span></button>`
@@ -365,7 +365,7 @@ function vTopik() {
   return `<div class="step-top"><button class="x" data-act="tk-lv" data-lv="" aria-label="返回">←</button><h2 style="margin:0">TOPIK ${lv} 級主題</h2></div>${tip}
   <div class="tp-grid">${TOPIK_TOPICS.filter(t => t.level === lv).map(t => { const ws = tpWords(t.no), art = tpArticle(t.no), inR = ws.filter(w => S.srs[w.id]).length;
     return ws.length ? `<button class="tp-tile" data-act="tp-open" data-n="${t.no}"><span class="tp-no">${String(t.no).padStart(2, '0')}</span><b>${h(t.title)}</b>
-      <span class="sub small">${ws.length} 字${art ? '・📖 文章' : ''}${inR ? `・複習中 ${inR}` : ''}</span>${ws.length < 34 ? '<span class="tp-part">部分完成</span>' : ''}</button>`
+      <span class="sub small">${ws.length} 字${art ? '・📖 文章' : ''}${inR ? `・複習中 ${inR}` : ''}</span>${ws.length < tpRange(t.no)[1] - tpRange(t.no)[0] + 1 ? '<span class="tp-part">部分完成</span>' : ''}</button>`
       : `<div class="tp-tile off"><span class="tp-no">${String(t.no).padStart(2, '0')}</span><b>${h(t.title)}</b><span class="sub small">準備中</span></div>`; }).join('')}</div>`;
 }
 function vChart() {
@@ -499,9 +499,11 @@ function cmpHtml(s) {
 }
 
 /* ================= TOPIK 主題：單字列表＋文章 ================= */
-const tpRange = no => { const a = 1001 + (no - 1) * 34; return [a, a + 33]; };
-const tpWords = no => { const [a, b] = tpRange(no); return READ_VOCAB.filter(v => { const n = Number(v.id.slice(2)); return v.level === 1 && n >= a && n <= b; }); };
-const tpArticle = no => READ_ARTICLES.find(a => a.article_id === 'art_1' + String(no).padStart(2, '0'));
+// 主題的單字區段與文章都寫在 TOPIK_TOPICS（ids＝[第一個, 最後一個]、art＝文章 id），各級每個主題的字數不同
+const tpTopic = no => TOPIK_TOPICS.find(t => t.no === no);
+const tpRange = no => { const t = tpTopic(no); return t ? t.ids.map(x => Number(x.slice(2))) : [0, -1]; };
+const tpWords = no => { const t = tpTopic(no), [a, b] = tpRange(no); return t ? READ_VOCAB.filter(v => { const n = Number(v.id.slice(2)); return v.level === t.level && n >= a && n <= b; }) : []; };
+const tpArticle = no => { const t = tpTopic(no); return t && READ_ARTICLES.find(a => a.article_id === t.art); };
 function vTopic() {
   const t = TOPIK_TOPICS.find(x => x.no === U.tp); if (!t) return vLearn();
   const ws = tpWords(t.no), art = tpArticle(t.no), notIn = ws.filter(w => !S.srs[w.id]).length;
@@ -576,7 +578,7 @@ function vArticle() {
     return `<button class="rw plus big" data-act="rd-word" data-s="${si}" data-w="${wi}">${h(c.word)}</button><span class="sub small">${h(c.meaning_zh)}</span>`; }).join('<br>');
   const listN = art.sentences.flatMap(s => s.target_words).filter(t => !t.vocab_id.startsWith('new_')).length;
   const allN = art.sentences.flatMap(s => s.target_words).length;
-  const tpNo = Number(art.article_id.slice(5));
+  const tpNo = (TOPIK_TOPICS.find(t => t.art === art.article_id) || {}).no;
   return `<div class="step-top"><button class="x" data-act="tp-open" data-n="${tpNo}" aria-label="返回">←</button><h2 style="margin:0" class="grow"><span class="ko">${h(art.title_ko)}</span>　<span class="sub">${h(art.title_zh)}</span></h2></div>
   <div class="rd ${rd.si != null ? 'has-card' : ''}">
     <div class="rd-main">

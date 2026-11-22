@@ -462,7 +462,17 @@ const INIT = () => {
   const order =await ev(() => { const m = document.querySelector('#main'), pos = q => [...m.querySelectorAll(q)].map(e => m.innerHTML.indexOf(e.outerHTML)); return { pron: Math.max(...pos('.lesson[data-id=r1]')), talk: Math.min(...pos('.lesson[data-id^="t-"]')), tk: pos('[data-act=tk-open]')[0], tiles: m.querySelectorAll('.tp-tile').length }; });
   ok(order.pron < order.talk && order.talk < order.tk && order.tiles === 0, 'E18 學習頁：基礎發音 → 旅遊會話 → TOPIK（收起來）');
   await p.click('[data-act=tk-open]');
-  ok((await p.$$('[data-act=tk-lv][data-lv="1"]')).length === 1 && (await p.$$('.lesson.off')).length === 3, 'E18 TOPIK 專欄：1 級可以點、2～4 級準備中');
+  const lvReady = await ev(() => TOPIK_LV.map(([n]) => TOPIK_TOPICS.some(t => t.level === n && t.ready)));
+  ok(lvReady[0] && lvReady[1] && (await p.$$('[data-act=tk-lv][data-lv]:not([data-lv=""])')).length === lvReady.filter(Boolean).length && (await p.$$('.lesson.off')).length === lvReady.filter(x => !x).length, 'E18 TOPIK 專欄：有主題的級數可以點、其他準備中 ' + lvReady);
+  // 2 級：主題 26 有 38 個字、文章 art_201、返回 2 級列表
+  await p.click('[data-act=tk-lv][data-lv="2"]');
+  ok((await p.$$('.tp-tile[data-act=tp-open]')).length === await ev(() => TOPIK_TOPICS.filter(t => t.level === 2 && t.ready).length) && (await p.$$('.tp-tile.off')).length === await ev(() => TOPIK_TOPICS.filter(t => t.level === 2 && !t.ready).length), 'E18 2 級主題列表');
+  await p.click('[data-act=tp-open][data-n="26"]');
+  ok((await p.$$('.tp-w')).length === 38 && /TOPIK 2 級/.test(await p.textContent('#main')), 'E18 主題 26 有 38 個字');
+  await p.click('[data-act=rd-open][data-id=art_201]'); ok(await ev(() => U.view === 'article') && (await p.$$('.rd-text .rw')).length > 10, 'E18 2 級文章 art_201');
+  await p.click('.step-top [data-act=tp-open]'); ok(await ev(() => U.view === 'topic' && U.tp === 26), 'E18 2 級文章返回主題頁');
+  await p.click('.step-top [data-act=tk-lv]'); ok(await ev(() => U.view === 'topik' && U.tlv === 2), 'E18 主題頁返回 2 級列表');
+  await p.click('.step-top [data-act=tk-lv]');
   ok(/建議先完成「基礎發音」/.test(await p.textContent('#main')) === await ev(() => pronLeft() > 0), 'E18 發音還沒完成才提示');
   await p.click('[data-act=tk-lv][data-lv="1"]');
   ok((await p.$$('.tp-tile[data-act=tp-open]')).length === await ev(() => TOPIK_TOPICS.filter(t => t.level === 1 && t.ready).length) && (await p.$$('.tp-tile.off')).length === await ev(() => TOPIK_TOPICS.filter(t => t.level === 1 && !t.ready).length), 'E18 1 級主題列表（完成的可以點、其他準備中）');

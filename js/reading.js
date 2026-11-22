@@ -4,7 +4,7 @@
  * READ_ARTICLES：文章；target_words 的 surface 必須照順序出現在句子裡，vocab_id 指向 READ_VOCAB 或該篇的 challenge_vocab（+1 生字）。
  * VOCAB_ID_MAP：舊編號 → 新編號（2026-11 重新編號，migrate() 會把複習進度換過去）。
  * 檢查：tests/hangul.js 的 R1～R5。 */
-const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": false}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": false}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": false}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": false}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": false}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": false}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": false}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": false}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": false}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": false}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": false}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": false}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": false}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": false}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": false}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": false}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": false}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": false}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": false}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": false}];
+const TOPIK_TOPICS = [{"no": 1, "level": 1, "title": "自我介紹與國籍職業", "desc": "問候、名字、學生/上班族、各國名稱", "ids": ["v_1001", "v_1034"], "ready": true}, {"no": 2, "level": 1, "title": "家庭成員與稱謂", "desc": "父母、兄弟姊妹、爺爺奶奶、基本人稱", "ids": ["v_1035", "v_1068"], "ready": true}, {"no": 3, "level": 1, "title": "數字與日期（漢字詞數字）", "desc": "年月日、星期、電話號碼、樓層", "ids": ["v_1069", "v_1102"], "ready": true}, {"no": 4, "level": 1, "title": "時間與作息（固有詞數字）", "desc": "幾點幾分、早上/晚上、起床/睡覺", "ids": ["v_1103", "v_1136"], "ready": true}, {"no": 5, "level": 1, "title": "教室與文具用品", "desc": "書桌、鉛筆、課本、老師/同學、上課", "ids": ["v_1137", "v_1170"], "ready": true}, {"no": 6, "level": 1, "title": "居家空間與基本家具", "desc": "客廳、房間、床、電視、冰箱", "ids": ["v_1171", "v_1204"], "ready": true}, {"no": 7, "level": 1, "title": "位置與方位介詞", "desc": "上面、下面、裡面、旁邊、對面", "ids": ["v_1205", "v_1238"], "ready": true}, {"no": 8, "level": 1, "title": "常見交通工具", "desc": "公車、地鐵、計程車、飛機、走路", "ids": ["v_1239", "v_1272"], "ready": true}, {"no": 9, "level": 1, "title": "問路與城市地標", "desc": "學校、醫院、銀行、郵局、直走/左轉", "ids": ["v_1273", "v_1306"], "ready": true}, {"no": 10, "level": 1, "title": "咖啡廳與飲料點餐", "desc": "美式咖啡、拿鐵、果汁、冰的/熱的、一杯", "ids": ["v_1307", "v_1340"], "ready": true}, {"no": 11, "level": 1, "title": "韓國常見平民美食", "desc": "拌飯、烤肉、泡菜、拉麵、辣炒年糕", "ids": ["v_1341", "v_1374"], "ready": false}, {"no": 12, "level": 1, "title": "餐廳點餐與口味形容", "desc": "菜單、好吃/不好吃、辣、甜、鹹", "ids": ["v_1375", "v_1408"], "ready": false}, {"no": 13, "level": 1, "title": "水果與生鮮食材", "desc": "蘋果、香蕉、肉、魚、牛奶、麵包", "ids": ["v_1409", "v_1442"], "ready": false}, {"no": 14, "level": 1, "title": "超市購物與貨幣單位", "desc": "多少錢、便宜/貴、買、給、韓國貨幣", "ids": ["v_1443", "v_1476"], "ready": false}, {"no": 15, "level": 1, "title": "基礎服飾與配件", "desc": "衣服、褲子、鞋子、帽子、眼鏡、穿/戴", "ids": ["v_1477", "v_1510"], "ready": false}, {"no": 16, "level": 1, "title": "顏色與外觀形容詞", "desc": "紅黃藍黑白、大/小、長/短、漂亮", "ids": ["v_1511", "v_1544"], "ready": false}, {"no": 17, "level": 1, "title": "四季與基礎天氣", "desc": "春夏秋冬、晴天、下雨、下雪、冷/熱", "ids": ["v_1545", "v_1578"], "ready": false}, {"no": 18, "level": 1, "title": "週末休閒與基本興趣", "desc": "看電影、聽音樂、運動、看書、睡覺", "ids": ["v_1579", "v_1612"], "ready": false}, {"no": 19, "level": 1, "title": "基礎球類與常見運動", "desc": "足球、籃球、游泳、登山、散步", "ids": ["v_1613", "v_1646"], "ready": false}, {"no": 20, "level": 1, "title": "身體部位與基礎外觀", "desc": "頭、眼睛、鼻子、嘴巴、手、腳、高/矮", "ids": ["v_1647", "v_1680"], "ready": false}, {"no": 21, "level": 1, "title": "基礎情緒與心理狀態", "desc": "開心、難過、生氣、累、忙、無聊", "ids": ["v_1681", "v_1714"], "ready": false}, {"no": 22, "level": 1, "title": "電話聯絡與約定時間", "desc": "打電話、傳簡訊、見面、等一下、遲到", "ids": ["v_1715", "v_1748"], "ready": false}, {"no": 23, "level": 1, "title": "常用高頻基礎動詞（動作篇）", "desc": "去、來、吃、喝、看、聽、寫、讀", "ids": ["v_1749", "v_1782"], "ready": false}, {"no": 24, "level": 1, "title": "常用高頻基礎形容詞（狀態篇）", "desc": "好、壞、多、少、快、慢、難、簡單", "ids": ["v_1783", "v_1816"], "ready": false}, {"no": 25, "level": 1, "title": "基礎時間副詞與連接詞", "desc": "今天、明天、昨天、現在、然後、但是", "ids": ["v_1817", "v_1850"], "ready": false}];
 
 const VOCAB_ID_MAP = {"v_1029": "v_1118", "v_1011": "v_1307", "v_1003": "v_1308", "v_1022": "v_1309", "v_1001": "v_1341", "v_1002": "v_1342", "v_1013": "v_1343", "v_1014": "v_1344", "v_1015": "v_1345", "v_1016": "v_1346", "v_1004": "v_1375", "v_1005": "v_1376", "v_1017": "v_1377", "v_1018": "v_1378", "v_1019": "v_1379", "v_1023": "v_1380", "v_1024": "v_1381", "v_1025": "v_1382", "v_1026": "v_1383", "v_1027": "v_1384", "v_1028": "v_1385", "v_1030": "v_1386", "v_1006": "v_1409", "v_1007": "v_1410", "v_1008": "v_1411", "v_1009": "v_1412", "v_1010": "v_1413", "v_1012": "v_1414", "v_1020": "v_1749", "v_1021": "v_1750"};
 const ARTICLE_ID_MAP = { 'art_101:new_01': 'art_112:new_01', 'art_101:new_02': 'art_112:new_02' };
@@ -1881,6 +1881,1502 @@ const READ_VOCAB = [
   "example_zh": "課三點結束。"
  },
  {
+  "id": "v_1171",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "집",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "家、房子",
+  "example_ko": "우리 집은 학교 근처에 있어요.",
+  "example_zh": "我家在學校附近。"
+ },
+ {
+  "id": "v_1172",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "아파트",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "公寓（大樓）",
+  "example_ko": "저는 아파트 십 층에 살아요.",
+  "example_zh": "我住在公寓十樓。"
+ },
+ {
+  "id": "v_1173",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "방",
+  "pos": "名詞",
+  "hanja": "房",
+  "meaning_zh": "房間",
+  "example_ko": "제 방은 작아요.",
+  "example_zh": "我的房間很小。"
+ },
+ {
+  "id": "v_1174",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "거실",
+  "pos": "名詞",
+  "hanja": "居室",
+  "meaning_zh": "客廳",
+  "example_ko": "가족들이 거실에서 텔레비전을 봐요.",
+  "example_zh": "家人在客廳看電視。"
+ },
+ {
+  "id": "v_1175",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "부엌",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "廚房",
+  "example_ko": "어머니가 부엌에서 요리해요.",
+  "example_zh": "媽媽在廚房做菜。"
+ },
+ {
+  "id": "v_1176",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "화장실",
+  "pos": "名詞",
+  "hanja": "化粧室",
+  "meaning_zh": "洗手間、廁所",
+  "example_ko": "화장실이 어디예요?",
+  "example_zh": "洗手間在哪裡？"
+ },
+ {
+  "id": "v_1177",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "욕실",
+  "pos": "名詞",
+  "hanja": "浴室",
+  "meaning_zh": "浴室",
+  "example_ko": "욕실에서 샤워해요.",
+  "example_zh": "在浴室洗澡。"
+ },
+ {
+  "id": "v_1178",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "침실",
+  "pos": "名詞",
+  "hanja": "寢室",
+  "meaning_zh": "臥室",
+  "example_ko": "침실에 침대가 두 개 있어요.",
+  "example_zh": "臥室裡有兩張床。"
+ },
+ {
+  "id": "v_1179",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "현관",
+  "pos": "名詞",
+  "hanja": "玄關",
+  "meaning_zh": "玄關、門口",
+  "example_ko": "현관에서 신발을 벗으세요.",
+  "example_zh": "請在玄關脫鞋。"
+ },
+ {
+  "id": "v_1180",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "문",
+  "pos": "名詞",
+  "hanja": "門",
+  "meaning_zh": "門",
+  "example_ko": "문을 닫아 주세요.",
+  "example_zh": "請幫我關門。"
+ },
+ {
+  "id": "v_1181",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "창문",
+  "pos": "名詞",
+  "hanja": "窗門",
+  "meaning_zh": "窗戶",
+  "example_ko": "창문을 열까요?",
+  "example_zh": "要開窗嗎？"
+ },
+ {
+  "id": "v_1182",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "벽",
+  "pos": "名詞",
+  "hanja": "壁",
+  "meaning_zh": "牆壁",
+  "example_ko": "벽에 사진이 있어요.",
+  "example_zh": "牆上有照片。"
+ },
+ {
+  "id": "v_1183",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "바닥",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "地板",
+  "example_ko": "바닥에 앉아서 밥을 먹어요.",
+  "example_zh": "坐在地板上吃飯。"
+ },
+ {
+  "id": "v_1184",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "계단",
+  "pos": "名詞",
+  "hanja": "階段",
+  "meaning_zh": "樓梯",
+  "example_ko": "엘리베이터가 없어서 계단으로 올라가요.",
+  "example_zh": "沒有電梯，所以走樓梯上去。"
+ },
+ {
+  "id": "v_1185",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "엘리베이터",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "電梯",
+  "example_ko": "엘리베이터를 타고 오 층에 가요.",
+  "example_zh": "搭電梯到五樓。"
+ },
+ {
+  "id": "v_1186",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "침대",
+  "pos": "名詞",
+  "hanja": "寢臺",
+  "meaning_zh": "床",
+  "example_ko": "침대가 아주 편해요.",
+  "example_zh": "床很舒服。"
+ },
+ {
+  "id": "v_1187",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "소파",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "沙發",
+  "example_ko": "소파에서 잠깐 쉬었어요.",
+  "example_zh": "在沙發上休息了一下。"
+ },
+ {
+  "id": "v_1188",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "책장",
+  "pos": "名詞",
+  "hanja": "冊欌",
+  "meaning_zh": "書櫃、書架",
+  "example_ko": "책장에 책이 많아요.",
+  "example_zh": "書櫃裡有很多書。"
+ },
+ {
+  "id": "v_1189",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "옷장",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "衣櫃",
+  "example_ko": "옷장에 옷을 넣으세요.",
+  "example_zh": "請把衣服放進衣櫃。"
+ },
+ {
+  "id": "v_1190",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "식탁",
+  "pos": "名詞",
+  "hanja": "食卓",
+  "meaning_zh": "餐桌",
+  "example_ko": "식탁 위에 과일이 있어요.",
+  "example_zh": "餐桌上有水果。"
+ },
+ {
+  "id": "v_1191",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "냉장고",
+  "pos": "名詞",
+  "hanja": "冷藏庫",
+  "meaning_zh": "冰箱",
+  "example_ko": "냉장고에 우유가 있어요.",
+  "example_zh": "冰箱裡有牛奶。"
+ },
+ {
+  "id": "v_1192",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "텔레비전",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "電視",
+  "example_ko": "저녁에 텔레비전을 봐요.",
+  "example_zh": "晚上看電視。"
+ },
+ {
+  "id": "v_1193",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "세탁기",
+  "pos": "名詞",
+  "hanja": "洗濯機",
+  "meaning_zh": "洗衣機",
+  "example_ko": "세탁기로 빨래를 해요.",
+  "example_zh": "用洗衣機洗衣服。"
+ },
+ {
+  "id": "v_1194",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "에어컨",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "冷氣",
+  "example_ko": "더워요. 에어컨을 켜 주세요.",
+  "example_zh": "好熱，請開冷氣。"
+ },
+ {
+  "id": "v_1195",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "거울",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "鏡子",
+  "example_ko": "화장실에 거울이 있어요.",
+  "example_zh": "洗手間有鏡子。"
+ },
+ {
+  "id": "v_1196",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "이불",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "棉被",
+  "example_ko": "겨울에는 두꺼운 이불을 덮어요.",
+  "example_zh": "冬天蓋厚棉被。"
+ },
+ {
+  "id": "v_1197",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "베개",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "枕頭",
+  "example_ko": "베개가 너무 높아요.",
+  "example_zh": "枕頭太高了。"
+ },
+ {
+  "id": "v_1198",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "불",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "燈、火",
+  "example_ko": "방에 불을 켜세요.",
+  "example_zh": "請打開房間的燈。"
+ },
+ {
+  "id": "v_1199",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "켜다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "打開（燈、電器）",
+  "example_ko": "컴퓨터를 켜요.",
+  "example_zh": "打開電腦。"
+ },
+ {
+  "id": "v_1200",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "끄다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "關掉（燈、電器）",
+  "example_ko": "자기 전에 불을 꺼요.",
+  "example_zh": "睡覺前關燈。"
+ },
+ {
+  "id": "v_1201",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "열다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "打開（門、窗、蓋子）",
+  "example_ko": "창문을 열어요.",
+  "example_zh": "打開窗戶。"
+ },
+ {
+  "id": "v_1202",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "닫다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "關上（門、窗）",
+  "example_ko": "추워요. 문을 닫으세요.",
+  "example_zh": "好冷，請關門。"
+ },
+ {
+  "id": "v_1203",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "깨끗하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "乾淨",
+  "example_ko": "방이 아주 깨끗해요.",
+  "example_zh": "房間很乾淨。"
+ },
+ {
+  "id": "v_1204",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "word": "넓다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "寬敞、寬",
+  "example_ko": "거실이 넓어요.",
+  "example_zh": "客廳很寬敞。"
+ },
+ {
+  "id": "v_1205",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "위",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "上面",
+  "example_ko": "책상 위에 컴퓨터가 있어요.",
+  "example_zh": "書桌上有電腦。"
+ },
+ {
+  "id": "v_1206",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "아래",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "下面",
+  "example_ko": "의자 아래에 가방이 있어요.",
+  "example_zh": "椅子下面有包包。"
+ },
+ {
+  "id": "v_1207",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "밑",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "底下、下面",
+  "example_ko": "침대 밑에 고양이가 있어요.",
+  "example_zh": "床底下有一隻貓。"
+ },
+ {
+  "id": "v_1208",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "안",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "裡面",
+  "example_ko": "가방 안에 책이 있어요.",
+  "example_zh": "包包裡有書。"
+ },
+ {
+  "id": "v_1209",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "밖",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "外面",
+  "example_ko": "밖에 비가 와요.",
+  "example_zh": "外面在下雨。"
+ },
+ {
+  "id": "v_1210",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "속",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "裡頭、內部",
+  "example_ko": "주머니 속에 열쇠가 있어요.",
+  "example_zh": "口袋裡有鑰匙。"
+ },
+ {
+  "id": "v_1211",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "앞",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "前面",
+  "example_ko": "학교 앞에서 만나요.",
+  "example_zh": "在學校前面見。"
+ },
+ {
+  "id": "v_1212",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "뒤",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "後面",
+  "example_ko": "집 뒤에 공원이 있어요.",
+  "example_zh": "家後面有公園。"
+ },
+ {
+  "id": "v_1213",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "옆",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "旁邊",
+  "example_ko": "제 옆에 앉으세요.",
+  "example_zh": "請坐我旁邊。"
+ },
+ {
+  "id": "v_1214",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "사이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "之間、中間",
+  "example_ko": "은행과 우체국 사이에 카페가 있어요.",
+  "example_zh": "銀行和郵局之間有咖啡廳。"
+ },
+ {
+  "id": "v_1215",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "가운데",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "正中間",
+  "example_ko": "방 가운데에 식탁이 있어요.",
+  "example_zh": "房間正中間有餐桌。"
+ },
+ {
+  "id": "v_1216",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "맞은편",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "對面",
+  "example_ko": "병원 맞은편에 약국이 있어요.",
+  "example_zh": "醫院對面有藥局。"
+ },
+ {
+  "id": "v_1217",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "건너편",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "（馬路、河的）對面",
+  "example_ko": "길 건너편에 버스 정류장이 있어요.",
+  "example_zh": "馬路對面有公車站。"
+ },
+ {
+  "id": "v_1218",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "근처",
+  "pos": "名詞",
+  "hanja": "近處",
+  "meaning_zh": "附近",
+  "example_ko": "이 근처에 편의점이 있어요?",
+  "example_zh": "這附近有便利商店嗎？"
+ },
+ {
+  "id": "v_1219",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "오른쪽",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "右邊",
+  "example_ko": "오른쪽으로 가세요.",
+  "example_zh": "請往右走。"
+ },
+ {
+  "id": "v_1220",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "왼쪽",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "左邊",
+  "example_ko": "화장실은 왼쪽에 있어요.",
+  "example_zh": "洗手間在左邊。"
+ },
+ {
+  "id": "v_1221",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "쪽",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "邊、方向",
+  "example_ko": "이쪽으로 오세요.",
+  "example_zh": "請往這邊來。"
+ },
+ {
+  "id": "v_1222",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "여기",
+  "pos": "代名詞",
+  "hanja": null,
+  "meaning_zh": "這裡",
+  "example_ko": "여기가 우리 교실이에요.",
+  "example_zh": "這裡是我們的教室。"
+ },
+ {
+  "id": "v_1223",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "거기",
+  "pos": "代名詞",
+  "hanja": null,
+  "meaning_zh": "那裡（離聽話者近）",
+  "example_ko": "거기에서 기다리세요.",
+  "example_zh": "請在那裡等。"
+ },
+ {
+  "id": "v_1224",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "저기",
+  "pos": "代名詞",
+  "hanja": null,
+  "meaning_zh": "那裡（離兩人都遠）",
+  "example_ko": "저기가 우리 학교예요.",
+  "example_zh": "那邊是我們學校。"
+ },
+ {
+  "id": "v_1225",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "어디",
+  "pos": "代名詞",
+  "hanja": null,
+  "meaning_zh": "哪裡",
+  "example_ko": "집이 어디예요?",
+  "example_zh": "你家在哪裡？"
+ },
+ {
+  "id": "v_1226",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "이",
+  "pos": "冠形詞",
+  "hanja": null,
+  "meaning_zh": "這（個）",
+  "example_ko": "이 책은 제 책이에요.",
+  "example_zh": "這本書是我的。"
+ },
+ {
+  "id": "v_1227",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "그",
+  "pos": "冠形詞",
+  "hanja": null,
+  "meaning_zh": "那（個）（剛提到的）",
+  "example_ko": "그 사람은 제 친구예요.",
+  "example_zh": "那個人是我朋友。"
+ },
+ {
+  "id": "v_1228",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "저",
+  "pos": "冠形詞",
+  "hanja": null,
+  "meaning_zh": "那（個）（遠處的）",
+  "example_ko": "저 건물이 병원이에요.",
+  "example_zh": "那棟建築是醫院。"
+ },
+ {
+  "id": "v_1229",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "이것",
+  "pos": "代名詞",
+  "hanja": null,
+  "meaning_zh": "這個（東西）",
+  "example_ko": "이것은 제 가방이에요.",
+  "example_zh": "這是我的包包。"
+ },
+ {
+  "id": "v_1230",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "그것",
+  "pos": "代名詞",
+  "hanja": null,
+  "meaning_zh": "那個（東西）",
+  "example_ko": "그것은 무엇이에요?",
+  "example_zh": "那是什麼？"
+ },
+ {
+  "id": "v_1231",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "저것",
+  "pos": "代名詞",
+  "hanja": null,
+  "meaning_zh": "那個（遠處的東西）",
+  "example_ko": "저것은 남산타워예요.",
+  "example_zh": "那是南山塔。"
+ },
+ {
+  "id": "v_1232",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "곳",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "地方、場所",
+  "example_ko": "여기는 조용한 곳이에요.",
+  "example_zh": "這裡是個安靜的地方。"
+ },
+ {
+  "id": "v_1233",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "동쪽",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "東邊",
+  "example_ko": "해는 동쪽에서 떠요.",
+  "example_zh": "太陽從東邊升起。"
+ },
+ {
+  "id": "v_1234",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "서쪽",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "西邊",
+  "example_ko": "해가 서쪽으로 져요.",
+  "example_zh": "太陽往西邊落下。"
+ },
+ {
+  "id": "v_1235",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "남쪽",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "南邊",
+  "example_ko": "부산은 한국 남쪽에 있어요.",
+  "example_zh": "釜山在韓國南部。"
+ },
+ {
+  "id": "v_1236",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "북쪽",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "北邊",
+  "example_ko": "서울은 부산의 북쪽에 있어요.",
+  "example_zh": "首爾在釜山的北邊。"
+ },
+ {
+  "id": "v_1237",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "놓다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "放、擺",
+  "example_ko": "책을 책상 위에 놓으세요.",
+  "example_zh": "請把書放在書桌上。"
+ },
+ {
+  "id": "v_1238",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "word": "두다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "放、擱（放著）",
+  "example_ko": "열쇠를 어디에 뒀어요?",
+  "example_zh": "你把鑰匙放在哪裡了？"
+ },
+ {
+  "id": "v_1239",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "교통",
+  "pos": "名詞",
+  "hanja": "交通",
+  "meaning_zh": "交通",
+  "example_ko": "서울은 교통이 편리해요.",
+  "example_zh": "首爾交通很方便。"
+ },
+ {
+  "id": "v_1240",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "버스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "公車、巴士",
+  "example_ko": "버스로 학교에 가요.",
+  "example_zh": "我搭公車去學校。"
+ },
+ {
+  "id": "v_1241",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "지하철",
+  "pos": "名詞",
+  "hanja": "地下鐵",
+  "meaning_zh": "地鐵、捷運",
+  "example_ko": "지하철이 빨라요.",
+  "example_zh": "地鐵很快。"
+ },
+ {
+  "id": "v_1242",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "택시",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "計程車",
+  "example_ko": "늦어서 택시를 탔어요.",
+  "example_zh": "因為遲到了，所以搭了計程車。"
+ },
+ {
+  "id": "v_1243",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "기차",
+  "pos": "名詞",
+  "hanja": "汽車",
+  "meaning_zh": "火車",
+  "example_ko": "기차로 부산에 가요.",
+  "example_zh": "搭火車去釜山。"
+ },
+ {
+  "id": "v_1244",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "비행기",
+  "pos": "名詞",
+  "hanja": "飛行機",
+  "meaning_zh": "飛機",
+  "example_ko": "비행기로 두 시간 걸려요.",
+  "example_zh": "搭飛機要兩個小時。"
+ },
+ {
+  "id": "v_1245",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "배",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "船",
+  "example_ko": "배를 타고 제주도에 갔어요.",
+  "example_zh": "搭船去了濟州島。"
+ },
+ {
+  "id": "v_1246",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "자전거",
+  "pos": "名詞",
+  "hanja": "自轉車",
+  "meaning_zh": "腳踏車",
+  "example_ko": "주말에 자전거를 타요.",
+  "example_zh": "週末騎腳踏車。"
+ },
+ {
+  "id": "v_1247",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "오토바이",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "機車、摩托車",
+  "example_ko": "대만에는 오토바이가 많아요.",
+  "example_zh": "台灣的機車很多。"
+ },
+ {
+  "id": "v_1248",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "자동차",
+  "pos": "名詞",
+  "hanja": "自動車",
+  "meaning_zh": "汽車",
+  "example_ko": "아버지는 자동차를 운전해요.",
+  "example_zh": "爸爸開車。"
+ },
+ {
+  "id": "v_1249",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "차",
+  "pos": "名詞",
+  "hanja": "車",
+  "meaning_zh": "車子",
+  "example_ko": "차가 많이 막혀요.",
+  "example_zh": "很塞車。"
+ },
+ {
+  "id": "v_1250",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "정류장",
+  "pos": "名詞",
+  "hanja": "停留場",
+  "meaning_zh": "公車站、停靠站",
+  "example_ko": "버스 정류장에서 기다려요.",
+  "example_zh": "在公車站等車。"
+ },
+ {
+  "id": "v_1251",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "역",
+  "pos": "名詞",
+  "hanja": "驛",
+  "meaning_zh": "車站（火車、地鐵）",
+  "example_ko": "역 앞에서 만나요.",
+  "example_zh": "在車站前面見。"
+ },
+ {
+  "id": "v_1252",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "공항",
+  "pos": "名詞",
+  "hanja": "空港",
+  "meaning_zh": "機場",
+  "example_ko": "공항까지 지하철로 가요.",
+  "example_zh": "搭地鐵到機場。"
+ },
+ {
+  "id": "v_1253",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "표",
+  "pos": "名詞",
+  "hanja": "票",
+  "meaning_zh": "票",
+  "example_ko": "기차 표를 샀어요.",
+  "example_zh": "我買了火車票。"
+ },
+ {
+  "id": "v_1254",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "운전하다",
+  "pos": "動詞",
+  "hanja": "運轉",
+  "meaning_zh": "開車、駕駛",
+  "example_ko": "저는 운전할 수 있어요.",
+  "example_zh": "我會開車。"
+ },
+ {
+  "id": "v_1255",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "타다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "搭、坐、騎（交通工具）",
+  "example_ko": "저는 매일 지하철을 타요.",
+  "example_zh": "我每天搭地鐵。"
+ },
+ {
+  "id": "v_1256",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "내리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "下（車）",
+  "example_ko": "다음 역에서 내리세요.",
+  "example_zh": "請在下一站下車。"
+ },
+ {
+  "id": "v_1257",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "걷다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "走、走路",
+  "example_ko": "매일 삼십 분 걸어요.",
+  "example_zh": "我每天走路三十分鐘。"
+ },
+ {
+  "id": "v_1258",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "걸어가다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "走路去",
+  "example_ko": "학교까지 걸어가요.",
+  "example_zh": "我走路去學校。"
+ },
+ {
+  "id": "v_1259",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "출발하다",
+  "pos": "動詞",
+  "hanja": "出發",
+  "meaning_zh": "出發",
+  "example_ko": "기차가 아홉 시에 출발해요.",
+  "example_zh": "火車九點出發。"
+ },
+ {
+  "id": "v_1260",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "도착하다",
+  "pos": "動詞",
+  "hanja": "到着",
+  "meaning_zh": "到達、抵達",
+  "example_ko": "부산에 오후 한 시에 도착해요.",
+  "example_zh": "下午一點抵達釜山。"
+ },
+ {
+  "id": "v_1261",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "멀다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "遠",
+  "example_ko": "회사가 집에서 멀어요.",
+  "example_zh": "公司離家很遠。"
+ },
+ {
+  "id": "v_1262",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "가깝다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "近",
+  "example_ko": "학교가 아주 가까워요.",
+  "example_zh": "學校很近。"
+ },
+ {
+  "id": "v_1263",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "길",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "路、道路",
+  "example_ko": "길을 몰라요.",
+  "example_zh": "我不知道路。"
+ },
+ {
+  "id": "v_1264",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "걸리다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "花（時間）、需要（多久）",
+  "example_ko": "집에서 회사까지 한 시간 걸려요.",
+  "example_zh": "從家裡到公司要一個小時。"
+ },
+ {
+  "id": "v_1265",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "호선",
+  "pos": "名詞（量詞）",
+  "hanja": "號線",
+  "meaning_zh": "號線（地鐵路線）",
+  "example_ko": "이 호선으로 갈아타세요.",
+  "example_zh": "請轉乘二號線。"
+ },
+ {
+  "id": "v_1266",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "출구",
+  "pos": "名詞",
+  "hanja": "出口",
+  "meaning_zh": "出口",
+  "example_ko": "삼 번 출구로 나오세요.",
+  "example_zh": "請從三號出口出來。"
+ },
+ {
+  "id": "v_1267",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "입구",
+  "pos": "名詞",
+  "hanja": "入口",
+  "meaning_zh": "入口",
+  "example_ko": "입구가 어디예요?",
+  "example_zh": "入口在哪裡？"
+ },
+ {
+  "id": "v_1268",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "기사",
+  "pos": "名詞",
+  "hanja": "技士",
+  "meaning_zh": "司機",
+  "example_ko": "택시 기사님이 친절해요.",
+  "example_zh": "計程車司機很親切。"
+ },
+ {
+  "id": "v_1269",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "자리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "座位、位子",
+  "example_ko": "이 자리에 앉아도 돼요?",
+  "example_zh": "我可以坐這個位子嗎？"
+ },
+ {
+  "id": "v_1270",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "고속버스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "客運、長途巴士",
+  "example_ko": "고속버스로 대구에 가요.",
+  "example_zh": "搭客運去大邱。"
+ },
+ {
+  "id": "v_1271",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "터미널",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "客運站、轉運站",
+  "example_ko": "버스 터미널은 역 옆에 있어요.",
+  "example_zh": "客運站在車站旁邊。"
+ },
+ {
+  "id": "v_1272",
+  "level": 1,
+  "topic": "常見交通工具",
+  "word": "천천히",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "慢慢地",
+  "example_ko": "천천히 운전하세요.",
+  "example_zh": "請慢慢開。"
+ },
+ {
+  "id": "v_1273",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "학교",
+  "pos": "名詞",
+  "hanja": "學校",
+  "meaning_zh": "學校",
+  "example_ko": "우리 학교는 크고 예뻐요.",
+  "example_zh": "我們學校又大又漂亮。"
+ },
+ {
+  "id": "v_1274",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "대학교",
+  "pos": "名詞",
+  "hanja": "大學校",
+  "meaning_zh": "大學",
+  "example_ko": "형은 서울에 있는 대학교에 다녀요.",
+  "example_zh": "哥哥在首爾的大學念書。"
+ },
+ {
+  "id": "v_1275",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "병원",
+  "pos": "名詞",
+  "hanja": "病院",
+  "meaning_zh": "醫院",
+  "example_ko": "아파서 병원에 갔어요.",
+  "example_zh": "因為不舒服，所以去了醫院。"
+ },
+ {
+  "id": "v_1276",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "은행",
+  "pos": "名詞",
+  "hanja": "銀行",
+  "meaning_zh": "銀行",
+  "example_ko": "은행은 네 시에 문을 닫아요.",
+  "example_zh": "銀行四點關門。"
+ },
+ {
+  "id": "v_1277",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "우체국",
+  "pos": "名詞",
+  "hanja": "郵遞局",
+  "meaning_zh": "郵局",
+  "example_ko": "우체국에서 편지를 보내요.",
+  "example_zh": "在郵局寄信。"
+ },
+ {
+  "id": "v_1278",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "도서관",
+  "pos": "名詞",
+  "hanja": "圖書館",
+  "meaning_zh": "圖書館",
+  "example_ko": "도서관은 조용해요.",
+  "example_zh": "圖書館很安靜。"
+ },
+ {
+  "id": "v_1279",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "공원",
+  "pos": "名詞",
+  "hanja": "公園",
+  "meaning_zh": "公園",
+  "example_ko": "공원에서 산책해요.",
+  "example_zh": "在公園散步。"
+ },
+ {
+  "id": "v_1280",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "시장",
+  "pos": "名詞",
+  "hanja": "市場",
+  "meaning_zh": "市場",
+  "example_ko": "전통 시장은 물건이 싸요.",
+  "example_zh": "傳統市場的東西很便宜。"
+ },
+ {
+  "id": "v_1281",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "백화점",
+  "pos": "名詞",
+  "hanja": "百貨店",
+  "meaning_zh": "百貨公司",
+  "example_ko": "백화점에서 옷을 샀어요.",
+  "example_zh": "在百貨公司買了衣服。"
+ },
+ {
+  "id": "v_1282",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "편의점",
+  "pos": "名詞",
+  "hanja": "便宜店",
+  "meaning_zh": "便利商店",
+  "example_ko": "편의점은 이십사 시간 문을 열어요.",
+  "example_zh": "便利商店二十四小時營業。"
+ },
+ {
+  "id": "v_1283",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "약국",
+  "pos": "名詞",
+  "hanja": "藥局",
+  "meaning_zh": "藥局、藥房",
+  "example_ko": "약국은 병원 옆에 있어요.",
+  "example_zh": "藥局在醫院旁邊。"
+ },
+ {
+  "id": "v_1284",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "서점",
+  "pos": "名詞",
+  "hanja": "書店",
+  "meaning_zh": "書店",
+  "example_ko": "서점에서 한국어 책을 샀어요.",
+  "example_zh": "在書店買了韓文書。"
+ },
+ {
+  "id": "v_1285",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "빵집",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "麵包店",
+  "example_ko": "빵집에서 빵 냄새가 나요.",
+  "example_zh": "麵包店傳來麵包香。"
+ },
+ {
+  "id": "v_1286",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "교회",
+  "pos": "名詞",
+  "hanja": "教會",
+  "meaning_zh": "教會、教堂",
+  "example_ko": "교회 앞에 사람들이 많아요.",
+  "example_zh": "教會前面人很多。"
+ },
+ {
+  "id": "v_1287",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "건물",
+  "pos": "名詞",
+  "hanja": "建物",
+  "meaning_zh": "建築物、大樓",
+  "example_ko": "저 높은 건물이 회사예요.",
+  "example_zh": "那棟高樓是公司。"
+ },
+ {
+  "id": "v_1288",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "거리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "街道、街",
+  "example_ko": "명동 거리는 항상 복잡해요.",
+  "example_zh": "明洞的街上總是很擁擠。"
+ },
+ {
+  "id": "v_1289",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "사거리",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "十字路口",
+  "example_ko": "사거리에서 오른쪽으로 가세요.",
+  "example_zh": "請在十字路口往右走。"
+ },
+ {
+  "id": "v_1290",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "건너다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "越過、過（馬路）",
+  "example_ko": "길을 건너세요.",
+  "example_zh": "請過馬路。"
+ },
+ {
+  "id": "v_1291",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "쭉",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "一直（往前）",
+  "example_ko": "이 길로 쭉 가세요.",
+  "example_zh": "請沿著這條路一直走。"
+ },
+ {
+  "id": "v_1292",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "돌다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "轉、轉彎",
+  "example_ko": "저 모퉁이에서 왼쪽으로 도세요.",
+  "example_zh": "請在那個轉角左轉。"
+ },
+ {
+  "id": "v_1293",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "좌회전하다",
+  "pos": "動詞",
+  "hanja": "左回轉",
+  "meaning_zh": "左轉",
+  "example_ko": "다음 사거리에서 좌회전하세요.",
+  "example_zh": "請在下一個十字路口左轉。"
+ },
+ {
+  "id": "v_1294",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "우회전하다",
+  "pos": "動詞",
+  "hanja": "右回轉",
+  "meaning_zh": "右轉",
+  "example_ko": "은행 앞에서 우회전하세요.",
+  "example_zh": "請在銀行前面右轉。"
+ },
+ {
+  "id": "v_1295",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "지나다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "經過、通過",
+  "example_ko": "다리를 지나면 학교가 있어요.",
+  "example_zh": "過了橋就是學校。"
+ },
+ {
+  "id": "v_1296",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "찾다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "找、尋找",
+  "example_ko": "우체국을 찾고 있어요.",
+  "example_zh": "我在找郵局。"
+ },
+ {
+  "id": "v_1297",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "묻다",
+  "pos": "動詞",
+  "hanja": null,
+  "meaning_zh": "問",
+  "example_ko": "길을 몰라서 경찰에게 물었어요.",
+  "example_zh": "我不知道路，所以問了警察。"
+ },
+ {
+  "id": "v_1298",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "동네",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "社區、街坊",
+  "example_ko": "우리 동네에는 공원이 많아요.",
+  "example_zh": "我們社區有很多公園。"
+ },
+ {
+  "id": "v_1299",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "도시",
+  "pos": "名詞",
+  "hanja": "都市",
+  "meaning_zh": "城市、都市",
+  "example_ko": "서울은 큰 도시예요.",
+  "example_zh": "首爾是大城市。"
+ },
+ {
+  "id": "v_1300",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "시내",
+  "pos": "名詞",
+  "hanja": "市內",
+  "meaning_zh": "市區、市中心",
+  "example_ko": "주말에 시내에 나가요.",
+  "example_zh": "週末去市區。"
+ },
+ {
+  "id": "v_1301",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "서울",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "首爾",
+  "example_ko": "저는 서울에서 일해요.",
+  "example_zh": "我在首爾工作。"
+ },
+ {
+  "id": "v_1302",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "가게",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "店、商店",
+  "example_ko": "이 가게는 밤 열 시까지 해요.",
+  "example_zh": "這家店開到晚上十點。"
+ },
+ {
+  "id": "v_1303",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "주차장",
+  "pos": "名詞",
+  "hanja": "駐車場",
+  "meaning_zh": "停車場",
+  "example_ko": "주차장이 건물 뒤에 있어요.",
+  "example_zh": "停車場在大樓後面。"
+ },
+ {
+  "id": "v_1304",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "꽃집",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "花店",
+  "example_ko": "꽃집에서 장미를 샀어요.",
+  "example_zh": "在花店買了玫瑰。"
+ },
+ {
+  "id": "v_1305",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "끝",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "盡頭、結尾",
+  "example_ko": "이 길 끝에 은행이 있어요.",
+  "example_zh": "這條路的盡頭有銀行。"
+ },
+ {
+  "id": "v_1306",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "word": "바로",
+  "pos": "副詞",
+  "hanja": null,
+  "meaning_zh": "就、正好、馬上",
+  "example_ko": "약국은 바로 옆에 있어요.",
+  "example_zh": "藥局就在旁邊。"
+ },
+ {
   "id": "v_1307",
   "level": 1,
   "topic": "咖啡廳與飲料點餐",
@@ -1912,6 +3408,347 @@ const READ_VOCAB = [
   "meaning_zh": "點餐、訂購",
   "example_ko": "커피를 두 잔 주문했어요.",
   "example_zh": "我點了兩杯咖啡。"
+ },
+ {
+  "id": "v_1310",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "카페",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "咖啡廳",
+  "example_ko": "카페에서 친구를 기다려요.",
+  "example_zh": "在咖啡廳等朋友。"
+ },
+ {
+  "id": "v_1311",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "아메리카노",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "美式咖啡",
+  "example_ko": "아이스 아메리카노 한 잔 주세요.",
+  "example_zh": "請給我一杯冰美式。"
+ },
+ {
+  "id": "v_1312",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "라떼",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "拿鐵",
+  "example_ko": "저는 따뜻한 라떼를 좋아해요.",
+  "example_zh": "我喜歡熱拿鐵。"
+ },
+ {
+  "id": "v_1313",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "녹차",
+  "pos": "名詞",
+  "hanja": "綠茶",
+  "meaning_zh": "綠茶",
+  "example_ko": "녹차는 건강에 좋아요.",
+  "example_zh": "綠茶對健康很好。"
+ },
+ {
+  "id": "v_1314",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "홍차",
+  "pos": "名詞",
+  "hanja": "紅茶",
+  "meaning_zh": "紅茶",
+  "example_ko": "홍차에 설탕을 넣어요.",
+  "example_zh": "在紅茶裡加糖。"
+ },
+ {
+  "id": "v_1315",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "차",
+  "pos": "名詞",
+  "hanja": "茶",
+  "meaning_zh": "茶",
+  "example_ko": "따뜻한 차를 마셔요.",
+  "example_zh": "喝熱茶。"
+ },
+ {
+  "id": "v_1316",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "주스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "果汁",
+  "example_ko": "오렌지 주스 두 잔 주세요.",
+  "example_zh": "請給我兩杯柳橙汁。"
+ },
+ {
+  "id": "v_1317",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "콜라",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "可樂",
+  "example_ko": "콜라는 너무 달아요.",
+  "example_zh": "可樂太甜了。"
+ },
+ {
+  "id": "v_1318",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "케이크",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "蛋糕",
+  "example_ko": "생일 케이크를 샀어요.",
+  "example_zh": "我買了生日蛋糕。"
+ },
+ {
+  "id": "v_1319",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "쿠키",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "餅乾",
+  "example_ko": "쿠키하고 우유를 먹어요.",
+  "example_zh": "吃餅乾配牛奶。"
+ },
+ {
+  "id": "v_1320",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "빙수",
+  "pos": "名詞",
+  "hanja": "冰水",
+  "meaning_zh": "刨冰（韓式剉冰）",
+  "example_ko": "여름에는 빙수가 인기가 많아요.",
+  "example_zh": "夏天刨冰很受歡迎。"
+ },
+ {
+  "id": "v_1321",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "아이스",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "冰的（飲料）",
+  "example_ko": "아이스로 드릴까요?",
+  "example_zh": "要冰的嗎？"
+ },
+ {
+  "id": "v_1322",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "따뜻하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "溫暖、熱的（飲料）",
+  "example_ko": "따뜻한 커피 주세요.",
+  "example_zh": "請給我熱咖啡。"
+ },
+ {
+  "id": "v_1323",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "뜨겁다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "燙、很熱",
+  "example_ko": "커피가 뜨거워요. 조심하세요.",
+  "example_zh": "咖啡很燙，小心。"
+ },
+ {
+  "id": "v_1324",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "차갑다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "冰冷、冰涼",
+  "example_ko": "차가운 물 한 잔 주세요.",
+  "example_zh": "請給我一杯冰水。"
+ },
+ {
+  "id": "v_1325",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "시원하다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "涼爽、冰涼爽口",
+  "example_ko": "시원한 주스를 마시고 싶어요.",
+  "example_zh": "我想喝冰涼的果汁。"
+ },
+ {
+  "id": "v_1326",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "잔",
+  "pos": "名詞（量詞）",
+  "hanja": "盞",
+  "meaning_zh": "杯（算飲料）",
+  "example_ko": "커피 두 잔 주세요.",
+  "example_zh": "請給我兩杯咖啡。"
+ },
+ {
+  "id": "v_1327",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "컵",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "杯子",
+  "example_ko": "컵이 깨졌어요.",
+  "example_zh": "杯子破了。"
+ },
+ {
+  "id": "v_1328",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "얼음",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "冰塊",
+  "example_ko": "얼음은 조금만 넣어 주세요.",
+  "example_zh": "冰塊請少放一點。"
+ },
+ {
+  "id": "v_1329",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "설탕",
+  "pos": "名詞",
+  "hanja": "雪糖",
+  "meaning_zh": "糖、砂糖",
+  "example_ko": "설탕은 빼 주세요.",
+  "example_zh": "請不要加糖。"
+ },
+ {
+  "id": "v_1330",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "빨대",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "吸管",
+  "example_ko": "빨대 하나 주세요.",
+  "example_zh": "請給我一根吸管。"
+ },
+ {
+  "id": "v_1331",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "사이즈",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "尺寸、大小（杯）",
+  "example_ko": "사이즈는 어떻게 드릴까요?",
+  "example_zh": "請問要什麼尺寸？"
+ },
+ {
+  "id": "v_1332",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "포장",
+  "pos": "名詞",
+  "hanja": "包裝",
+  "meaning_zh": "外帶、打包；包裝",
+  "example_ko": "포장해 주세요.",
+  "example_zh": "請幫我外帶。"
+ },
+ {
+  "id": "v_1333",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "손님",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "客人",
+  "example_ko": "손님, 주문하시겠어요?",
+  "example_zh": "客人，請問要點餐嗎？"
+ },
+ {
+  "id": "v_1334",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "점원",
+  "pos": "名詞",
+  "hanja": "店員",
+  "meaning_zh": "店員",
+  "example_ko": "점원이 아주 친절해요.",
+  "example_zh": "店員非常親切。"
+ },
+ {
+  "id": "v_1335",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "초콜릿",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "巧克力",
+  "example_ko": "초콜릿 케이크가 맛있어요.",
+  "example_zh": "巧克力蛋糕很好吃。"
+ },
+ {
+  "id": "v_1336",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "샌드위치",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "三明治",
+  "example_ko": "점심에 샌드위치를 먹었어요.",
+  "example_zh": "中午吃了三明治。"
+ },
+ {
+  "id": "v_1337",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "휴지",
+  "pos": "名詞",
+  "hanja": "休紙",
+  "meaning_zh": "衛生紙、紙巾",
+  "example_ko": "휴지 좀 주세요.",
+  "example_zh": "請給我一些紙巾。"
+ },
+ {
+  "id": "v_1338",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "영수증",
+  "pos": "名詞",
+  "hanja": "領收證",
+  "meaning_zh": "收據",
+  "example_ko": "영수증 필요하세요?",
+  "example_zh": "需要收據嗎？"
+ },
+ {
+  "id": "v_1339",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "쓰다",
+  "pos": "形容詞",
+  "hanja": null,
+  "meaning_zh": "苦",
+  "example_ko": "이 커피는 너무 써요.",
+  "example_zh": "這杯咖啡太苦了。"
+ },
+ {
+  "id": "v_1340",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "word": "디저트",
+  "pos": "名詞",
+  "hanja": null,
+  "meaning_zh": "甜點",
+  "example_ko": "디저트로 케이크를 먹어요.",
+  "example_zh": "甜點吃蛋糕。"
  },
  {
   "id": "v_1341",
@@ -3497,6 +5334,1284 @@ const READ_ARTICLES = [
     "explanation": "把動詞變成形容名詞的樣子：공부하는 문제（要做的題目）、자는 아이（在睡覺的小孩）。現在的動作或平常的事用 -는，不管有沒有收音都接 -는（ㄹ 結尾的動詞要去掉 ㄹ：살다 → 사는）。",
     "extra_example_ko": "저기 책을 읽는 사람이 제 친구예요.",
     "extra_example_zh": "在那邊看書的人是我朋友。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_106",
+  "level": 1,
+  "topic": "居家空間與基本家具",
+  "title_ko": "우리 집",
+  "title_zh": "我的家",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "우리 집은 아파트 칠 층에 있어요.",
+    "zh": "我家在公寓七樓。",
+    "target_words": [
+     {
+      "surface": "우리",
+      "lemma": "우리",
+      "vocab_id": "v_1059"
+     },
+     {
+      "surface": "집은",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "아파트",
+      "lemma": "아파트",
+      "vocab_id": "v_1172"
+     },
+     {
+      "surface": "칠",
+      "lemma": "칠",
+      "vocab_id": "v_1076"
+     },
+     {
+      "surface": "층에",
+      "lemma": "층",
+      "vocab_id": "v_1100"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_112"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "집에 방이 세 개 있어요.",
+    "zh": "家裡有三個房間。",
+    "target_words": [
+     {
+      "surface": "집에",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "방이",
+      "lemma": "방",
+      "vocab_id": "v_1173"
+     },
+     {
+      "surface": "세",
+      "lemma": "셋",
+      "vocab_id": "v_1105"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_112"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "거실은 넓고 깨끗해요.",
+    "zh": "客廳又寬敞又乾淨。",
+    "target_words": [
+     {
+      "surface": "거실은",
+      "lemma": "거실",
+      "vocab_id": "v_1174"
+     },
+     {
+      "surface": "넓고",
+      "lemma": "넓다",
+      "vocab_id": "v_1204"
+     },
+     {
+      "surface": "깨끗해요",
+      "lemma": "깨끗하다",
+      "vocab_id": "v_1203"
+     }
+    ],
+    "grammar_ids": [
+     "g_111"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "거실에 소파하고 텔레비전이 있어요.",
+    "zh": "客廳裡有沙發和電視。",
+    "target_words": [
+     {
+      "surface": "거실에",
+      "lemma": "거실",
+      "vocab_id": "v_1174"
+     },
+     {
+      "surface": "소파하고",
+      "lemma": "소파",
+      "vocab_id": "v_1187"
+     },
+     {
+      "surface": "텔레비전이",
+      "lemma": "텔레비전",
+      "vocab_id": "v_1192"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_112"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "제 방에는 침대하고 책상이 있어요.",
+    "zh": "我的房間裡有床和書桌。",
+    "target_words": [
+     {
+      "surface": "제",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "방에는",
+      "lemma": "방",
+      "vocab_id": "v_1173"
+     },
+     {
+      "surface": "침대하고",
+      "lemma": "침대",
+      "vocab_id": "v_1186"
+     },
+     {
+      "surface": "책상이",
+      "lemma": "책상",
+      "vocab_id": "v_1138"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_112"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "그런데 곧 이사해요. 그래서 짐을 정리해요.",
+    "zh": "不過我們快要搬家了，所以我在整理行李。",
+    "target_words": [
+     {
+      "surface": "이사해요",
+      "lemma": "이사하다",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "짐을",
+      "lemma": "짐",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "정리해요",
+      "lemma": "정리하다",
+      "vocab_id": "new_03"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "이사하다",
+    "pos": "動詞",
+    "hanja": "移徙",
+    "meaning_zh": "搬家"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "짐",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "行李、東西"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "정리하다",
+    "pos": "動詞",
+    "hanja": "整理",
+    "meaning_zh": "整理、收拾"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_111",
+    "pattern": "形容詞語幹 + -고",
+    "meaning": "又…又…（把兩個特點連在一起）",
+    "explanation": "形容一個東西有兩個特點時，第一個形容詞接 -고，時態和語尾放在最後一個：넓고 깨끗해요（又寬又乾淨）。不管有沒有收音都直接接 -고。動詞也能用 -고 表示「然後」（見主題 04）。",
+    "extra_example_ko": "제 방은 작고 조용해요.",
+    "extra_example_zh": "我的房間又小又安靜。"
+   },
+   {
+    "grammar_id": "g_112",
+    "pattern": "地點 + 에 + 名詞 + 이/가 있다",
+    "meaning": "某個地方有…",
+    "explanation": "說「哪裡有什麼」：先說地點加 -에，再說東西加 -이/가，最後用 있어요。數量放在名詞後面：방이 세 개 있어요（有三個房間）。固有詞數字放在量詞前會變短：하나→한、둘→두、셋→세、넷→네。",
+    "extra_example_ko": "냉장고에 우유가 두 개 있어요.",
+    "extra_example_zh": "冰箱裡有兩瓶牛奶。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_107",
+  "level": 1,
+  "topic": "位置與方位介詞",
+  "title_ko": "가방이 어디에 있어요?",
+  "title_zh": "包包在哪裡？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "엄마, 제 가방이 어디에 있어요?",
+    "zh": "媽，我的包包在哪裡？",
+    "target_words": [
+     {
+      "surface": "엄마",
+      "lemma": "엄마",
+      "vocab_id": "v_1039"
+     },
+     {
+      "surface": "제",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "가방이",
+      "lemma": "가방",
+      "vocab_id": "v_1146"
+     },
+     {
+      "surface": "어디에",
+      "lemma": "어디",
+      "vocab_id": "v_1225"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "책상 위에 없어요?",
+    "zh": "不在書桌上嗎？",
+    "target_words": [
+     {
+      "surface": "책상",
+      "lemma": "책상",
+      "vocab_id": "v_1138"
+     },
+     {
+      "surface": "위에",
+      "lemma": "위",
+      "vocab_id": "v_1205"
+     },
+     {
+      "surface": "없어요",
+      "lemma": "없다",
+      "vocab_id": "v_1063"
+     }
+    ],
+    "grammar_ids": [
+     "g_113"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "A",
+    "ko": "없어요. 침대 밑에도 없어요.",
+    "zh": "沒有。床底下也沒有。",
+    "target_words": [
+     {
+      "surface": "없어요",
+      "lemma": "없다",
+      "vocab_id": "v_1063"
+     },
+     {
+      "surface": "침대",
+      "lemma": "침대",
+      "vocab_id": "v_1186"
+     },
+     {
+      "surface": "밑에도",
+      "lemma": "밑",
+      "vocab_id": "v_1207"
+     },
+     {
+      "surface": "없어요",
+      "lemma": "없다",
+      "vocab_id": "v_1063"
+     }
+    ],
+    "grammar_ids": [
+     "g_114",
+     "g_113"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "B",
+    "ko": "아, 현관에 있어요! 문 옆 의자 위에 있어요.",
+    "zh": "啊，在玄關！就在門旁邊的椅子上。",
+    "target_words": [
+     {
+      "surface": "현관에",
+      "lemma": "현관",
+      "vocab_id": "v_1179"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     },
+     {
+      "surface": "문",
+      "lemma": "문",
+      "vocab_id": "v_1180"
+     },
+     {
+      "surface": "옆",
+      "lemma": "옆",
+      "vocab_id": "v_1213"
+     },
+     {
+      "surface": "의자",
+      "lemma": "의자",
+      "vocab_id": "v_1139"
+     },
+     {
+      "surface": "위에",
+      "lemma": "위",
+      "vocab_id": "v_1205"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_113"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "A",
+    "ko": "아, 드디어 찾았어요! 그런데 열쇠는 어디에 있어요?",
+    "zh": "啊，終於找到了！那鑰匙在哪裡？",
+    "target_words": [
+     {
+      "surface": "드디어",
+      "lemma": "드디어",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "찾았어요",
+      "lemma": "찾다",
+      "vocab_id": "v_1296"
+     },
+     {
+      "surface": "열쇠는",
+      "lemma": "열쇠",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "어디에",
+      "lemma": "어디",
+      "vocab_id": "v_1225"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "B",
+    "ko": "가방 속 주머니 안에 있어요.",
+    "zh": "在包包裡的口袋裡面。",
+    "target_words": [
+     {
+      "surface": "가방",
+      "lemma": "가방",
+      "vocab_id": "v_1146"
+     },
+     {
+      "surface": "속",
+      "lemma": "속",
+      "vocab_id": "v_1210"
+     },
+     {
+      "surface": "주머니",
+      "lemma": "주머니",
+      "vocab_id": "new_02"
+     },
+     {
+      "surface": "안에",
+      "lemma": "안",
+      "vocab_id": "v_1208"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_113"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "열쇠",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "鑰匙"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "주머니",
+    "pos": "名詞",
+    "hanja": null,
+    "meaning_zh": "口袋"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "드디어",
+    "pos": "副詞",
+    "hanja": null,
+    "meaning_zh": "終於"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_113",
+    "pattern": "名詞 + 위／아래／밑／안／옆 + 에 있다",
+    "meaning": "在…的上面／下面／裡面／旁邊",
+    "explanation": "韓文的方位詞放在名詞「後面」，跟中文順序一樣：책상 위（書桌上面）、문 옆（門旁邊）、가방 안（包包裡面）。後面再接 -에 있어요（在）或 -에 없어요（不在）。兩個方位可以連著用：가방 속 주머니 안에（包包裡的口袋裡面）。",
+    "extra_example_ko": "고양이가 소파 뒤에 있어요.",
+    "extra_example_zh": "貓在沙發後面。"
+   },
+   {
+    "grammar_id": "g_114",
+    "pattern": "名詞（＋助詞）+ 도",
+    "meaning": "也…",
+    "explanation": "-도 表示「也」，直接接在名詞後面，會取代 -이/가、-을/를：가방도 없어요（包包也沒有）。如果前面有 -에、-에서 這類助詞就保留它，再加 -도：밑에도（底下也）。",
+    "extra_example_ko": "저도 학생이에요.",
+    "extra_example_zh": "我也是學生。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_108",
+  "level": 1,
+  "topic": "常見交通工具",
+  "title_ko": "출근길",
+  "title_zh": "上班的路上",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": null,
+    "ko": "저는 매일 지하철을 타고 출근해요.",
+    "zh": "我每天搭地鐵上班。",
+    "target_words": [
+     {
+      "surface": "저는",
+      "lemma": "저",
+      "vocab_id": "v_1010"
+     },
+     {
+      "surface": "매일",
+      "lemma": "매일",
+      "vocab_id": "v_1131"
+     },
+     {
+      "surface": "지하철을",
+      "lemma": "지하철",
+      "vocab_id": "v_1241"
+     },
+     {
+      "surface": "타고",
+      "lemma": "타다",
+      "vocab_id": "v_1255"
+     },
+     {
+      "surface": "출근해요",
+      "lemma": "출근하다",
+      "vocab_id": "v_1129"
+     }
+    ],
+    "grammar_ids": [
+     "g_115"
+    ]
+   },
+   {
+    "sentence_index": 2,
+    "speaker": null,
+    "ko": "집에서 역까지 걸어서 십 분 걸려요.",
+    "zh": "從家裡走到車站要十分鐘。",
+    "target_words": [
+     {
+      "surface": "집에서",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "역까지",
+      "lemma": "역",
+      "vocab_id": "v_1251"
+     },
+     {
+      "surface": "걸어서",
+      "lemma": "걷다",
+      "vocab_id": "v_1257"
+     },
+     {
+      "surface": "십",
+      "lemma": "십",
+      "vocab_id": "v_1079"
+     },
+     {
+      "surface": "분",
+      "lemma": "분",
+      "vocab_id": "v_1115"
+     },
+     {
+      "surface": "걸려요",
+      "lemma": "걸리다",
+      "vocab_id": "v_1264"
+     }
+    ],
+    "grammar_ids": [
+     "g_116"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": null,
+    "ko": "이 호선 지하철을 타고 다섯 번째 역에서 내려요.",
+    "zh": "搭二號線地鐵，在第五站下車。",
+    "target_words": [
+     {
+      "surface": "이",
+      "lemma": "이",
+      "vocab_id": "v_1071"
+     },
+     {
+      "surface": "호선",
+      "lemma": "호선",
+      "vocab_id": "v_1265"
+     },
+     {
+      "surface": "지하철을",
+      "lemma": "지하철",
+      "vocab_id": "v_1241"
+     },
+     {
+      "surface": "타고",
+      "lemma": "타다",
+      "vocab_id": "v_1255"
+     },
+     {
+      "surface": "다섯",
+      "lemma": "다섯",
+      "vocab_id": "v_1107"
+     },
+     {
+      "surface": "번째",
+      "lemma": "번째",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "역에서",
+      "lemma": "역",
+      "vocab_id": "v_1251"
+     },
+     {
+      "surface": "내려요",
+      "lemma": "내리다",
+      "vocab_id": "v_1256"
+     }
+    ],
+    "grammar_ids": [
+     "g_115"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": null,
+    "ko": "아침에는 지하철이 복잡해서 자리가 없어요.",
+    "zh": "早上地鐵很擠，所以沒有座位。",
+    "target_words": [
+     {
+      "surface": "아침에는",
+      "lemma": "아침",
+      "vocab_id": "v_1118"
+     },
+     {
+      "surface": "지하철이",
+      "lemma": "지하철",
+      "vocab_id": "v_1241"
+     },
+     {
+      "surface": "복잡해서",
+      "lemma": "복잡하다",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "자리가",
+      "lemma": "자리",
+      "vocab_id": "v_1269"
+     },
+     {
+      "surface": "없어요",
+      "lemma": "없다",
+      "vocab_id": "v_1063"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 5,
+    "speaker": null,
+    "ko": "그래서 가끔 버스를 타요. 버스 정류장은 집 바로 앞에 있어요.",
+    "zh": "所以我有時候搭公車。公車站就在我家正前面。",
+    "target_words": [
+     {
+      "surface": "버스를",
+      "lemma": "버스",
+      "vocab_id": "v_1240"
+     },
+     {
+      "surface": "타요",
+      "lemma": "타다",
+      "vocab_id": "v_1255"
+     },
+     {
+      "surface": "버스",
+      "lemma": "버스",
+      "vocab_id": "v_1240"
+     },
+     {
+      "surface": "정류장은",
+      "lemma": "정류장",
+      "vocab_id": "v_1250"
+     },
+     {
+      "surface": "집",
+      "lemma": "집",
+      "vocab_id": "v_1171"
+     },
+     {
+      "surface": "바로",
+      "lemma": "바로",
+      "vocab_id": "v_1306"
+     },
+     {
+      "surface": "앞에",
+      "lemma": "앞",
+      "vocab_id": "v_1211"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": [
+     "g_115"
+    ]
+   },
+   {
+    "sentence_index": 6,
+    "speaker": null,
+    "ko": "주말에는 자전거를 타고 한강 공원까지 달려요.",
+    "zh": "週末我騎腳踏車到漢江公園。",
+    "target_words": [
+     {
+      "surface": "주말에는",
+      "lemma": "주말",
+      "vocab_id": "v_1095"
+     },
+     {
+      "surface": "자전거를",
+      "lemma": "자전거",
+      "vocab_id": "v_1246"
+     },
+     {
+      "surface": "타고",
+      "lemma": "타다",
+      "vocab_id": "v_1255"
+     },
+     {
+      "surface": "공원까지",
+      "lemma": "공원",
+      "vocab_id": "v_1279"
+     },
+     {
+      "surface": "달려요",
+      "lemma": "달리다",
+      "vocab_id": "new_02"
+     }
+    ],
+    "grammar_ids": [
+     "g_115",
+     "g_116"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "번째",
+    "pos": "名詞（量詞）",
+    "hanja": null,
+    "meaning_zh": "第…（個、次）"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "달리다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "跑、奔馳"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "복잡하다",
+    "pos": "形容詞",
+    "hanja": "複雜",
+    "meaning_zh": "擁擠；複雜"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_115",
+    "pattern": "交通工具 + 을/를 타다",
+    "meaning": "搭、騎（交通工具）",
+    "explanation": "中文說「搭地鐵」，韓文的交通工具要加受詞助詞 -을/를，再接 타다：지하철을 타요、자전거를 타요。有收音接 -을（지하철 → 지하철을），沒有收音接 -를（버스 → 버스를）。下車是「名詞 + 에서 내리다」：역에서 내려요。",
+    "extra_example_ko": "저는 택시를 타고 공항에 가요.",
+    "extra_example_zh": "我搭計程車去機場。"
+   },
+   {
+    "grammar_id": "g_116",
+    "pattern": "地點 + 에서 + 地點 + 까지",
+    "meaning": "從…到…",
+    "explanation": "-에서 表示起點（從），-까지 表示終點（到）。常和 걸리다（花時間）一起用：집에서 역까지 십 분 걸려요（從家到車站要十分鐘）。只說終點時單獨用 -까지：공원까지 달려요（跑到公園）。",
+    "extra_example_ko": "서울에서 부산까지 기차로 세 시간 걸려요.",
+    "extra_example_zh": "從首爾到釜山搭火車要三個小時。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_109",
+  "level": 1,
+  "topic": "問路與城市地標",
+  "title_ko": "우체국이 어디예요?",
+  "title_zh": "郵局在哪裡？",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "A",
+    "ko": "실례합니다. 이 근처에 우체국이 있어요?",
+    "zh": "不好意思，請問這附近有郵局嗎？",
+    "target_words": [
+     {
+      "surface": "실례합니다",
+      "lemma": "실례하다",
+      "vocab_id": "new_01"
+     },
+     {
+      "surface": "이",
+      "lemma": "이",
+      "vocab_id": "v_1226"
+     },
+     {
+      "surface": "근처에",
+      "lemma": "근처",
+      "vocab_id": "v_1218"
+     },
+     {
+      "surface": "우체국이",
+      "lemma": "우체국",
+      "vocab_id": "v_1277"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "B",
+    "ko": "네, 있어요. 이 길로 쭉 걸어가세요.",
+    "zh": "有的。沿著這條路一直走。",
+    "target_words": [
+     {
+      "surface": "네",
+      "lemma": "네",
+      "vocab_id": "v_1007"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     },
+     {
+      "surface": "이",
+      "lemma": "이",
+      "vocab_id": "v_1226"
+     },
+     {
+      "surface": "길로",
+      "lemma": "길",
+      "vocab_id": "v_1263"
+     },
+     {
+      "surface": "쭉",
+      "lemma": "쭉",
+      "vocab_id": "v_1291"
+     },
+     {
+      "surface": "걸어가세요",
+      "lemma": "걸어가다",
+      "vocab_id": "v_1258"
+     }
+    ],
+    "grammar_ids": [
+     "g_117"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "B",
+    "ko": "그리고 사거리에서 왼쪽으로 도세요. 약 오 분 걸려요.",
+    "zh": "然後在十字路口往左轉，大約五分鐘。",
+    "target_words": [
+     {
+      "surface": "사거리에서",
+      "lemma": "사거리",
+      "vocab_id": "v_1289"
+     },
+     {
+      "surface": "왼쪽으로",
+      "lemma": "왼쪽",
+      "vocab_id": "v_1220"
+     },
+     {
+      "surface": "도세요",
+      "lemma": "돌다",
+      "vocab_id": "v_1292"
+     },
+     {
+      "surface": "약",
+      "lemma": "약",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "오",
+      "lemma": "오",
+      "vocab_id": "v_1074"
+     },
+     {
+      "surface": "분",
+      "lemma": "분",
+      "vocab_id": "v_1115"
+     },
+     {
+      "surface": "걸려요",
+      "lemma": "걸리다",
+      "vocab_id": "v_1264"
+     }
+    ],
+    "grammar_ids": [
+     "g_118",
+     "g_117"
+    ]
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "A",
+    "ko": "사거리에서 좌회전해요? 멀어요?",
+    "zh": "在十字路口左轉嗎？遠嗎？",
+    "target_words": [
+     {
+      "surface": "사거리에서",
+      "lemma": "사거리",
+      "vocab_id": "v_1289"
+     },
+     {
+      "surface": "좌회전해요",
+      "lemma": "좌회전하다",
+      "vocab_id": "v_1293"
+     },
+     {
+      "surface": "멀어요",
+      "lemma": "멀다",
+      "vocab_id": "v_1261"
+     }
+    ],
+    "grammar_ids": [
+     "g_118"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "B",
+    "ko": "아니요, 가까워요. 은행하고 약국 사이에 있어요.",
+    "zh": "不遠，很近。就在銀行和藥局中間。",
+    "target_words": [
+     {
+      "surface": "아니요",
+      "lemma": "아니요",
+      "vocab_id": "v_1008"
+     },
+     {
+      "surface": "가까워요",
+      "lemma": "가깝다",
+      "vocab_id": "v_1262"
+     },
+     {
+      "surface": "은행하고",
+      "lemma": "은행",
+      "vocab_id": "v_1276"
+     },
+     {
+      "surface": "약국",
+      "lemma": "약국",
+      "vocab_id": "v_1283"
+     },
+     {
+      "surface": "사이에",
+      "lemma": "사이",
+      "vocab_id": "v_1214"
+     },
+     {
+      "surface": "있어요",
+      "lemma": "있다",
+      "vocab_id": "v_1062"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "A",
+    "ko": "정말 감사합니다. 아주 친절하세요!",
+    "zh": "真的很謝謝您，您人真好！",
+    "target_words": [
+     {
+      "surface": "감사합니다",
+      "lemma": "감사하다",
+      "vocab_id": "v_1003"
+     },
+     {
+      "surface": "친절하세요",
+      "lemma": "친절하다",
+      "vocab_id": "new_02"
+     }
+    ],
+    "grammar_ids": []
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "실례하다",
+    "pos": "動詞",
+    "hanja": "失禮",
+    "meaning_zh": "打擾、不好意思（向陌生人搭話）"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "친절하다",
+    "pos": "形容詞",
+    "hanja": "親切",
+    "meaning_zh": "親切、友善"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "약",
+    "pos": "冠形詞",
+    "hanja": "約",
+    "meaning_zh": "大約"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_117",
+    "pattern": "名詞 + (으)로",
+    "meaning": "往…（方向）、沿著…（路線）",
+    "explanation": "表示移動的方向或路線：왼쪽으로（往左）、이 길로（沿著這條路）。沒有收音或收音是 ㄹ 接 -로（길 → 길로），其他有收音接 -으로（앞 → 앞으로）。常和 가다、걸어가다、돌다 一起用。",
+    "extra_example_ko": "오른쪽으로 가세요.",
+    "extra_example_zh": "請往右走。"
+   },
+   {
+    "grammar_id": "g_118",
+    "pattern": "地點 + 에서",
+    "meaning": "在…（做某個動作）",
+    "explanation": "-에서 表示動作發生的地點：사거리에서 도세요（在十字路口轉彎）。和 -에 的差別：「在哪裡有／存在」用 -에（은행 옆에 있어요），「在哪裡做動作」用 -에서（도서관에서 공부해요）。",
+    "extra_example_ko": "공원에서 친구를 만나요.",
+    "extra_example_zh": "在公園跟朋友見面。"
+   }
+  ]
+ },
+ {
+  "article_id": "art_110",
+  "level": 1,
+  "topic": "咖啡廳與飲料點餐",
+  "title_ko": "카페에서",
+  "title_zh": "在咖啡廳",
+  "sentences": [
+   {
+    "sentence_index": 1,
+    "speaker": "B",
+    "ko": "어서 오세요. 주문하시겠어요?",
+    "zh": "歡迎光臨，請問要點什麼？",
+    "target_words": [
+     {
+      "surface": "주문하시겠어요",
+      "lemma": "주문하다",
+      "vocab_id": "v_1309"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 2,
+    "speaker": "A",
+    "ko": "아이스 아메리카노 한 잔하고 녹차 라떼 한 잔 주세요.",
+    "zh": "請給我一杯冰美式和一杯綠茶拿鐵。",
+    "target_words": [
+     {
+      "surface": "아이스",
+      "lemma": "아이스",
+      "vocab_id": "v_1321"
+     },
+     {
+      "surface": "아메리카노",
+      "lemma": "아메리카노",
+      "vocab_id": "v_1311"
+     },
+     {
+      "surface": "한",
+      "lemma": "하나",
+      "vocab_id": "v_1103"
+     },
+     {
+      "surface": "잔하고",
+      "lemma": "잔",
+      "vocab_id": "v_1326"
+     },
+     {
+      "surface": "녹차",
+      "lemma": "녹차",
+      "vocab_id": "v_1313"
+     },
+     {
+      "surface": "라떼",
+      "lemma": "라떼",
+      "vocab_id": "v_1312"
+     },
+     {
+      "surface": "한",
+      "lemma": "하나",
+      "vocab_id": "v_1103"
+     },
+     {
+      "surface": "잔",
+      "lemma": "잔",
+      "vocab_id": "v_1326"
+     }
+    ],
+    "grammar_ids": [
+     "g_119"
+    ]
+   },
+   {
+    "sentence_index": 3,
+    "speaker": "B",
+    "ko": "사이즈는 어떻게 드릴까요?",
+    "zh": "請問要什麼尺寸？",
+    "target_words": [
+     {
+      "surface": "사이즈는",
+      "lemma": "사이즈",
+      "vocab_id": "v_1331"
+     },
+     {
+      "surface": "드릴까요",
+      "lemma": "드리다",
+      "vocab_id": "new_01"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 4,
+    "speaker": "A",
+    "ko": "보통 사이즈로 주세요. 그리고 설탕은 빼 주세요.",
+    "zh": "請給我一般大小，然後不要加糖。",
+    "target_words": [
+     {
+      "surface": "보통",
+      "lemma": "보통",
+      "vocab_id": "v_1132"
+     },
+     {
+      "surface": "사이즈로",
+      "lemma": "사이즈",
+      "vocab_id": "v_1331"
+     },
+     {
+      "surface": "설탕은",
+      "lemma": "설탕",
+      "vocab_id": "v_1329"
+     },
+     {
+      "surface": "빼",
+      "lemma": "빼다",
+      "vocab_id": "new_02"
+     }
+    ],
+    "grammar_ids": [
+     "g_120"
+    ]
+   },
+   {
+    "sentence_index": 5,
+    "speaker": "B",
+    "ko": "여기서 드세요? 포장이에요?",
+    "zh": "要內用還是外帶？",
+    "target_words": [
+     {
+      "surface": "여기서",
+      "lemma": "여기",
+      "vocab_id": "v_1222"
+     },
+     {
+      "surface": "드세요",
+      "lemma": "드시다",
+      "vocab_id": "new_03"
+     },
+     {
+      "surface": "포장이에요",
+      "lemma": "포장",
+      "vocab_id": "v_1332"
+     }
+    ],
+    "grammar_ids": []
+   },
+   {
+    "sentence_index": 6,
+    "speaker": "A",
+    "ko": "포장해 주세요. 그리고 영수증도 주세요.",
+    "zh": "請幫我外帶，也請給我收據。",
+    "target_words": [
+     {
+      "surface": "포장",
+      "lemma": "포장",
+      "vocab_id": "v_1332"
+     },
+     {
+      "surface": "영수증도",
+      "lemma": "영수증",
+      "vocab_id": "v_1338"
+     }
+    ],
+    "grammar_ids": [
+     "g_120"
+    ]
+   }
+  ],
+  "challenge_vocab": [
+   {
+    "id": "new_01",
+    "level": 2,
+    "word": "드리다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "給（주다 的敬語，給長輩或客人）"
+   },
+   {
+    "id": "new_02",
+    "level": 2,
+    "word": "빼다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "去掉、拿掉、不加"
+   },
+   {
+    "id": "new_03",
+    "level": 2,
+    "word": "드시다",
+    "pos": "動詞",
+    "hanja": null,
+    "meaning_zh": "吃、喝（먹다、마시다 的敬語）"
+   }
+  ],
+  "grammar_notes": [
+   {
+    "grammar_id": "g_119",
+    "pattern": "名詞 + 固有詞數字 + 量詞",
+    "meaning": "（幾）杯、（幾）個…",
+    "explanation": "點東西時的順序是「東西＋數量＋量詞」，跟中文相反：커피 한 잔（一杯咖啡）、케이크 두 개（兩個蛋糕）。數量用固有詞數字，而且 하나、둘、셋、넷 在量詞前會變短：한 잔、두 잔、세 잔、네 잔。",
+    "extra_example_ko": "콜라 세 잔하고 쿠키 두 개 주세요.",
+    "extra_example_zh": "請給我三杯可樂和兩片餅乾。"
+   },
+   {
+    "grammar_id": "g_120",
+    "pattern": "動詞語幹 + -아/어 주세요",
+    "meaning": "請（幫我）…",
+    "explanation": "請對方為自己做某件事。接法和 -아요/어요 一樣：빼다 → 빼 주세요、넣다 → 넣어 주세요、포장하다 → 포장해 주세요。比單獨的 -(으)세요 更有「麻煩您幫我」的感覺，點餐、問路都很常用。",
+    "extra_example_ko": "얼음을 많이 넣어 주세요.",
+    "extra_example_zh": "請幫我多加一點冰塊。"
    }
   ]
  },

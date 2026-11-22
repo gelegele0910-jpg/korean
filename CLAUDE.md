@@ -14,6 +14,7 @@
   - `js/speech-art.js`：子音與母音發音動畫（`window.SA`）。人物外觀是使用者提供、可公開的插畫 `img/girl.webp`（1254×1254），只有口腔用 SVG 疊上去做動畫（`drawHybrid()`，口腔座標經 `HY_T` 換算到圖片像素；`patch` 範圍蓋掉原圖的剖面與編號）。`stateAt(子音, 毫秒)` 是時間軸（準備→頂住→放開→念母音），`FAM` 是 6 個部位家族卡、`MANNERS` 是平音／送氣音／硬音卡、`closeup()` 是卡片的圓形特寫圖。對外：`SA.stage()` 產生畫面、`SA.mountAll()` 畫靜止畫面、`SA.play(svg, 子音, {slow, labels, cap, onRelease})`（播放時自動放大嘴巴，放開那一刻呼叫 `onRelease` 念字）、`SA.stop()`。減少動態時直接停在「放開」那一格。母音：`VPOSE`（舌頭四點＋下巴 `j`＋嘴唇 `r`：1 嘟圓往前、-1 拉平）、`VSEQ`（雙母音起點→終點）、`vStateAt(母音, 毫秒)`、`VFAM`（6 張母音家族卡）、`vsyl()`；`SA.play()` 子音、母音都能播，母音畫面用 `SA.stage(說明, 'v')`（不顯示子音的 ①～⑥）
   - `js/app.js`：主程式
   - `css/style.css`：樣式與 6 種介面風格
+  - `tools/topik/gen.py`：產生 `js/reading.js`（TOPIK 單字與文章都寫在這裡和 `batchN.py`，**不要手改 reading.js**）。新的一批寫成 `tools/topik/batchN.py`（單字清單＋`articles(S, TITLE)`），在 gen.py 匯入並把 `ready` 範圍往後改；`ID()` 會擋下同形異義字（例如 저＝我／那）沒指定主題的情況。本批 JSON 另存到 `tools/topik/out/`（不進 git）給使用者下載
   - `tools/make-icons.js`：由吉祥物產生 `icon.svg`、`apple-touch-icon.png`
 
 ## 部署
